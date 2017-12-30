@@ -1,0 +1,22 @@
+{
+    "finish": [2,2],
+    "character": [0,1],
+    "boardSize": [3,3],
+    "moves": 5,
+    "movingObjects": [
+                {
+                "type": "bee",
+                "move": [
+                         [2,0],
+                         [1,0],
+                         [1,1],
+                         [1,2],
+                         [0,2]]
+                },
+                {
+                "type": "bee",
+                "move": [
+                       [1,2],
+                       [1,1]]
+                }]
+}
