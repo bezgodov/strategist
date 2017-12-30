@@ -17,25 +17,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var move: Int = 0
     
     /// Доступное количество ходов
-    var moves: Int!
+    var moves: Int = 0
     
     /// Координаты финишного блока
-    var finish: Point!
+    var finish: Point = Point(column: 0, row: 0)
     
     /// Координаты начальной позиции ГП
     var characterStart: Point = Point(column: 0, row: 0)
     
     /// Размеры игрового поля
-    var boardSize: Point!
+    var boardSize: Point = Point(column: 0, row: 0)
    
     /// Главный персонаж (ГП)
-    var character: Character!
+    var character: Character = Character()
     
     /// Вспомогательная переменная для выбора траектории с помощью TouchedMoved
-    var checkChoosingPath: Point!
+    var checkChoosingPath: Point = Point(column: 0, row: 0)
     
     /// Вспомогательная переменная для выбора траектории с помощью TouchedMoved
-    var checkChoosingPathArray: [Point]!
+    var checkChoosingPathArray: [Point] = []
     
     /// Вспомогательная переменная для выбора траектории с помощью TouchedMoved
     var addedLastPointByMove: Bool = false
@@ -54,13 +54,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /// Слой, на который добавляются спрайты ячеек
     let tilesLayer = SKNode()
     
-    /// Текущий уровень
-    var currentLevel = 1
+    var heartsStackView: UIStackView = UIStackView()
     
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
-    var playerWalkingFrames: [SKTexture]!
+    var playerWalkingFrames: [SKTexture] = []
     
     override func didMove(to view: SKView) {
         
@@ -68,23 +67,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         sceneSettings()
         
-        let playerAnimatedAtlas = SKTextureAtlas(named: "PlayerWalks")
-        var walkFrames = [SKTexture]()
-        
-        /// Задаём анимацию для ГП
-        let numImages = playerAnimatedAtlas.textureNames.count
-        for i in 1...numImages {
-            let playerTextureName = "PlayerPinkWalks_\(i)"
-            walkFrames.append(playerAnimatedAtlas.textureNamed(playerTextureName))
-        }
-        
-        playerWalkingFrames = walkFrames
-        
         createLevel()
     }
     
     /* Настройка сцены */
     func sceneSettings() {
+        var countLives = UserDefaults.standard.dictionary(forKey: "countLives")
+        // Если нет сохранённых уровней, то задаёт кол-во жизней на каждый уровень равным 5
+        if countLives == nil {
+            countLives = [String: Int]()
+            
+            for index in 1...Model.sharedInstance.countLevels {
+                countLives![String(index)] = 5
+            }
+            
+            UserDefaults.standard.set(countLives, forKey: "countLives")
+            
+            Model.sharedInstance.countLives = countLives as! [String : Int]
+        }
         
         /*
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
@@ -120,80 +120,96 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func createLevel() {
-        goToLevel(currentLevel)
+        if Model.sharedInstance.countLives![String(Model.sharedInstance.currentLevel)]! > 0 {
+            goToLevel(Model.sharedInstance.currentLevel)
         
-        // Инициализируем ГП
-        character = Character(texture: playerWalkingFrames[1])
-        character.zPosition = 3
-        character.position = pointFor(column: characterStart.column, row: characterStart.row)
-        character.size = CGSize(width: TileWidth * 0.5, height: (character.texture?.size().height)! / ((character.texture?.size().width)! / (TileWidth * 0.5)))
-        character.moves.append(characterStart)
-        objectsLayer.addChild(character)
+            let playerAnimatedAtlas = SKTextureAtlas(named: "PlayerWalks")
+            var walkFrames = [SKTexture]()
         
-        // Инициализируем статичные объекты
-        for object in staticObjects {
-            object.position = pointFor(column: object.point.column, row: object.point.row)
-            objectsLayer.addChild(object)
-            
-            // Инициализируем Label для объекта "бомба"
-            if object.type == ObjectType.bomb {
-                let movesToExplodeLabel = SKLabelNode(text: String(object.movesToExplode))
-                movesToExplodeLabel.name = "movesToExplode"
-                movesToExplodeLabel.zPosition = 6
-                movesToExplodeLabel.color = UIColor.green
-                movesToExplodeLabel.fontColor = UIColor.green
-                movesToExplodeLabel.fontSize = 65
-                movesToExplodeLabel.fontName = "Helvetica Neue"
-                movesToExplodeLabel.horizontalAlignmentMode = .center
-                movesToExplodeLabel.verticalAlignmentMode = .center
-                object.addChild(movesToExplodeLabel)
+            /// Задаём анимацию для ГП
+            let numImages = playerAnimatedAtlas.textureNames.count
+            for i in 1...numImages {
+                let playerTextureName = "PlayerPinkWalks_\(i)"
+                walkFrames.append(playerAnimatedAtlas.textureNamed(playerTextureName))
             }
+        
+            playerWalkingFrames = walkFrames
+        
+            // Инициализируем ГП
+            character = Character(texture: playerWalkingFrames[1])
+            character.zPosition = 3
+            character.position = pointFor(column: characterStart.column, row: characterStart.row)
+            character.size = CGSize(width: TileWidth * 0.5, height: (character.texture?.size().height)! / ((character.texture?.size().width)! / (TileWidth * 0.5)))
+            character.moves.append(characterStart)
+            objectsLayer.addChild(character)
+        
+            // Инициализируем статичные объекты
+            for object in staticObjects {
+                object.position = pointFor(column: object.point.column, row: object.point.row)
+                objectsLayer.addChild(object)
+                
+                // Инициализируем Label для объекта "бомба"
+                if object.type == ObjectType.bomb {
+                    let movesToExplodeLabel = SKLabelNode(text: String(object.movesToExplode))
+                    movesToExplodeLabel.name = "movesToExplode"
+                    movesToExplodeLabel.zPosition = 6
+                    movesToExplodeLabel.color = UIColor.green
+                    movesToExplodeLabel.fontColor = UIColor.green
+                    movesToExplodeLabel.fontSize = 65
+                    movesToExplodeLabel.fontName = "Helvetica Neue"
+                    movesToExplodeLabel.horizontalAlignmentMode = .center
+                    movesToExplodeLabel.verticalAlignmentMode = .center
+                    object.addChild(movesToExplodeLabel)
+                }
+            }
+        
+            // Инициализируем перемещающиеся объекты
+            for object in self.movingObjects {
+                object.position = pointFor(column: object.moves[0].column, row: object.moves[0].row)
+                objectsLayer.addChild(object)
+            }
+        
+            // Отображаем слой с объектами по центру экрана
+            objectsLayer.position = CGPoint(x: -TileWidth * CGFloat(boardSize.column) / 2, y: -TileHeight * CGFloat(boardSize.row) / 2)
+            tilesLayer.position = objectsLayer.position
+        
+            gameLayer.addChild(objectsLayer)
+            gameLayer.addChild(tilesLayer)
+        
+            // Инициализируем финишный блок
+            let finishSprite = SKSpriteNode(imageNamed: "Finish")
+            finishSprite.position = pointFor(column: finish.column, row: finish.row)
+            finishSprite.zPosition = 2
+            finishSprite.size = CGSize(width: TileWidth * 0.75, height: (finishSprite.texture?.size().height)! / ((finishSprite.texture?.size().width)! / (TileWidth * 0.75)))
+            objectsLayer.addChild(finishSprite)
+        
+            self.addChild(gameLayer)
+        
+            // Добавляем ячейке игрового поля
+            addTiles()
+        
+            Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel?.isHidden = true
+            Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = false
+            Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.isHidden = false
         }
-        
-        // Инициализируем перемещающиеся объекты
-        for object in self.movingObjects {
-            object.position = pointFor(column: object.moves[0].column, row: object.moves[0].row)
-            objectsLayer.addChild(object)
-        }
-        
-        // Отображаем слой с объектами по центру экрана
-        objectsLayer.position = CGPoint(x: -TileWidth * CGFloat(boardSize.column) / 2, y: -TileHeight * CGFloat(boardSize.row) / 2)
-        tilesLayer.position = objectsLayer.position
-        
-        gameLayer.addChild(objectsLayer)
-        gameLayer.addChild(tilesLayer)
-        
-        // Инициализируем финишный блок
-        let finishSprite = SKSpriteNode(imageNamed: "Finish")
-        finishSprite.position = pointFor(column: finish.column, row: finish.row)
-        finishSprite.zPosition = 2
-        finishSprite.size = CGSize(width: TileWidth * 0.75, height: (finishSprite.texture?.size().height)! / ((finishSprite.texture?.size().width)! / (TileWidth * 0.75)))
-        objectsLayer.addChild(finishSprite)
-        
-        self.addChild(gameLayer)
-        
-        // Добавляем ячейке игрового поля
-        addTiles()
-        
-        Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel?.isHidden = true
-        Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = false
-        Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.isHidden = false
     }
     
     /// Функция, которая запускает основной цикл игры
     func startLevel() {
-        // Если уровень не был начат
-        if move == 0 {
-            // Если траектория ГП состоит более, чем 1 хода
-            if character.moves.count > 1 {
-                character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
-                
-                gameTimer = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true) { (_) in
-                    self.worldMove()
+        if Model.sharedInstance.countLives![String(Model.sharedInstance.currentLevel)]! > 0 {
+            // Если уровень не был начат
+            if move == 0 {
+                // Если траектория ГП состоит более, чем 1 хода
+                if character.moves.count > 1 {
+                    character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
+                    
+                    gameTimer = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true) { (_) in
+                        self.worldMove()
+                    }
+                    
+                    character.pathNode.removeFromParent()
+                    Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = true
                 }
-                
-                character.pathNode.removeFromParent()
-                Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = true
             }
         }
     }
@@ -317,6 +333,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.isHidden = false
         Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isHidden = true
         Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.isHidden = true
+        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
+        
+        var countLives = UserDefaults.standard.dictionary(forKey: "countLives") as? [String: Int] ?? nil
+
+        if countLives != nil {
+            countLives![String(Model.sharedInstance.currentLevel)] = countLives![String(Model.sharedInstance.currentLevel)]! - 1
+            UserDefaults.standard.set(countLives, forKey: "countLives")
+        }
+        
+        Model.sharedInstance.countLives = countLives
+        
+        let livesOnLevel = countLives![String(Model.sharedInstance.currentLevel)]!
+        
+        if livesOnLevel > 0 {
+            
+            let heartTexture = SKTexture(imageNamed: "Heart")
+            
+            let halfSize = Model.sharedInstance.gameScene.view!.frame.width / 2
+            
+            heartsStackView = UIStackView(frame: CGRect(x: Int((Model.sharedInstance.gameScene.view?.frame.maxX)! - CGFloat(45 * livesOnLevel)), y: 10, width: 50 * livesOnLevel, height: 50))
+        
+            for index in 0...livesOnLevel - 1 {
+                let button = UIButton(frame: CGRect(x: CGFloat(45 * index), y: 0, width: heartTexture.size().width / 3, height: heartTexture.size().height / 3))
+                button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
+                button.isUserInteractionEnabled = false
+    //            button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+                button.tag = index + 1
+                
+                heartsStackView.addSubview(button)
+                Model.sharedInstance.gameScene.view?.addSubview(heartsStackView)
+            }
+        }
         
         gameTimer.invalidate()
         
@@ -325,7 +373,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /// Уровень пройден
     func winLevel() {
-        currentLevel += 1
+        Model.sharedInstance.currentLevel += 1
  
         cleanLevel()
         createLevel()
@@ -333,20 +381,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /// Очистка уровня
     func cleanLevel() {
-        move = 0
-        stars = 0
- 
         movingObjects.removeAll()
         staticObjects.removeAll()
+        move = 0
+        moves = 0
+        finish = Point(column: 0, row: 0)
+        characterStart = Point(column: 0, row: 0)
+        boardSize = Point(column: 0, row: 0)
+        character = Character()
+        checkChoosingPath = Point(column: 0, row: 0)
+        checkChoosingPathArray.removeAll()
+        addedLastPointByMove = false
+        stars = 0
+        gameTimer.invalidate()
         gameLayer.removeAllChildren()
+        gameLayer.removeAllActions()
+        gameLayer.removeFromParent()
         objectsLayer.removeAllChildren()
+        objectsLayer.removeAllActions()
+        objectsLayer.removeFromParent()
         tilesLayer.removeAllChildren()
+        tilesLayer.removeAllActions()
+        tilesLayer.removeFromParent()
+        
+        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
+        heartsStackView.removeFromSuperview()
         
         self.removeAllChildren()
         self.removeAllActions()
-        gameTimer.invalidate()
-//        timerToLose.invalidate()
-//        timeToLose = 30
     }
     
     /// Срабатывает при нажатии на кнопку RESTART в меню после проигранного раунда

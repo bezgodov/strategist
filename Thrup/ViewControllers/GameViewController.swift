@@ -1,6 +1,5 @@
 import UIKit
 import SpriteKit
-import GameplayKit
 
 class GameViewController: UIViewController {
 
@@ -71,8 +70,11 @@ class GameViewController: UIViewController {
     
     /// При нажатии на "Menu" после проигранного раунда
     @IBAction func goToMenu(sender: UIButton) {
-        navigationController?.popViewController(animated: true)
-        navigationController?.dismiss(animated: true, completion: nil)
+        if let storyboard = storyboard {
+            let menuViewController = storyboard.instantiateViewController(withIdentifier: "MenuViewController") as! MenuViewController
+            navigationController?.pushViewController(menuViewController, animated: true)
+        }
+        
         Model.sharedInstance.gameScene.cleanLevel()
     }
     

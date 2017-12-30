@@ -29,6 +29,7 @@
 		2B9330741FD63866002E5933 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9330731FD63866002E5933 /* Extensions.swift */; };
 		2B9330781FD81F93002E5933 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9330771FD81F93002E5933 /* Character.swift */; };
 		2B9D14931FAFD57F00D3D52C /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2B9D14921FAFD57F00D3D52C /* GameScene.sks */; };
+		2BB1130B1FF7850B00C3BB2E /* Heart.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BB1130A1FF7850A00C3BB2E /* Heart.png */; };
 		2BBE77A01FB71F3F0042F79F /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBE779F1FB71F3F0042F79F /* MenuViewController.swift */; };
 		2BC4F2F31FB5913D002B28BB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC4F2F21FB5913D002B28BB /* Model.swift */; };
 		2BCD9DC01FF634BC0097C4F2 /* GameScene_Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCD9DBF1FF634BC0097C4F2 /* GameScene_Touches.swift */; };
@@ -72,6 +73,7 @@
 		2B9330731FD63866002E5933 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		2B9330771FD81F93002E5933 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
 		2B9D14921FAFD57F00D3D52C /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
+		2BB1130A1FF7850A00C3BB2E /* Heart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Heart.png; sourceTree = "<group>"; };
 		2BBE779F1FB71F3F0042F79F /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		2BC4F2F21FB5913D002B28BB /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		2BCD9DBF1FF634BC0097C4F2 /* GameScene_Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene_Touches.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 				2BF041961FF72E7600624C4C /* Bomb.png */,
 				2B309A871FDBB87C0095D11E /* Cupcake.png */,
 				2BF041941FF7295800624C4C /* Spinner.png */,
+				2BB1130A1FF7850A00C3BB2E /* Heart.png */,
 				2BF041821FF7196D00624C4C /* Star.png */,
 				2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */,
 				2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */,
@@ -291,6 +294,7 @@
 				2B0B63E11FAFD1AF002C0322 /* Assets.xcassets in Resources */,
 				2B309A961FE39BF20095D11E /* Fish.png in Resources */,
 				2BF041861FF71A5A00624C4C /* PlayerPinkClimbs_1.png in Resources */,
+				2BB1130B1FF7850B00C3BB2E /* Heart.png in Resources */,
 				2BF041951FF7295800624C4C /* Spinner.png in Resources */,
 				2BCD9DCC1FF672210097C4F2 /* Tile_center.png in Resources */,
 				2BCD9DC81FF665510097C4F2 /* Tile_top_left.png in Resources */,
