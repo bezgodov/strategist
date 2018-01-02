@@ -72,18 +72,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /* Настройка сцены */
     func sceneSettings() {
-        var countLives = UserDefaults.standard.dictionary(forKey: "countLives")
-        // Если нет сохранённых уровней, то задаёт кол-во жизней на каждый уровень равным 5
-        if countLives == nil {
-            countLives = [String: Int]()
+        
+        // Если нет сохранённых уровней, то задаём кол-во жизней на каждый уровень равным 5
+        if Model.sharedInstance.emptySavedLevelsLives() == true {
             
             for index in 1...Model.sharedInstance.countLevels {
-                countLives![String(index)] = 5
+                Model.sharedInstance.setLevelLives(level: index, newValue: 5)
             }
-            
-            UserDefaults.standard.set(countLives, forKey: "countLives")
-            
-            Model.sharedInstance.countLives = countLives as! [String : Int]
         }
         
         /*
@@ -120,7 +115,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func createLevel() {
-        if Model.sharedInstance.countLives![String(Model.sharedInstance.currentLevel)]! > 0 {
+        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
             goToLevel(Model.sharedInstance.currentLevel)
         
             let playerAnimatedAtlas = SKTextureAtlas(named: "PlayerWalks")
@@ -196,7 +191,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /// Функция, которая запускает основной цикл игры
     func startLevel() {
-        if Model.sharedInstance.countLives![String(Model.sharedInstance.currentLevel)]! > 0 {
+        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
             // Если уровень не был начат
             if move == 0 {
                 // Если траектория ГП состоит более, чем 1 хода
@@ -334,23 +329,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isHidden = true
         Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.isHidden = true
         Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
-        
-        var countLives = UserDefaults.standard.dictionary(forKey: "countLives") as? [String: Int] ?? nil
 
-        if countLives != nil {
-            countLives![String(Model.sharedInstance.currentLevel)] = countLives![String(Model.sharedInstance.currentLevel)]! - 1
-            UserDefaults.standard.set(countLives, forKey: "countLives")
+        if Model.sharedInstance.emptySavedLevelsLives() == false {
+            Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
         }
         
-        Model.sharedInstance.countLives = countLives
-        
-        let livesOnLevel = countLives![String(Model.sharedInstance.currentLevel)]!
+        let livesOnLevel = Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)
         
         if livesOnLevel > 0 {
             
             let heartTexture = SKTexture(imageNamed: "Heart")
-            
-            let halfSize = Model.sharedInstance.gameScene.view!.frame.width / 2
             
             heartsStackView = UIStackView(frame: CGRect(x: Int((Model.sharedInstance.gameScene.view?.frame.maxX)! - CGFloat(45 * livesOnLevel)), y: 10, width: 50 * livesOnLevel, height: 50))
         
@@ -358,7 +346,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let button = UIButton(frame: CGRect(x: CGFloat(45 * index), y: 0, width: heartTexture.size().width / 3, height: heartTexture.size().height / 3))
                 button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
                 button.isUserInteractionEnabled = false
-    //            button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+//                button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
                 button.tag = index + 1
                 
                 heartsStackView.addSubview(button)
@@ -373,8 +361,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /// Уровень пройден
     func winLevel() {
+        if Model.sharedInstance.currentLevel >= Model.sharedInstance.getCountCompletedLevels() {
+            Model.sharedInstance.setCountCompletedLevels(Model.sharedInstance.currentLevel)
+        }
+        
         Model.sharedInstance.currentLevel += 1
- 
+
         cleanLevel()
         createLevel()
     }
@@ -547,3 +539,4 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        }
 //    }
 }
+

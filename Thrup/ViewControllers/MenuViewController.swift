@@ -17,6 +17,9 @@ class MenuViewController: UIViewController {
     
     /// При нажатии на Label "Start"
     @IBAction func startGame(sender: UIButton) {
+        
+        Model.sharedInstance.currentLevel = Model.sharedInstance.getCountCompletedLevels() + 1
+        
         if let storyboard = storyboard {
             let gameViewController = storyboard.instantiateViewController(withIdentifier: "GameViewController") as! GameViewController
             navigationController?.pushViewController(gameViewController, animated: true)

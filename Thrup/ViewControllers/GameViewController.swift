@@ -57,15 +57,17 @@ class GameViewController: UIViewController {
         return true
     }
     
-    // При нажатии "Start" в меню
+    // При нажатии "Start" в верхней части экрана (запуск уровня)
     @IBAction func startLevel(sender: UIButton) {
         Model.sharedInstance.gameScene.startLevel()
     }
     
     /// При нажатии на "Restart" после проигранного раунда
     @IBAction func restartLevel(sender: UIButton) {
-        Model.sharedInstance.gameViewControllerConnect = self
-        Model.sharedInstance.gameScene.restartLevel()
+        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
+            Model.sharedInstance.gameViewControllerConnect = self
+            Model.sharedInstance.gameScene.restartLevel()
+        }
     }
     
     /// При нажатии на "Menu" после проигранного раунда
