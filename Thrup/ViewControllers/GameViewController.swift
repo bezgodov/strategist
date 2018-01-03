@@ -84,4 +84,13 @@ class GameViewController: UIViewController {
     @IBAction func showMoves(sender: UIButton) {
         Model.sharedInstance.gameScene.showMoves()
     }
+    
+    func goToNextLevel() {
+        if let storyboard = storyboard {
+            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
+            chooseLevelViewController.moveCharacterToNextLevel = true
+            
+            navigationController?.pushViewController(chooseLevelViewController, animated: true)
+        }
+    }
 }

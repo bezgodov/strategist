@@ -1,8 +1,6 @@
 import Foundation
 import SpriteKit
 
-
-/// Вспомогательный класс, в основном служит для соединения остальных классов
 class Model {
     init() {
         if let arr = UserDefaults.standard.array(forKey: "countLives") as? [Int] {
@@ -41,6 +39,7 @@ class Model {
     
     /// Функция, которая изменяет значение количества жизней на уровне
     func setLevelLives(level: Int, newValue: Int = -1) {
+        countLives.remove(at: level - 1)
         countLives.insert(newValue, at: level - 1)
         UserDefaults.standard.set(countLives, forKey: "countLives")
     }

@@ -54,7 +54,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /// Слой, на который добавляются спрайты ячеек
     let tilesLayer = SKNode()
     
+    /// View для кнопок (жизней)
     var heartsStackView: UIStackView = UIStackView()
+    
+    /// Переменная, которая запоминает последнюю кнопку (жизней) для дальнейшего её удаления
+    var lastHeartButton: UIButton!
     
 //    var motionManager: CMMotionManager!
     
@@ -72,15 +76,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /* Настройка сцены */
     func sceneSettings() {
+        // Функция показа всех ходов пока не будет работать
+        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
         
         // Если нет сохранённых уровней, то задаём кол-во жизней на каждый уровень равным 5
         if Model.sharedInstance.emptySavedLevelsLives() == true {
-            
             for index in 1...Model.sharedInstance.countLevels {
                 Model.sharedInstance.setLevelLives(level: index, newValue: 5)
             }
         }
-        
+    
         /*
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
         swipeDown.direction = UISwipeGestureRecognizerDirection.down
@@ -156,6 +161,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     movesToExplodeLabel.verticalAlignmentMode = .center
                     object.addChild(movesToExplodeLabel)
                 }
+                
+                if object.type == ObjectType.spinner {
+                    object.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi * 2), duration: 1)))
+                }
             }
         
             // Инициализируем перемещающиеся объекты
@@ -182,6 +191,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
             // Добавляем ячейке игрового поля
             addTiles()
+            
+            drawHearts()
         
             Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel?.isHidden = true
             Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = false
@@ -321,6 +332,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didSimulatePhysics() {
     }
     
+    /// Функция, отрисовывающая количество оставшихся жизней на уровне
+    func drawHearts() {
+        let livesOnLevel = Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)
+        
+        if livesOnLevel > 0 {
+            
+            let heartTexture = SKTexture(imageNamed: "Heart")
+            
+            heartsStackView = UIStackView(frame: CGRect(x: Int((Model.sharedInstance.gameScene.view?.bounds.maxX)! - CGFloat(45 * livesOnLevel) - 10), y: Int((Model.sharedInstance.gameScene.view?.bounds.maxY)! - 50 + 5), width: 50 * livesOnLevel, height: 50))
+            
+            for index in 0...livesOnLevel - 1 {
+                let button = UIButton(frame: CGRect(x: CGFloat(45 * index), y: 0, width: heartTexture.size().width / 3, height: heartTexture.size().height / 3))
+                button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
+                button.isUserInteractionEnabled = false
+//                button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+                button.tag = index + 1
+                
+                if index == 0 {
+                    lastHeartButton = button
+                }
+                
+                heartsStackView.addSubview(button)
+            }
+            Model.sharedInstance.gameScene.view?.addSubview(heartsStackView)
+        }
+    }
+    
     
     /// Уровень не пройден
     func loseLevel() {
@@ -334,25 +372,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
         }
         
-        let livesOnLevel = Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)
+        let btnFadeOutAnim = CABasicAnimation(keyPath: "opacity")
+        btnFadeOutAnim.toValue = 0
+        btnFadeOutAnim.duration = 0.35
+        btnFadeOutAnim.fillMode = kCAFillModeForwards
+        btnFadeOutAnim.isRemovedOnCompletion = false
         
-        if livesOnLevel > 0 {
-            
-            let heartTexture = SKTexture(imageNamed: "Heart")
-            
-            heartsStackView = UIStackView(frame: CGRect(x: Int((Model.sharedInstance.gameScene.view?.frame.maxX)! - CGFloat(45 * livesOnLevel)), y: 10, width: 50 * livesOnLevel, height: 50))
-        
-            for index in 0...livesOnLevel - 1 {
-                let button = UIButton(frame: CGRect(x: CGFloat(45 * index), y: 0, width: heartTexture.size().width / 3, height: heartTexture.size().height / 3))
-                button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
-                button.isUserInteractionEnabled = false
-//                button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-                button.tag = index + 1
-                
-                heartsStackView.addSubview(button)
-                Model.sharedInstance.gameScene.view?.addSubview(heartsStackView)
-            }
-        }
+        lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
         
         gameTimer.invalidate()
         
@@ -366,7 +392,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         Model.sharedInstance.currentLevel += 1
-
+        Model.sharedInstance.gameViewControllerConnect.goToNextLevel()
+        
         cleanLevel()
         createLevel()
     }
@@ -396,7 +423,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         tilesLayer.removeAllActions()
         tilesLayer.removeFromParent()
         
-        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
+//        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
         heartsStackView.removeFromSuperview()
         
         self.removeAllChildren()
