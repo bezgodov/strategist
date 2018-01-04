@@ -133,7 +133,7 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="N0e-Yl-Nye">
-                                <rect key="frame" x="25" y="39.5" width="23.5" height="27.5"/>
+                                <rect key="frame" x="25" y="40" width="23.5" height="27.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="60" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ocF-LN-Q0r">
                                         <rect key="frame" x="0.0" y="0.0" width="23.5" height="27.5"/>

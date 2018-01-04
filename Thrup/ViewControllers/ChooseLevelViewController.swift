@@ -50,9 +50,11 @@ class ChooseLevelViewController: UIViewController {
         
         characterInitial()
         
-        // Если перешли в меню после прохождения уровня, то запускаем анимацию перехода на след. уровень
-        if moveCharacterToNextLevel {
-            moveToPoint(from: levelButtonsPositions[Model.sharedInstance.currentLevel - 1 - 1], to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
+        if Model.sharedInstance.currentLevel - 1 < countLevels {
+            // Если перешли в меню после прохождения уровня, то запускаем анимацию перехода на след. уровень
+            if moveCharacterToNextLevel {
+                moveToPoint(from: levelButtonsPositions[Model.sharedInstance.currentLevel - 1 - 1], to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
+            }
         }
     }
     
@@ -107,6 +109,7 @@ class ChooseLevelViewController: UIViewController {
         scrollView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
         
         scrollView.contentSize = CGSize(width: self.view.bounds.width, height: CGFloat((countCompletedLevels + distanceBetweenLevels + extraCountForExtremeLevels) * distanceBetweenLevels) * levelTileSize.height)
+        
         scrollView.contentOffset.y = CGFloat((countCompletedLevels + ((countLevels - countCompletedLevels < distanceBetweenLevels) ? extraCountForExtremeLevels : 0)) * distanceBetweenLevels) * levelTileSize.height
         
         scrollView.contentInset = UIEdgeInsets.zero
@@ -116,8 +119,10 @@ class ChooseLevelViewController: UIViewController {
         scrollView.alwaysBounceVertical = true
         scrollView.showsVerticalScrollIndicator = false
         
-        if moveCharacterToNextLevel {
-            scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 - 1) * distanceBetweenLevels) * levelTileSize.height
+        if Model.sharedInstance.currentLevel - 1 != countLevels {
+            if moveCharacterToNextLevel {
+                scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 - 1) * distanceBetweenLevels) * levelTileSize.height
+            }
         }
     }
     
@@ -130,14 +135,18 @@ class ChooseLevelViewController: UIViewController {
         
         Model.sharedInstance.currentLevel = buttonSenderAction.tag
         
-        // Анимации ходьбы ГП
-        character.animationImages = walkFrames
-        character.animationRepeatCount = 0
-        character.animationDuration = TimeInterval(0.05 * Double(walkFrames.count))
-        character.startAnimating()
-        
         /// Точка, на которую ГП будет перемещаться
         let nextPoint = convertPoint(point: CGPoint(x: buttonSenderAction.frame.origin.x + levelTileSize.width / 2, y: buttonSenderAction.frame.origin.y + levelTileSize.height / 2))
+        
+        // Если персонаж ещё не находится на выбранном уровне, то запускаем анимацию перемещения
+        if nextPoint.point != convertPoint(point: self.character.layer.position).point {
+            // Анимации ходьбы ГП
+            character.animationImages = walkFrames
+            character.animationRepeatCount = 0
+            character.animationDuration = TimeInterval(0.05 * Double(walkFrames.count))
+            character.startAnimating()
+        }
+        
         moveToPoint(from: convertPoint(point: self.character.layer.position).point, to: nextPoint.point)
     }
     
@@ -259,6 +268,13 @@ class ChooseLevelViewController: UIViewController {
         return (bezier: path, count: count)
     }
     
+    func addLevelImageState(spriteName: String = "Locked", buttonToPin: UIButton) {
+        let levelStateImage = UIImageView(image: UIImage(named: spriteName))
+        levelStateImage.frame.size = CGSize(width: buttonToPin.frame.size.width * 0.35, height: buttonToPin.frame.size.height * 0.35)
+        levelStateImage.frame.origin = CGPoint(x: buttonToPin.frame.size.width - levelStateImage.frame.size.width - 5, y: buttonToPin.frame.size.height - levelStateImage.frame.size.height - 5)
+        buttonToPin.addSubview(levelStateImage)
+    }
+    
     func addTiles() {
         /// Флаг, который запоминает последнюю строку, на которой была вставлена кнопка уровня
         var lastRowWhereBtnAdded = Int.min
@@ -291,13 +307,15 @@ class ChooseLevelViewController: UIViewController {
                 if (lastRowWhereBtnAdded != row) && (row >= 0 && row < boardSize.row + distanceBetweenLevels * distanceBetweenLevels) && ((row / distanceBetweenLevels + 1) <= countLevels) && (row % 3 == 0) {
                     
                     let buttonPos = pointFor(column: randColumn, row: row + 1)
-                
+                    
                     let button = UIButton(frame: CGRect(x: buttonPos.x - levelTileSize.width / 2, y: buttonPos.y - levelTileSize.height / 2, width: levelTileSize.width, height: levelTileSize.height))
+                    
                     button.setBackgroundImage(UIImage(named: "Tile_center"), for: UIControlState.normal)
                     button.titleLabel?.font = UIFont(name: "Avenir Next", size: 24)
                     button.setTitle("\(row / distanceBetweenLevels + 1)", for: UIControlState.normal)
                     button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
                     button.tag = row / distanceBetweenLevels + 1
+                    button.adjustsImageWhenHighlighted = false
                     // Переворачиваем кнопку, т. к. перевернул весь слой
                     button.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
                     
@@ -309,17 +327,25 @@ class ChooseLevelViewController: UIViewController {
                         characterPointStart = Point(column: randColumn, row: row + 1)
                     }
                     
-                    if (row / distanceBetweenLevels) <= countCompletedLevels {
+                    // Если уровень пройден, то добавляем соответствующую метку
+                    if Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels + 1) {
+                        addLevelImageState(spriteName: "Checked", buttonToPin: button)
+                    }
+                    
+                    if (row / distanceBetweenLevels) <= countCompletedLevels + 2 {
                         if Model.sharedInstance.emptySavedLevelsLives() == false {
+                            // Если на уровне не осталось жизней, то добавляем соответствующую метку
                             if Model.sharedInstance.getLevelLives(row / distanceBetweenLevels + 1) <= 0 {
                                 button.isEnabled = false
-                                button.alpha = 0.5
+//                                button.alpha = 0.5
+                                addLevelImageState(spriteName: "Heart", buttonToPin: button)
                             }
                         }
                     }
                     else {
                         button.isEnabled = false
-                        button.alpha = 0.5
+//                        button.alpha = 0.5
+                        addLevelImageState(spriteName: "Locked", buttonToPin: button)
                     }
                     
                     levelButtonsPositions.append(Point(column: randColumn, row: row + 1))

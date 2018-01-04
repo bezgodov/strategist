@@ -23,7 +23,7 @@ enum ObjectType: Int {
             "Bee",
             "Spinner",
             "Bomb",
-            "Stopper",
+            "StopSign",
             "Accelerator",
             "Stopper",
             "Donut",

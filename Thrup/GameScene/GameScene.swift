@@ -78,13 +78,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func sceneSettings() {
         // Функция показа всех ходов пока не будет работать
         Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
-        
         // Если нет сохранённых уровней, то задаём кол-во жизней на каждый уровень равным 5
-        if Model.sharedInstance.emptySavedLevelsLives() == true {
+        Model.sharedInstance.setCountCompletedLevels(0)
+//        if Model.sharedInstance.emptySavedLevelsLives() == true {
             for index in 1...Model.sharedInstance.countLevels {
                 Model.sharedInstance.setLevelLives(level: index, newValue: 5)
+                Model.sharedInstance.setCompletedLevel(index, value: false)
             }
-        }
+//        }
     
         /*
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
@@ -334,28 +335,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /// Функция, отрисовывающая количество оставшихся жизней на уровне
     func drawHearts() {
-        let livesOnLevel = Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)
-        
-        if livesOnLevel > 0 {
+        if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+            let livesOnLevel = Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)
             
-            let heartTexture = SKTexture(imageNamed: "Heart")
-            
-            heartsStackView = UIStackView(frame: CGRect(x: Int((Model.sharedInstance.gameScene.view?.bounds.maxX)! - CGFloat(45 * livesOnLevel) - 10), y: Int((Model.sharedInstance.gameScene.view?.bounds.maxY)! - 50 + 5), width: 50 * livesOnLevel, height: 50))
-            
-            for index in 0...livesOnLevel - 1 {
-                let button = UIButton(frame: CGRect(x: CGFloat(45 * index), y: 0, width: heartTexture.size().width / 3, height: heartTexture.size().height / 3))
-                button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
-                button.isUserInteractionEnabled = false
-//                button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-                button.tag = index + 1
+            if livesOnLevel > 0 {
+                let heartTexture = SKTexture(imageNamed: "Heart")
                 
-                if index == 0 {
-                    lastHeartButton = button
+                heartsStackView = UIStackView(frame: CGRect(x: Int((Model.sharedInstance.gameScene.view?.bounds.maxX)! - CGFloat(45 * livesOnLevel) - 10), y: Int((Model.sharedInstance.gameScene.view?.bounds.maxY)! - 50 + 5), width: 50 * livesOnLevel, height: 50))
+                
+                for index in 0...livesOnLevel - 1 {
+                    let button = UIButton(frame: CGRect(x: CGFloat(45 * index), y: 0, width: heartTexture.size().width / 3, height: heartTexture.size().height / 3))
+                    button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
+                    button.isUserInteractionEnabled = false
+    //                button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+                    button.tag = index + 1
+                    
+                    if index == 0 {
+                        lastHeartButton = button
+                    }
+                    
+                    heartsStackView.addSubview(button)
                 }
-                
-                heartsStackView.addSubview(button)
+                Model.sharedInstance.gameScene.view?.addSubview(heartsStackView)
             }
-            Model.sharedInstance.gameScene.view?.addSubview(heartsStackView)
         }
     }
     
@@ -369,17 +371,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
 
         if Model.sharedInstance.emptySavedLevelsLives() == false {
-            Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
+            if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
+            }
         }
         
-        let btnFadeOutAnim = CABasicAnimation(keyPath: "opacity")
-        btnFadeOutAnim.toValue = 0
-        btnFadeOutAnim.duration = 0.35
-        btnFadeOutAnim.fillMode = kCAFillModeForwards
-        btnFadeOutAnim.isRemovedOnCompletion = false
-        
-        lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
-        
+        if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+            let btnFadeOutAnim = CABasicAnimation(keyPath: "opacity")
+            btnFadeOutAnim.toValue = 0
+            btnFadeOutAnim.duration = 0.35
+            btnFadeOutAnim.fillMode = kCAFillModeForwards
+            btnFadeOutAnim.isRemovedOnCompletion = false
+            
+            lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
+        }
         gameTimer.invalidate()
         
         self.isPaused = true
@@ -390,6 +395,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if Model.sharedInstance.currentLevel >= Model.sharedInstance.getCountCompletedLevels() {
             Model.sharedInstance.setCountCompletedLevels(Model.sharedInstance.currentLevel)
         }
+        
+        Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
         
         Model.sharedInstance.currentLevel += 1
         Model.sharedInstance.gameViewControllerConnect.goToNextLevel()

@@ -55,16 +55,18 @@ extension GameScene {
                     }
                     
                     // Следующие проверки предназначены для того, чтобы удостовериться, что позиция в траектории, которую уже выбрали для ГП существует
-                    if checkChoosingPathArray.last! == checkChoosingPath {
-                        if pointExists(points: character.moves, point: boardClick.point) {
-                            if getMoveIndex(move: checkChoosingPath, moves: character.moves) - getMoveIndex(move: boardClick.point, moves: character.moves) == 1 {
+                    if checkChoosingPathArray.last != nil {
+                        if checkChoosingPathArray.last! == checkChoosingPath {
+                            if pointExists(points: character.moves, point: boardClick.point) {
+                                if getMoveIndex(move: checkChoosingPath, moves: character.moves) - getMoveIndex(move: boardClick.point, moves: character.moves) == 1 {
                                     
-                                character.moves.remove(at: character.moves.count - 1)
-                                checkChoosingPathArray.removeLast()
-                                checkChoosingPath = character.moves[character.moves.count - 1]
-                                
-                                updateMoves(1)
-                                character.path()
+                                    character.moves.remove(at: character.moves.count - 1)
+                                    checkChoosingPathArray.removeLast()
+                                    checkChoosingPath = character.moves[character.moves.count - 1]
+                                    
+                                    updateMoves(1)
+                                    character.path()
+                                }
                             }
                         }
                     }
