@@ -289,7 +289,7 @@ class ChooseLevelViewController: UIViewController {
         drawHearts(Model.sharedInstance.currentLevel)
     }
     
-    @objc func startLevel(_ isBtnDisabled: Bool = false) {
+    @objc func startLevel() {
         self.goToLevel()
     }
     
@@ -327,15 +327,18 @@ class ChooseLevelViewController: UIViewController {
     func drawHearts(_ forLevel: Int) {
         if !Model.sharedInstance.isCompletedLevel(forLevel) {
             let livesOnLevel = Model.sharedInstance.getLevelLives(forLevel)
+            let allLivesPerLevel = 5
             
             if livesOnLevel > 0 {
-                let heartTexture = SKTexture(imageNamed: "Heart")
-                let heartSize = CGSize(width: heartTexture.size().width / 4, height: heartTexture.size().height / 4)
+                var heartTexture = SKTexture(imageNamed: "Heart")
+                let heartSize = CGSize(width: heartTexture.size().width / 1.5, height: heartTexture.size().height / 1.5)
                 
                 let heartsStackView = UIView(frame: CGRect(x: 0, y: Int(modalWindow.frame.size.height - heartSize.height - 15), width: Int(modalWindow.frame.size.width), height: Int(heartSize.height)))
                 
-                for index in 0...livesOnLevel - 1 {
-                    let button = UIButton(frame: CGRect(x: 3 / 2 + (modalWindow.frame.size.width - (CGFloat((heartSize.width + 3) * CGFloat(livesOnLevel)))) / 2 + CGFloat((heartSize.width + 3) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
+                for index in 0...allLivesPerLevel - 1 {
+                    heartTexture = allLivesPerLevel - 1 - index < livesOnLevel ? SKTexture(imageNamed: "Heart") : SKTexture(imageNamed: "Heart_empty")
+                    
+                    let button = UIButton(frame: CGRect(x: 3 / 2 + (modalWindow.frame.size.width - (CGFloat((heartSize.width + 3) * CGFloat(allLivesPerLevel)))) / 2 + CGFloat((heartSize.width + 3) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
                     button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
                     button.isUserInteractionEnabled = false
 //                    button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)

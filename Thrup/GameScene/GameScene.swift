@@ -336,21 +336,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func drawHearts() {
         if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
             let livesOnLevel = Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)
+            let allLivesPerLevel = 5
             
             if livesOnLevel > 0 {
-                let heartTexture = SKTexture(imageNamed: "Heart")
+                var heartTexture = SKTexture(imageNamed: "Heart")
+                let heartSize = CGSize(width: heartTexture.size().width / 1.5, height: heartTexture.size().height / 1.5)
+                heartsStackView = UIStackView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.bounds.maxX)! - CGFloat(heartSize.width + 3) * CGFloat(allLivesPerLevel) - 10, y: (Model.sharedInstance.gameScene.view?.bounds.maxY)! - 50 + 5, width: heartSize.width * CGFloat(livesOnLevel), height: heartSize.height))
                 
-                heartsStackView = UIStackView(frame: CGRect(x: Int((Model.sharedInstance.gameScene.view?.bounds.maxX)! - CGFloat(45 * livesOnLevel) - 10), y: Int((Model.sharedInstance.gameScene.view?.bounds.maxY)! - 50 + 5), width: 50 * livesOnLevel, height: 50))
-                
-                for index in 0...livesOnLevel - 1 {
-                    let button = UIButton(frame: CGRect(x: CGFloat(45 * index), y: 0, width: heartTexture.size().width / 3, height: heartTexture.size().height / 3))
+                for index in 0...allLivesPerLevel - 1 {
+                    heartTexture = allLivesPerLevel - 1 - index < livesOnLevel ? SKTexture(imageNamed: "Heart") : SKTexture(imageNamed: "Heart_empty")
+                    
+                    let button = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 3) * CGFloat(index)), y: 0, width: heartTexture.size().width / 1.5, height: heartTexture.size().height / 1.5))
                     button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
                     button.isUserInteractionEnabled = false
     //                button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
                     button.tag = index + 1
                     
-                    if index == 0 {
+                    if allLivesPerLevel - livesOnLevel == index {
                         lastHeartButton = button
+                        
+                        // Добавляем пустое сердце под последнее непустое сердце (если проигрывает, то скрываем непустое и убедт анимация)
+                        let losesButton = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 3) * CGFloat(index)), y: 0, width: heartTexture.size().width / 1.5, height: heartTexture.size().height / 1.5))
+                        losesButton.setBackgroundImage(UIImage(named: "Heart_empty"), for: UIControlState.normal)
+                        heartsStackView.addSubview(losesButton)
                     }
                     
                     heartsStackView.addSubview(button)
@@ -359,7 +367,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
     }
-    
     
     /// Уровень не пройден
     func loseLevel() {
@@ -384,6 +391,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
         }
+        
         gameTimer.invalidate()
         
         self.isPaused = true
