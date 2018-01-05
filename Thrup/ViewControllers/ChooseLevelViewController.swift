@@ -39,6 +39,9 @@ class ChooseLevelViewController: UIViewController {
     
     /// Флаг, который определяет автоматическое перемещение персонажа при открытии меню
     var moveCharacterToNextLevel = false
+
+    /// БГ модального окна
+    var modalWindowBg: UIView!
     
     /// Модальное окно
     var modalWindow: UIView!
@@ -133,13 +136,16 @@ class ChooseLevelViewController: UIViewController {
     @objc func buttonAction(sender: UIButton!) {
         let buttonSenderAction: UIButton = sender
         
-        Model.sharedInstance.currentLevel = buttonSenderAction.tag
-        moveCharacterToNextLevel = false
-        
-        /// Точка, на которую ГП будет перемещаться
-        let nextPoint = convertPoint(point: CGPoint(x: buttonSenderAction.frame.origin.x + levelTileSize.width / 2, y: buttonSenderAction.frame.origin.y + levelTileSize.height / 2))
-        
-        moveToPoint(from: convertPoint(point: self.character.layer.position).point, to: nextPoint.point, delay: 0.25)
+        // Если уровень не заблокирован
+        if buttonSenderAction.tag != -1 {
+            Model.sharedInstance.currentLevel = buttonSenderAction.tag
+            moveCharacterToNextLevel = false
+            
+            /// Точка, на которую ГП будет перемещаться
+            let nextPoint = convertPoint(point: CGPoint(x: buttonSenderAction.frame.origin.x + levelTileSize.width / 2, y: buttonSenderAction.frame.origin.y + levelTileSize.height / 2))
+            
+            moveToPoint(from: convertPoint(point: self.character.layer.position).point, to: nextPoint.point, delay: 0.25)
+        }
     }
     
     /// Функция, которая вызывает анимацию следования ГП по кривой Безье
@@ -221,36 +227,124 @@ class ChooseLevelViewController: UIViewController {
     /// Функция показывает модальное окно с информацией об уровне
     func modalWindowPresent() {
         // Добавляем бг, чтобы при клике на него закрыть всё модальное окно
-        modalWindow = UIView(frame: scrollView.bounds)
-        modalWindow.backgroundColor = UIColor.clear
-        modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
-        modalWindow.isUserInteractionEnabled = true
-        scrollView.addSubview(modalWindow)
+        modalWindowBg = UIView(frame: scrollView.bounds)
+        modalWindowBg.backgroundColor = UIColor.clear
+        modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+        modalWindowBg.isUserInteractionEnabled = true
+        
+        scrollView.addSubview(modalWindowBg)
         scrollView.isScrollEnabled = false
         
         // Добавляем модальное окно
-        let levelInfoView = UIView(frame: CGRect(x: self.view.bounds.midX - 100, y: self.view.bounds.midY - 100, width: 200, height: 200))
-        levelInfoView.backgroundColor = UIColor.blue
-        levelInfoView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
-        modalWindow.addSubview(levelInfoView)
+        modalWindow = UIView(frame: CGRect(x: self.view.frame.minX - 200, y: self.view.bounds.midY - 200 / 2, width: 200, height: 200))
+        modalWindow.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+        
+        UIView.animate(withDuration: 0.215, animations: {
+            self.modalWindow.frame.origin.x = self.view.bounds.midX - self.modalWindow.frame.size.width / 2
+        })
+        
+        modalWindow.backgroundColor = UIColor.blue
+        
+        modalWindow.layer.cornerRadius = 10
+        modalWindow.layer.shadowColor = UIColor.black.cgColor
+        modalWindow.layer.shadowOffset = CGSize.zero
+        modalWindow.layer.shadowOpacity = 0.35
+        modalWindow.layer.shadowRadius = 10
+        
+        modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+        modalWindowBg.addSubview(modalWindow)
+        
+        /// Название выбранного уровня
+        let levelNumberLabel = UILabel(frame: CGRect(x: modalWindow.bounds.midX - modalWindow.frame.size.width / 2, y: 0 + 15, width: modalWindow.frame.size.width, height: 35))
+        levelNumberLabel.text = "Level \(Model.sharedInstance.currentLevel)"
+        levelNumberLabel.textAlignment = NSTextAlignment.center
+        levelNumberLabel.font = UIFont(name: "Avenir Next", size: 24)
+        levelNumberLabel.textColor = UIColor.white
+        modalWindow.addSubview(levelNumberLabel)
         
         // Кнопка "старт" в модальном окне, которая переносит на выбранный уровень
-        let btnStart = UIButton(frame: CGRect(x: levelInfoView.bounds.midX - 100 / 2, y: levelInfoView.bounds.midY - 100 / 2, width: 100, height: 100))
+        let btnStart = UIButton(frame: CGRect(x: modalWindow.bounds.midX - 100 / 2, y: modalWindow.bounds.midY - 50 / 2, width: 100, height: 50))
+        btnStart.layer.cornerRadius = 5
         btnStart.backgroundColor = UIColor.red
-        btnStart.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
         btnStart.addTarget(self, action: #selector(startLevel), for: .touchUpInside)
         btnStart.setTitle("START", for: UIControlState.normal)
-        levelInfoView.addSubview(btnStart)
+        
+        // Если количество жизенй на уровне меньше 0, то добавляем кнопку получения новой жизни
+        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
+            btnStart.backgroundColor = UIColor(displayP3Red: 0.5, green: 0, blue: 0, alpha: 0.9)
+            btnStart.removeTarget(self, action: nil, for: .allEvents)
+            btnStart.addTarget(self, action: #selector(shakeBtnStart), for: .touchUpInside)
+            // Кнопка "дополнительная жизнь" в модальном окне
+            let btnExtraLives = UIButton(frame: CGRect(x: modalWindow.bounds.midX - 100 / 2, y: modalWindow.frame.size.height - 50 - 15, width: 100, height: 50))
+            btnExtraLives.layer.cornerRadius = 5
+            btnExtraLives.backgroundColor = UIColor.green
+            btnExtraLives.setTitleColor(UIColor.black, for: UIControlState.normal)
+//            btnExtraLives.addTarget(self, action: #selector(startLevel), for: .touchUpInside)
+            btnExtraLives.setTitle("EXTRA LIFE", for: UIControlState.normal)
+            modalWindow.addSubview(btnExtraLives)
+        }
+        
+        modalWindow.addSubview(btnStart)
+        
+        drawHearts(Model.sharedInstance.currentLevel)
     }
     
-    @objc func startLevel() {
+    @objc func startLevel(_ isBtnDisabled: Bool = false) {
         self.goToLevel()
     }
     
     @objc func bgClick(_ sender: UITapGestureRecognizer) {
         if sender.view?.superview === scrollView {
-            modalWindow.removeFromSuperview()
-            scrollView.isScrollEnabled = true
+            UIView.animate(withDuration: 0.215, animations: {
+                self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
+            }, completion: { (_) in
+                self.modalWindowBg.removeFromSuperview()
+                self.scrollView.isScrollEnabled = true
+            })
+        }
+    }
+    
+    @objc func shakeBtnStart(_ button: UIButton) {
+        shakeView(button)
+    }
+    
+    @objc func shakeScreen() {
+        shakeView(self.view)
+    }
+    
+    func shakeView(_ viewToShake: UIView, repeatCount: Float = 3, amplitude: CGFloat = 5) {
+        let animation = CABasicAnimation(keyPath: "position")
+        animation.duration = 0.07
+        animation.repeatCount = repeatCount
+        animation.autoreverses = true
+        animation.fromValue = NSValue(cgPoint: CGPoint(x: viewToShake.center.x - amplitude, y: viewToShake.center.y))
+        animation.toValue = NSValue(cgPoint: CGPoint(x: viewToShake.center.x + amplitude, y: viewToShake.center.y))
+        
+        viewToShake.layer.add(animation, forKey: "position")
+    }
+    
+    /// Функция, отрисовывающая количество оставшихся жизней на уровне
+    func drawHearts(_ forLevel: Int) {
+        if !Model.sharedInstance.isCompletedLevel(forLevel) {
+            let livesOnLevel = Model.sharedInstance.getLevelLives(forLevel)
+            
+            if livesOnLevel > 0 {
+                let heartTexture = SKTexture(imageNamed: "Heart")
+                let heartSize = CGSize(width: heartTexture.size().width / 4, height: heartTexture.size().height / 4)
+                
+                let heartsStackView = UIView(frame: CGRect(x: 0, y: Int(modalWindow.frame.size.height - heartSize.height - 15), width: Int(modalWindow.frame.size.width), height: Int(heartSize.height)))
+                
+                for index in 0...livesOnLevel - 1 {
+                    let button = UIButton(frame: CGRect(x: 3 / 2 + (modalWindow.frame.size.width - (CGFloat((heartSize.width + 3) * CGFloat(livesOnLevel)))) / 2 + CGFloat((heartSize.width + 3) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
+                    button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
+                    button.isUserInteractionEnabled = false
+//                    button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+                    button.tag = index + 1
+                    
+                    heartsStackView.addSubview(button)
+                }
+                modalWindow.addSubview(heartsStackView)
+            }
         }
     }
     
@@ -372,15 +466,15 @@ class ChooseLevelViewController: UIViewController {
                         if Model.sharedInstance.emptySavedLevelsLives() == false {
                             // Если на уровне не осталось жизней, то добавляем соответствующую метку
                             if Model.sharedInstance.getLevelLives(row / distanceBetweenLevels + 1) <= 0 {
-                                button.isEnabled = false
+//                                button.isEnabled = false
 //                                button.alpha = 0.5
                                 addLevelImageState(spriteName: "Heart", buttonToPin: button)
                             }
                         }
                     }
                     else {
-                        button.isEnabled = false
-//                        button.alpha = 0.5
+                        button.tag = -1
+                        button.addTarget(self, action: #selector(shakeScreen), for: .touchUpInside)
                         addLevelImageState(spriteName: "Locked", buttonToPin: button)
                     }
                     
