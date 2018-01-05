@@ -134,51 +134,87 @@ class ChooseLevelViewController: UIViewController {
         let buttonSenderAction: UIButton = sender
         
         Model.sharedInstance.currentLevel = buttonSenderAction.tag
+        moveCharacterToNextLevel = false
         
         /// Точка, на которую ГП будет перемещаться
         let nextPoint = convertPoint(point: CGPoint(x: buttonSenderAction.frame.origin.x + levelTileSize.width / 2, y: buttonSenderAction.frame.origin.y + levelTileSize.height / 2))
         
-        // Если персонаж ещё не находится на выбранном уровне, то запускаем анимацию перемещения
-        if nextPoint.point != convertPoint(point: self.character.layer.position).point {
-            // Анимации ходьбы ГП
-            character.animationImages = walkFrames
-            character.animationRepeatCount = 0
-            character.animationDuration = TimeInterval(0.05 * Double(walkFrames.count))
-            character.startAnimating()
-        }
-        
-        moveToPoint(from: convertPoint(point: self.character.layer.position).point, to: nextPoint.point)
+        moveToPoint(from: convertPoint(point: self.character.layer.position).point, to: nextPoint.point, delay: 0.25)
     }
     
     /// Функция, которая вызывает анимацию следования ГП по кривой Безье
     func moveToPoint(from: Point, to: Point, delay: CFTimeInterval = 0) {
-        // Второе -1, т.к. массив кнопок уровней начинается с 0
-        let path = pathToPoint(from: from, to: to)
-        
-        // Если предыдущая анимация ещё не закончилась
-        if character.layer.animation(forKey: "movement") == nil {
-            let movement = CAKeyframeAnimation(keyPath: "position")
+        // Если конечная позиция не совпадает с начальной
+        if from != to {
+            // Второе -1, т.к. массив кнопок уровней начинается с 0
+            let path = pathToPoint(from: from, to: to)
             
-            CATransaction.begin()
-            
-            CATransaction.setCompletionBlock({
-                self.character.layer.position = self.pointFor(column: to.column, row: to.row)
-                self.character.layer.removeAnimation(forKey: "movement")
-                self.character.stopAnimating()
+            // Если предыдущая анимация ещё не закончилась
+            if character.layer.animation(forKey: "movement") == nil {
+                let movement = CAKeyframeAnimation(keyPath: "position")
+                scrollView.isScrollEnabled = false
                 
-                self.modalWindowPresent()
-            })
-            
-            movement.beginTime = CACurrentMediaTime() + delay
-            movement.path = path.bezier.cgPath
-            movement.fillMode = kCAFillModeForwards
-            movement.isRemovedOnCompletion = false
-            movement.duration = 0.35 * Double(path.count)
-//            movement.rotationMode = kCAAnimationRotateAuto
-            
-            character.layer.add(movement, forKey: "movement")
-            
-            CATransaction.commit()
+                // Анимации ходьбы ГП
+                character.animationImages = walkFrames
+                character.animationRepeatCount = 0
+                character.animationDuration = TimeInterval(0.05 * Double(walkFrames.count))
+                character.startAnimating()
+                
+                CATransaction.begin()
+                
+                DispatchQueue.main.async {
+                    if !self.moveCharacterToNextLevel {
+                        var extremeKoef = (((self.characterPointStart.row - 1) / self.distanceBetweenLevels) - 1) < 0 ? 0 : -1
+                        extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -1 : extremeKoef)
+                        extremeKoef = ((self.characterPointStart.row - 1) / self.distanceBetweenLevels + 1) > self.countCompletedLevels + 2 ? -2 : extremeKoef
+                        
+                        UIView.animate(withDuration: 0.25, animations: {
+                            self.scrollView.contentOffset.y = CGFloat((((self.characterPointStart.row - 1) / self.distanceBetweenLevels) + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
+                        }, completion: { (_) in
+                            
+                            var extremeKoef = (Model.sharedInstance.currentLevel - 1 - 1 < 0) ? 0 : -1
+                            extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -2 : extremeKoef)
+                            
+                            UIView.animate(withDuration: 0.25 * Double(path.count), delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+                                self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
+                            })
+                        })
+                    }
+                    else {
+                        let extremeKoef = (Model.sharedInstance.currentLevel >= self.countCompletedLevels + 2 || Model.sharedInstance.currentLevel >= self.countLevels) ? -1 : 0
+                        
+                        UIView.animate(withDuration: 0.25 * Double(path.count), delay: delay, options: UIViewAnimationOptions.curveLinear, animations: {
+                            self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel + extremeKoef - 1) * self.distanceBetweenLevels) * self.levelTileSize.height
+                        })
+                    }
+                }
+                
+                CATransaction.setCompletionBlock({
+                    self.character.layer.position = self.pointFor(column: to.column, row: to.row)
+                    self.character.layer.removeAnimation(forKey: "movement")
+                    self.character.stopAnimating()
+                    self.scrollView.isScrollEnabled = true
+                    
+                    self.modalWindowPresent()
+                    self.characterPointStart = to
+                })
+                
+                movement.beginTime = CACurrentMediaTime() + delay
+                movement.path = path.bezier.cgPath
+                movement.fillMode = kCAFillModeForwards
+                movement.isRemovedOnCompletion = false
+                movement.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
+                movement.duration = 0.25 * Double(path.count)
+//                movement.rotationMode = kCAAnimationRotateAuto
+                
+                character.layer.add(movement, forKey: "movement")
+                
+                CATransaction.commit()
+            }
+        }
+        else {
+            self.modalWindowPresent()
+            self.characterPointStart = to
         }
     }
     

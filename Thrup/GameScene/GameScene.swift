@@ -79,13 +79,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Функция показа всех ходов пока не будет работать
         Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
         // Если нет сохранённых уровней, то задаём кол-во жизней на каждый уровень равным 5
-        Model.sharedInstance.setCountCompletedLevels(0)
-//        if Model.sharedInstance.emptySavedLevelsLives() == true {
+        if Model.sharedInstance.emptySavedLevelsLives() == true {
             for index in 1...Model.sharedInstance.countLevels {
                 Model.sharedInstance.setLevelLives(level: index, newValue: 5)
                 Model.sharedInstance.setCompletedLevel(index, value: false)
             }
-//        }
+        }
     
         /*
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
