@@ -129,7 +129,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             /// Задаём анимацию для ГП
             let numImages = playerAnimatedAtlas.textureNames.count
             for i in 1...numImages {
-                let playerTextureName = "PlayerPinkWalks_\(i)"
+                let playerTextureName = "PlayerWalks_\(i)"
                 walkFrames.append(playerAnimatedAtlas.textureNamed(playerTextureName))
             }
         

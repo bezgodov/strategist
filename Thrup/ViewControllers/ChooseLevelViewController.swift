@@ -70,17 +70,17 @@ class ChooseLevelViewController: UIViewController {
         walkFrames = [UIImage]()
         let numImages = playerAnimatedAtlas.textureNames.count
         for i in 1...numImages {
-            let playerTextureName = "PlayerPinkWalks_\(i)"
+            let playerTextureName = "PlayerWalks_\(i)"
             walkFrames.append(UIImage(cgImage: playerAnimatedAtlas.textureNamed(playerTextureName).cgImage()))
         }
         
         let pointCharacter = pointFor(column: characterPointStart.column, row: characterPointStart.row)
-        let textureCharacter = playerAnimatedAtlas.textureNamed("PlayerPinkWalks_1").cgImage()
+        let textureCharacter = playerAnimatedAtlas.textureNamed("PlayerWalks_2").cgImage()
         let sizeCharacter = CGSize(width: levelTileSize.width * 0.5, height: CGFloat(textureCharacter.height) / (CGFloat(textureCharacter.width) / (levelTileSize.width * 0.5)))
         
         character = UIImageView(frame: CGRect(x: pointCharacter.x - sizeCharacter.width / 2, y: pointCharacter.y - sizeCharacter.height / 2, width: sizeCharacter.width, height: sizeCharacter.height))
         character.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-        character.image = UIImage(cgImage: playerAnimatedAtlas.textureNamed("PlayerPinkWalks_2").cgImage())
+        character.image = UIImage(cgImage: playerAnimatedAtlas.textureNamed("PlayerWalks_2").cgImage())
         
         scrollView.addSubview(character)
     }
