@@ -71,7 +71,7 @@
 		2B309A951FE39BF20095D11E /* Fish.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Fish.png; sourceTree = "<group>"; };
 		2B54018B1FDA41B400E03C63 /* Level_2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_2.json; sourceTree = "<group>"; };
 		2B54018D1FDA81E800E03C63 /* Level_3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_3.json; sourceTree = "<group>"; };
-		2B8407F81FE6A46A004B44CE /* PlayerWalks.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = PlayerWalks.atlas; path = /Users/bezgodov/apache/GraduateProject/Thrup/PlayerWalks.atlas; sourceTree = "<absolute>"; };
+		2B8407F81FE6A46A004B44CE /* PlayerWalks.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = PlayerWalks.atlas; sourceTree = "<group>"; };
 		2B84E5281FE6587C00446FE1 /* Box.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Box.png; sourceTree = "<group>"; };
 		2B9330711FD6352E002E5933 /* Level_1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Level_1.json; sourceTree = "<group>"; };
 		2B9330731FD63866002E5933 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
