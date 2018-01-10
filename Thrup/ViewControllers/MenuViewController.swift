@@ -6,23 +6,21 @@ class MenuViewController: UIViewController {
         super.viewDidLoad()
     }
     
-    
-    /// При нажатии на Label "Levels"
-    @IBAction func chooseLevel(sender: UIButton) {
-        if let storyboard = storyboard {
-            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
-            navigationController?.pushViewController(chooseLevelViewController, animated: true)
+    /// При нажатии на Switch, удаление сохранённых данных
+    @IBAction func resetData(sender: UISwitch) {
+        Model.sharedInstance.setCountCompletedLevels(0)
+        for index in 1...Model.sharedInstance.countLevels {
+            Model.sharedInstance.setLevelLives(level: index, newValue: 5)
+            Model.sharedInstance.setCompletedLevel(index, value: false)
         }
     }
     
-    /// При нажатии на Label "Start"
-    @IBAction func startGame(sender: UIButton) {
-        
-        Model.sharedInstance.currentLevel = Model.sharedInstance.getCountCompletedLevels() + 1
-        
+    @IBAction func goBack(sender: UIButton) {
         if let storyboard = storyboard {
-            let gameViewController = storyboard.instantiateViewController(withIdentifier: "GameViewController") as! GameViewController
-            navigationController?.pushViewController(gameViewController, animated: true)
+            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
+            chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
+            
+            navigationController?.pushViewController(chooseLevelViewController, animated: true)
         }
     }
     

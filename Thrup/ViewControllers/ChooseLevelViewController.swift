@@ -46,6 +46,9 @@ class ChooseLevelViewController: UIViewController {
     /// Модальное окно
     var modalWindow: UIView!
     
+    /// Стартовая позиция ГП после перехода из уровня
+    var characterPosLevelFromScene = -1
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -103,7 +106,7 @@ class ChooseLevelViewController: UIViewController {
         addTiles()
         
         if moveCharacterToNextLevel {
-            characterPointStart = levelButtonsPositions[Model.sharedInstance.currentLevel - 1 - 1]
+            characterPointStart = levelButtonsPositions[Model.sharedInstance.currentLevel - 1 - characterPosLevelFromScene != -1 ? 0 : 1]
         }
     }
     
@@ -123,8 +126,13 @@ class ChooseLevelViewController: UIViewController {
         scrollView.showsVerticalScrollIndicator = false
         
         if Model.sharedInstance.currentLevel - 1 != countLevels {
-            if moveCharacterToNextLevel {
-                scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 - 1) * distanceBetweenLevels) * levelTileSize.height
+            if characterPosLevelFromScene != -1 {
+                scrollView.contentOffset.y = CGFloat((characterPosLevelFromScene - 1) * distanceBetweenLevels) * levelTileSize.height
+            }
+            else {
+                if moveCharacterToNextLevel {
+                    scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 - 1) * distanceBetweenLevels) * levelTileSize.height
+                }
             }
         }
     }
@@ -170,16 +178,17 @@ class ChooseLevelViewController: UIViewController {
                 
                 DispatchQueue.main.async {
                     if !self.moveCharacterToNextLevel {
-                        var extremeKoef = (((self.characterPointStart.row - 1) / self.distanceBetweenLevels) - 1) < 0 ? 0 : -1
-                        extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -1 : extremeKoef)
+                        var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -1 : 0)
                         extremeKoef = ((self.characterPointStart.row - 1) / self.distanceBetweenLevels + 1) > self.countCompletedLevels + 2 ? -2 : extremeKoef
+                        extremeKoef = (((self.characterPointStart.row - 1) / self.distanceBetweenLevels) - 1) < 0 ? 0 : -1
                         
                         UIView.animate(withDuration: 0.25, animations: {
                             self.scrollView.contentOffset.y = CGFloat((((self.characterPointStart.row - 1) / self.distanceBetweenLevels) + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
                         }, completion: { (_) in
                             
-                            var extremeKoef = (Model.sharedInstance.currentLevel - 1 - 1 < 0) ? 0 : -1
-                            extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -2 : extremeKoef)
+                            var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -2 : 0)
+                            extremeKoef = (Model.sharedInstance.currentLevel - 1 - 1 < 0) ? 0 : -1
+                            
                             
                             UIView.animate(withDuration: 0.25 * Double(path.count), delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
                                 self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
@@ -456,8 +465,15 @@ class ChooseLevelViewController: UIViewController {
                     
                     let koefForLastLevel = (countLevels == countCompletedLevels) ? 0 : 1
                     
-                    if row / distanceBetweenLevels + 1 == countCompletedLevels + koefForLastLevel {
-                        characterPointStart = Point(column: randColumn, row: row + 1)
+                    if characterPosLevelFromScene != -1 {
+                        if (row / distanceBetweenLevels + 1 == characterPosLevelFromScene) {
+                            characterPointStart = Point(column: randColumn, row: row + 1)
+                        }
+                    }
+                    else {
+                        if row / distanceBetweenLevels + 1 == countCompletedLevels + koefForLastLevel {
+                            characterPointStart = Point(column: randColumn, row: row + 1)
+                        }
                     }
                     
                     // Если уровень пройден, то добавляем соответствующую метку
@@ -509,10 +525,12 @@ class ChooseLevelViewController: UIViewController {
         }
     }
     
-    /// При нажатии на Label "Back"
-    @IBAction func goBack(sender: UIButton) {
-        navigationController?.popViewController(animated: true)
-        navigationController?.dismiss(animated: true, completion: nil)
+    /// Переход в настройки
+    @IBAction func goToMenu(sender: UIButton) {
+        if let storyboard = storyboard {
+            let menuViewController = storyboard.instantiateViewController(withIdentifier: "MenuViewController") as! MenuViewController
+            navigationController?.pushViewController(menuViewController, animated: true)
+        }
     }
     
     override var prefersStatusBarHidden: Bool {

@@ -73,8 +73,10 @@ class GameViewController: UIViewController {
     /// При нажатии на "Menu" после проигранного раунда
     @IBAction func goToMenu(sender: UIButton) {
         if let storyboard = storyboard {
-            let menuViewController = storyboard.instantiateViewController(withIdentifier: "MenuViewController") as! MenuViewController
-            navigationController?.pushViewController(menuViewController, animated: true)
+            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
+            chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
+            
+            navigationController?.pushViewController(chooseLevelViewController, animated: true)
         }
         
         Model.sharedInstance.gameScene.cleanLevel()
