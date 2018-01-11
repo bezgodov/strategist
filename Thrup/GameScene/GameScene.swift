@@ -392,6 +392,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
         }
         
+        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
+            Model.sharedInstance.gameViewControllerConnect.goToNextLevel(moveCharacterFlag: false)
+        }
+        
         gameTimer.invalidate()
         
         self.isPaused = true

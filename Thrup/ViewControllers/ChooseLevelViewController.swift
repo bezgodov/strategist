@@ -62,6 +62,10 @@ class ChooseLevelViewController: UIViewController {
                 moveToPoint(from: levelButtonsPositions[Model.sharedInstance.currentLevel - 1 - 1], to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
             }
         }
+        
+        if countCompletedLevels == 0 {
+            moveToPoint(from: Point(column: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].column, row: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].row - distanceBetweenLevels), to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
+        }
     }
     
     func characterInitial() {
@@ -74,7 +78,7 @@ class ChooseLevelViewController: UIViewController {
             walkFrames.append(UIImage(cgImage: playerAnimatedAtlas.textureNamed(playerTextureName).cgImage()))
         }
         
-        let pointCharacter = pointFor(column: characterPointStart.column, row: characterPointStart.row)
+        let pointCharacter = pointFor(column: characterPointStart.column, row: characterPointStart.row - (countCompletedLevels == 0 ? distanceBetweenLevels : 0))
         let textureCharacter = playerAnimatedAtlas.textureNamed("PlayerWalks_2").cgImage()
         let sizeCharacter = CGSize(width: levelTileSize.width * 0.5, height: CGFloat(textureCharacter.height) / (CGFloat(textureCharacter.width) / (levelTileSize.width * 0.5)))
         
@@ -91,7 +95,7 @@ class ChooseLevelViewController: UIViewController {
             extraCountForExtremeLevels = 1
         }
         // Если нахожимся на последних уровнях, то подфиксиваем так, чтобы последний уровень фиксировался по центру и не уходил дальше
-        if countLevels - countCompletedLevels < distanceBetweenLevels {
+        if countLevels - (countCompletedLevels + 2) < distanceBetweenLevels {
             extraCountForExtremeLevels = countLevels - countCompletedLevels - distanceBetweenLevels + 1
         }
         
@@ -358,6 +362,14 @@ class ChooseLevelViewController: UIViewController {
                 modalWindow.addSubview(heartsStackView)
             }
         }
+        else {
+            let completedLabel = UILabel(frame: CGRect(x: modalWindow.bounds.midX - modalWindow.frame.size.width / 2, y: modalWindow.frame.size.height - 35 - 15, width: modalWindow.frame.size.width, height: 35))
+            completedLabel.text = "Completed"
+            completedLabel.textAlignment = NSTextAlignment.center
+            completedLabel.font = UIFont(name: "Avenir Next", size: 24)
+            completedLabel.textColor = UIColor.white
+            modalWindow.addSubview(completedLabel)
+        }
     }
     
     func goToLevel() {
@@ -410,9 +422,9 @@ class ChooseLevelViewController: UIViewController {
         return (bezier: path, count: count)
     }
     
-    func addLevelImageState(spriteName: String = "Locked", buttonToPin: UIButton) {
+    func addLevelImageState(spriteName: String = "Locked", buttonToPin: UIButton, sizeKoef: CGSize = CGSize(width: 0.275, height: 0.275)) {
         let levelStateImage = UIImageView(image: UIImage(named: spriteName))
-        levelStateImage.frame.size = CGSize(width: buttonToPin.frame.size.width * 0.35, height: buttonToPin.frame.size.height * 0.35)
+        levelStateImage.frame.size = CGSize(width: buttonToPin.frame.size.width * sizeKoef.width, height: buttonToPin.frame.size.height * sizeKoef.height)
         levelStateImage.frame.origin = CGPoint(x: buttonToPin.frame.size.width - levelStateImage.frame.size.width - 5, y: buttonToPin.frame.size.height - levelStateImage.frame.size.height - 5)
         buttonToPin.addSubview(levelStateImage)
     }
@@ -487,14 +499,14 @@ class ChooseLevelViewController: UIViewController {
                             if Model.sharedInstance.getLevelLives(row / distanceBetweenLevels + 1) <= 0 {
 //                                button.isEnabled = false
 //                                button.alpha = 0.5
-                                addLevelImageState(spriteName: "Heart", buttonToPin: button)
+                                addLevelImageState(spriteName: "Heart_empty", buttonToPin: button, sizeKoef: CGSize(width: 0.275, height: 0.25))
                             }
                         }
                     }
                     else {
                         button.tag = -1
                         button.addTarget(self, action: #selector(shakeScreen), for: .touchUpInside)
-                        addLevelImageState(spriteName: "Locked", buttonToPin: button)
+                        addLevelImageState(spriteName: "Locked", buttonToPin: button, sizeKoef: CGSize(width: 0.3, height: 0.3))
                     }
                     
                     levelButtonsPositions.append(Point(column: randColumn, row: row + 1))
