@@ -20,33 +20,52 @@ extension GameScene {
                 object.run(SKAction.scaleX(to: -1, duration: 0.25))
             }
             
-            object.run(SKAction.move(to: pointFor(column: object.getPoint().column, row: object.getPoint().row), duration: 0.5), completion: {
+            var characterMove = self.move
+            if self.move >= self.character.moves.count {
+                characterMove = self.character.moves.count - 1
+            }
+            
+            // Если объект и ГП "поменялись местами", то проигрыш
+            if object.moves[object.move] == self.character.moves[characterMove - 1] &&
+                previousObjectPoint == self.character.moves[characterMove] {
+                var moveToPointLose = pointFor(column: object.getPoint().column, row: object.getPoint().row)
                 
-                var characterMove = self.move
-                
-                if self.move >= self.character.moves.count {
-                    characterMove = self.character.moves.count - 1
+                if movingObjectDirection == RotationDirection.right {
+                    moveToPointLose.x -= TileWidth / 2
                 }
                 
-                if object.moves[object.move] == self.character.moves[characterMove] {
+                if movingObjectDirection == RotationDirection.top {
+                    moveToPointLose.y -= TileHeight / 2
+                }
+                
+                if movingObjectDirection == RotationDirection.left {
+                    moveToPointLose.x += TileWidth / 2
+                }
+                
+                if movingObjectDirection == RotationDirection.bottom {
+                    moveToPointLose.y += TileHeight / 2
+                }
+                
+                object.run(SKAction.move(to: moveToPointLose, duration: 0.25), completion: {
                     self.loseLevel()
-                }
-                
-                if self.move > 0 {
-                    if object.moves[object.move] == self.character.moves[characterMove - 1] &&
-                        previousObjectPoint == self.character.moves[characterMove] {
+                })
+            }
+            else {
+                object.run(SKAction.move(to: pointFor(column: object.getPoint().column, row: object.getPoint().row), duration: 0.5), completion: {
+                    
+                    if object.moves[object.move] == self.character.moves[characterMove] {
                         self.loseLevel()
                     }
-                }
-                
-                if object.type == ObjectType.electric {
-                    for point in self.getPointsAround(object.moves[object.move]) {
-                        if point == self.character.moves[self.move] {
-                            self.loseLevel()
+                    
+                    if object.type == ObjectType.electric {
+                        for point in self.getPointsAround(object.moves[object.move]) {
+                            if point == self.character.moves[self.move] {
+                                self.loseLevel()
+                            }
                         }
                     }
-                }
-            })
+                })
+            }
         }
         
         if move < character.moves.count {

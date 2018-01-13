@@ -47,7 +47,7 @@ class StaticObject: SKSpriteNode {
         case ObjectType.star:
             size = 0.5
         case ObjectType.bomb:
-            size = 0.8
+            size = 0.5
         default:
             size = 0.65
         }

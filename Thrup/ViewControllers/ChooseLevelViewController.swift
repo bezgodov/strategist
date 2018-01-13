@@ -108,9 +108,9 @@ class ChooseLevelViewController: UIViewController {
         
         scrollView.addSubview(tilesLayer)
         addTiles()
-        
+
         if moveCharacterToNextLevel {
-            characterPointStart = levelButtonsPositions[Model.sharedInstance.currentLevel - 1 - characterPosLevelFromScene != -1 ? 0 : 1]
+            characterPointStart = levelButtonsPositions[Model.sharedInstance.currentLevel - 1 - (characterPosLevelFromScene != -1 ? 0 : 1)]
         }
     }
     
@@ -131,11 +131,11 @@ class ChooseLevelViewController: UIViewController {
         
         if Model.sharedInstance.currentLevel - 1 != countLevels {
             if characterPosLevelFromScene != -1 {
-                scrollView.contentOffset.y = CGFloat((characterPosLevelFromScene - 1) * distanceBetweenLevels) * levelTileSize.height
+                scrollView.contentOffset.y = CGFloat((characterPosLevelFromScene - 1 - (Model.sharedInstance.currentLevel == Model.sharedInstance.countLevels ? 1 : 0)) * distanceBetweenLevels) * levelTileSize.height
             }
             else {
                 if moveCharacterToNextLevel {
-                    scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 - 1) * distanceBetweenLevels) * levelTileSize.height
+                    scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 - (Model.sharedInstance.currentLevel - 1 <= Model.sharedInstance.countLevels ? 1 : 0)) * distanceBetweenLevels) * levelTileSize.height
                 }
             }
         }

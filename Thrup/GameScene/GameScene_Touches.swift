@@ -154,6 +154,15 @@ extension GameScene {
                             }
                         }
                     }
+                    else {
+                        if character.moves.count == 1 && !addedLastPointByMove {
+                            objectTypeClicked = ObjectType.spaceAlien
+                        }
+                    }
+                    
+                    if boardClick.point == finish && character.moves.count == 1 && !addedLastPointByMove {
+                        objectTypeClicked = ObjectType.gem
+                    }
                     
                     if objectTypeClicked != objectTypeClickedLast {
                         let lastInfoView = objectInfoView
@@ -171,7 +180,7 @@ extension GameScene {
                         }
                         
                         if objectTypeClicked != nil {
-                            self.presentObjectInfoView(objectTypeClicked!)
+                            presentObjectInfoView(spriteName: objectTypeClicked!.spriteName, description: objectTypeClicked!.description)
                         }
                         
                         objectTypeClickedLast = objectTypeClicked
@@ -182,7 +191,7 @@ extension GameScene {
         addedLastPointByMove = false
     }
     
-    func presentObjectInfoView(_ objectTypeClicked: ObjectType) {
+    func presentObjectInfoView(spriteName: String, description: String) {
         let objectInfoViewSize = CGSize(width: (Model.sharedInstance.gameScene.view?.frame.width)!, height: 65)
         
         // ((Model.sharedInstance.gameScene.frame.height - (Model.sharedInstance.gameScene.frame.height - (TileHeight * CGFloat(boardSize.row)))) / 2) - (TileHeight * CGFloat(boardSize.row))
@@ -193,7 +202,7 @@ extension GameScene {
         objectInfoView.backgroundColor = UIColor.darkGray
         Model.sharedInstance.gameScene.view?.addSubview(objectInfoView)
         
-        let objectIcon = UIImageView(image: UIImage(named: objectTypeClicked.spriteName))
+        let objectIcon = UIImageView(image: UIImage(named: spriteName))
         objectIcon.alpha = 0.0
         objectIcon.frame.size = CGSize(width: 45, height: objectIcon.frame.size.height / (objectIcon.frame.size.width / 45))
         objectIcon.frame.origin = CGPoint(x: 10, y: (objectInfoViewSize.height / 2) - (objectIcon.frame.size.height / 2))
@@ -204,7 +213,7 @@ extension GameScene {
         objectDescription.lineBreakMode = NSLineBreakMode.byWordWrapping
         objectDescription.numberOfLines = 3
         objectDescription.font = UIFont(name: "Avenir Next", size: 14)
-        objectDescription.text = objectTypeClicked.description
+        objectDescription.text = description
         objectDescription.textColor = UIColor.white
         objectInfoView.addSubview(objectDescription)
         
