@@ -459,8 +459,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         tilesLayer.removeAllActions()
         tilesLayer.removeFromParent()
         heartsStackView.removeFromSuperview()
-        lastHeartButton.removeFromSuperview()
-        objectInfoView.removeFromSuperview()
         objectTypeClickedLast = nil
         
 //        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
