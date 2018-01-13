@@ -198,11 +198,10 @@
                                 <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <edgeInsets key="layoutMargins" top="0.0" left="0.0" bottom="0.0" right="0.0"/>
                             </scrollView>
-                            <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ma5-yQ-M9T">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ma5-yQ-M9T">
                                 <rect key="frame" x="320" y="15" width="30" height="36"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cwf-1j-eDn">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cwf-1j-eDn">
                                         <rect key="frame" x="0.0" y="0.0" width="30" height="36"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <state key="normal" title="-&gt;">
@@ -219,8 +218,10 @@
                         <constraints>
                             <constraint firstItem="Ai1-do-3GV" firstAttribute="trailing" secondItem="oRJ-mT-qVv" secondAttribute="trailing" id="3lQ-bV-cxp"/>
                             <constraint firstItem="Ai1-do-3GV" firstAttribute="top" secondItem="oRJ-mT-qVv" secondAttribute="top" constant="20" id="7kn-oc-m2z"/>
+                            <constraint firstItem="Ai1-do-3GV" firstAttribute="trailing" secondItem="ma5-yQ-M9T" secondAttribute="trailing" constant="25" id="G1p-Dn-uwN"/>
                             <constraint firstItem="Ai1-do-3GV" firstAttribute="bottom" secondItem="oRJ-mT-qVv" secondAttribute="bottom" id="UPC-dG-syV"/>
                             <constraint firstItem="oRJ-mT-qVv" firstAttribute="leading" secondItem="Ai1-do-3GV" secondAttribute="leading" id="UWE-Xd-1KN"/>
+                            <constraint firstItem="ma5-yQ-M9T" firstAttribute="top" secondItem="a1G-66-wV8" secondAttribute="top" constant="15" id="Zok-AP-GRN"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Ai1-do-3GV"/>
                     </view>

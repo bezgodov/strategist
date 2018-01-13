@@ -81,6 +81,9 @@ extension GameScene {
                 let touchLocation = touch.location(in: objectsLayer)
                 let boardClick = convertPoint(point: touchLocation)
                 
+                /// Был ли клик сделан по какому-либо объекту
+                var objectTypeClicked: ObjectType?
+                
                 if boardClick.success {
                     if character.moves.count == 1 {
                         for object in movingObjects {
@@ -92,6 +95,8 @@ extension GameScene {
                                 else {
                                     object.path()
                                 }
+                                
+                                objectTypeClicked = object.type
                             }
                             else {
                                 object.path(hide: true)
@@ -111,6 +116,7 @@ extension GameScene {
                                         })
                                     }
                                 }
+                                objectTypeClicked = object.type
                             }
                         }
                     }
@@ -148,9 +154,69 @@ extension GameScene {
                             }
                         }
                     }
+                    
+                    if objectTypeClicked != objectTypeClickedLast {
+                        let lastInfoView = objectInfoView
+                        
+                        DispatchQueue.main.async {
+                            UIView.animate(withDuration: 0.25, animations: {
+                                if lastInfoView != nil {
+                                    lastInfoView?.frame.origin.x = -1 * (Model.sharedInstance.gameScene.view?.frame.size.width)!
+                                }
+                            }, completion: { (_) in
+                                if lastInfoView != nil {
+                                    lastInfoView?.removeFromSuperview()
+                                }
+                            })
+                        }
+                        
+                        if objectTypeClicked != nil {
+                            self.presentObjectInfoView(objectTypeClicked!)
+                        }
+                        
+                        objectTypeClickedLast = objectTypeClicked
+                    }
                 }
             }
         }
         addedLastPointByMove = false
+    }
+    
+    func presentObjectInfoView(_ objectTypeClicked: ObjectType) {
+        let objectInfoViewSize = CGSize(width: (Model.sharedInstance.gameScene.view?.frame.width)!, height: 65)
+        
+        // ((Model.sharedInstance.gameScene.frame.height - (Model.sharedInstance.gameScene.frame.height - (TileHeight * CGFloat(boardSize.row)))) / 2) - (TileHeight * CGFloat(boardSize.row))
+        let ypos = -(TileHeight * CGFloat(boardSize.row)) / 2
+        let objectInfoViewPosConverted = Model.sharedInstance.gameScene.convertPoint(toView: CGPoint(x: 0, y: ypos))
+        
+        objectInfoView = UIView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.frame.size.width)!, y: objectInfoViewPosConverted.y, width: objectInfoViewSize.width, height: objectInfoViewSize.height))
+        objectInfoView.backgroundColor = UIColor.darkGray
+        Model.sharedInstance.gameScene.view?.addSubview(objectInfoView)
+        
+        let objectIcon = UIImageView(image: UIImage(named: objectTypeClicked.spriteName))
+        objectIcon.alpha = 0.0
+        objectIcon.frame.size = CGSize(width: 45, height: objectIcon.frame.size.height / (objectIcon.frame.size.width / 45))
+        objectIcon.frame.origin = CGPoint(x: 10, y: (objectInfoViewSize.height / 2) - (objectIcon.frame.size.height / 2))
+        objectInfoView.addSubview(objectIcon)
+        
+        let objectDescription = UILabel(frame: CGRect(x: objectIcon.frame.size.width + 10 + 10, y: 0, width: objectInfoView.frame.size.width - objectIcon.frame.size.width - 20 - 10 - 10, height: objectInfoView.frame.size.height))
+        objectDescription.alpha = 0.0
+        objectDescription.lineBreakMode = NSLineBreakMode.byWordWrapping
+        objectDescription.numberOfLines = 3
+        objectDescription.font = UIFont(name: "Avenir Next", size: 14)
+        objectDescription.text = objectTypeClicked.description
+        objectDescription.textColor = UIColor.white
+        objectInfoView.addSubview(objectDescription)
+        
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 0.5, animations: {
+                objectIcon.alpha = 1.0
+                objectDescription.alpha = 1.0
+            })
+            
+            UIView.animate(withDuration: 0.25, animations: {
+                self.objectInfoView.frame.origin.x = 0
+            })
+        }
     }
 }

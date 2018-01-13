@@ -60,6 +60,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /// Переменная, которая запоминает последнюю кнопку (жизней) для дальнейшего её удаления
     var lastHeartButton: UIButton!
     
+    /// View, который выводит информацию об объекте
+    var objectInfoView: UIView!
+    
+    /// Последний выбранный объект
+    var objectTypeClickedLast: ObjectType?
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
@@ -143,6 +149,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             character.moves.append(characterStart)
             objectsLayer.addChild(character)
         
+            /// Флаг, чтобы Spinner крутились в разные стороны
+            var lastDirectionSpinnerLeft: CGFloat = 1
             // Инициализируем статичные объекты
             for object in staticObjects {
                 object.position = pointFor(column: object.point.column, row: object.point.row)
@@ -163,13 +171,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 
                 if object.type == ObjectType.spinner {
-                    object.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi * 2), duration: 1)))
+                    object.run(SKAction.repeatForever(SKAction.rotate(byAngle: lastDirectionSpinnerLeft * CGFloat(Double.pi * 2), duration: 1)))
+                    lastDirectionSpinnerLeft *= -1
                 }
             }
         
             // Инициализируем перемещающиеся объекты
-            for object in self.movingObjects {
+            for object in movingObjects {
                 object.position = pointFor(column: object.moves[0].column, row: object.moves[0].row)
+                
+                if object.moves.count > 1 {
+                    let direction = getObjectDirection(from: object.moves[0], to: object.moves[1])
+                    
+                    if direction == RotationDirection.left || direction == RotationDirection.right {
+                        object.xScale = direction.rawValue == 0 ? -1 : 1
+                    }
+                }
+                
                 objectsLayer.addChild(object)
             }
         
@@ -181,10 +199,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             gameLayer.addChild(tilesLayer)
         
             // Инициализируем финишный блок
-            let finishSprite = SKSpriteNode(imageNamed: "Finish")
+            let finishSprite = SKSpriteNode(imageNamed: "Gem_blue")
             finishSprite.position = pointFor(column: finish.column, row: finish.row)
             finishSprite.zPosition = 2
-            finishSprite.size = CGSize(width: TileWidth * 0.75, height: (finishSprite.texture?.size().height)! / ((finishSprite.texture?.size().width)! / (TileWidth * 0.75)))
+            finishSprite.size = CGSize(width: TileWidth * 0.4, height: (finishSprite.texture?.size().height)! / ((finishSprite.texture?.size().width)! / (TileWidth * 0.4)))
             objectsLayer.addChild(finishSprite)
         
             self.addChild(gameLayer)

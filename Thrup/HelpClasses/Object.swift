@@ -35,6 +35,14 @@ enum ObjectType: Int {
         return spriteNames[rawValue - 1]
     }
     
+    var description: String {
+        let descriptions = [
+            "Bee moves one cell by one game's move. If your and bee's positions are same you lose"
+        ]
+        
+        return rawValue <= descriptions.count ? descriptions[rawValue - 1] : "No description"
+    }
+    
     /// Приведение к типу ObjectType из строки
     static func enumFromString(string: String) -> ObjectType? {
         var i = 0
