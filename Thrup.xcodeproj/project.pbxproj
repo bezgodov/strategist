@@ -17,7 +17,8 @@
 		2B1178DA1FB84928006326E4 /* GameScene_Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1178D91FB84928006326E4 /* GameScene_Levels.swift */; };
 		2B22D1301FC78BFA00464F20 /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B22D12F1FC78BFA00464F20 /* Object.swift */; };
 		2B2CA4461FB93F4600AA35F1 /* ChooseLevelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2CA4451FB93F4600AA35F1 /* ChooseLevelViewController.swift */; };
-		2B309A8C1FDCA2D70095D11E /* Level_5.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B309A8B1FDCA2D70095D11E /* Level_5.json */; };
+		2B309555200B1C5E00F571DA /* Level_6.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B309554200B1C5E00F571DA /* Level_6.json */; };
+		2B309A8C1FDCA2D70095D11E /* Level_4.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B309A8B1FDCA2D70095D11E /* Level_4.json */; };
 		2B309A941FE39BD50095D11E /* Bee.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B309A931FE39BD50095D11E /* Bee.png */; };
 		2B309A961FE39BF20095D11E /* Fish.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B309A951FE39BF20095D11E /* Fish.png */; };
 		2B54018C1FDA41B400E03C63 /* Level_2.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B54018B1FDA41B400E03C63 /* Level_2.json */; };
@@ -40,7 +41,7 @@
 		2BCD9DCC1FF672210097C4F2 /* Tile_center.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BCD9DCB1FF672210097C4F2 /* Tile_center.png */; };
 		2BCD9DCE1FF672B60097C4F2 /* Tile_top.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BCD9DCD1FF672B60097C4F2 /* Tile_top.png */; };
 		2BD002A61FDAAD2000A95001 /* StaticObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD002A51FDAAD2000A95001 /* StaticObject.swift */; };
-		2BD002AC1FDBAB2900A95001 /* Level_4.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BD002AB1FDBAB2900A95001 /* Level_4.json */; };
+		2BD002AC1FDBAB2900A95001 /* Level_5.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BD002AB1FDBAB2900A95001 /* Level_5.json */; };
 		2BF041831FF7196D00624C4C /* Star.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041821FF7196D00624C4C /* Star.png */; };
 		2BF041861FF71A5A00624C4C /* PlayerPinkClimbs_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */; };
 		2BF041871FF71A5A00624C4C /* PlayerPinkClimbs_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */; };
@@ -67,7 +68,8 @@
 		2B1178D91FB84928006326E4 /* GameScene_Levels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene_Levels.swift; sourceTree = "<group>"; };
 		2B22D12F1FC78BFA00464F20 /* Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
 		2B2CA4451FB93F4600AA35F1 /* ChooseLevelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseLevelViewController.swift; sourceTree = "<group>"; };
-		2B309A8B1FDCA2D70095D11E /* Level_5.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_5.json; sourceTree = "<group>"; };
+		2B309554200B1C5E00F571DA /* Level_6.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_6.json; sourceTree = "<group>"; };
+		2B309A8B1FDCA2D70095D11E /* Level_4.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_4.json; sourceTree = "<group>"; };
 		2B309A931FE39BD50095D11E /* Bee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Bee.png; sourceTree = "<group>"; };
 		2B309A951FE39BF20095D11E /* Fish.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Fish.png; sourceTree = "<group>"; };
 		2B54018B1FDA41B400E03C63 /* Level_2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_2.json; sourceTree = "<group>"; };
@@ -90,7 +92,7 @@
 		2BCD9DCB1FF672210097C4F2 /* Tile_center.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tile_center.png; sourceTree = "<group>"; };
 		2BCD9DCD1FF672B60097C4F2 /* Tile_top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tile_top.png; sourceTree = "<group>"; };
 		2BD002A51FDAAD2000A95001 /* StaticObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticObject.swift; sourceTree = "<group>"; };
-		2BD002AB1FDBAB2900A95001 /* Level_4.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_4.json; sourceTree = "<group>"; };
+		2BD002AB1FDBAB2900A95001 /* Level_5.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_5.json; sourceTree = "<group>"; };
 		2BF041821FF7196D00624C4C /* Star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Star.png; sourceTree = "<group>"; };
 		2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerPinkClimbs_1.png; sourceTree = "<group>"; };
 		2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerPinkClimbs_2.png; sourceTree = "<group>"; };
@@ -189,8 +191,9 @@
 				2B9330711FD6352E002E5933 /* Level_1.json */,
 				2B54018B1FDA41B400E03C63 /* Level_2.json */,
 				2B54018D1FDA81E800E03C63 /* Level_3.json */,
-				2BD002AB1FDBAB2900A95001 /* Level_4.json */,
-				2B309A8B1FDCA2D70095D11E /* Level_5.json */,
+				2B309A8B1FDCA2D70095D11E /* Level_4.json */,
+				2BD002AB1FDBAB2900A95001 /* Level_5.json */,
+				2B309554200B1C5E00F571DA /* Level_6.json */,
 			);
 			path = Levels;
 			sourceTree = "<group>";
@@ -316,11 +319,12 @@
 			files = (
 				2BF041831FF7196D00624C4C /* Star.png in Resources */,
 				2BFD739F20084C8A00968FB5 /* Gem_yellow.png in Resources */,
-				2B309A8C1FDCA2D70095D11E /* Level_5.json in Resources */,
+				2B309A8C1FDCA2D70095D11E /* Level_4.json in Resources */,
 				2BF041871FF71A5A00624C4C /* PlayerPinkClimbs_2.png in Resources */,
 				2B9330721FD6352E002E5933 /* Level_1.json in Resources */,
 				2BF041971FF72E7600624C4C /* Bomb.png in Resources */,
 				2B0B63DF1FAFD1AF002C0322 /* Main.storyboard in Resources */,
+				2B309555200B1C5E00F571DA /* Level_6.json in Resources */,
 				2B9D14931FAFD57F00D3D52C /* GameScene.sks in Resources */,
 				2B309A941FE39BD50095D11E /* Bee.png in Resources */,
 				2BA41FEC1FFFAB860023E8FD /* Heart_empty.png in Resources */,
@@ -342,7 +346,7 @@
 				2B54018E1FDA81E800E03C63 /* Level_3.json in Resources */,
 				2B54018C1FDA41B400E03C63 /* Level_2.json in Resources */,
 				2B99C1381FFE5B42008485BF /* StopSign.png in Resources */,
-				2BD002AC1FDBAB2900A95001 /* Level_4.json in Resources */,
+				2BD002AC1FDBAB2900A95001 /* Level_5.json in Resources */,
 				2B99C12E1FFE2844008485BF /* Checked.png in Resources */,
 				2BF041931FF7276000624C4C /* Finish.png in Resources */,
 				2BCD9DCE1FF672B60097C4F2 /* Tile_top.png in Resources */,

@@ -2,7 +2,7 @@
     "finish": [4, 0],
     "character": [0,4],
     "boardSize": [5,5],
-    "moves": 14,
+    "moves": 16,
     "movingObjects": [
                 {
                 "type": "bee",
@@ -15,11 +15,14 @@
                 {
                 "type": "bee",
                 "move": [
-                        [4,4],
-                        [3,4],
-                        [3,3],
-                        [3,2],
-                        [4,2]]
+                        [4,2],
+                        [4,1],
+                        [4,0],
+                        [3,0],
+                        [2,0],
+                        [1,0],
+                        [0,0],
+                        [0,1]]
                 },
                 {
                 "type": "bee",
@@ -32,12 +35,12 @@
                 }],
     "staticObjects": [
                 {
-                "type": "spinner",
-                "point": [1,2]
+                "type": "stopper",
+                "point": [1,1]
                 },
                 {
                 "type": "spinner",
-                "point": [4,3]
+                "point": [1,2]
                 },
                 {
                 "type": "star",
@@ -46,5 +49,10 @@
                 {
                 "type": "star",
                 "point": [2,0]
+                },
+                {
+                "type": "bomb",
+                "point": [3,1],
+                "movesToExplode": 7
                 }]
 }
