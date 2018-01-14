@@ -69,6 +69,9 @@ extension GameScene {
         }
         
         if move < character.moves.count {
+            /// Если ГП находится на стопе
+            var characterAtStopper = false
+            
             for object in staticObjects {
                 
                 if object.type == ObjectType.bridge {
@@ -79,10 +82,10 @@ extension GameScene {
                 if object.type == ObjectType.rotatorPointer {
                     object.run(SKAction.rotate(toAngle: object.zRotation - CGFloat(90 * Double.pi / 180), duration: 0.5))
                     object.rotate = object.rotate.nextPoint()
-                    
-                    if character.moves[move] == object.point {
-                        
-                    }
+                }
+                
+                if character.moves[move - 1] == object.point && object.type == ObjectType.stopper {
+                    characterAtStopper = true
                 }
                 
                 if object.type == ObjectType.rotator {
@@ -104,12 +107,14 @@ extension GameScene {
                     character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
                 }
                 
-                if characterDirectionWalks == RotationDirection.right {
-                    character.run(SKAction.scaleX(to: 1, duration: 0.25))
-                }
-                
-                if characterDirectionWalks == RotationDirection.left {
-                    character.run(SKAction.scaleX(to: -1, duration: 0.25))
+                if !characterAtStopper {
+                    if characterDirectionWalks == RotationDirection.right {
+                        character.run(SKAction.scaleX(to: 1, duration: 0.25))
+                    }
+                    
+                    if characterDirectionWalks == RotationDirection.left {
+                        character.run(SKAction.scaleX(to: -1, duration: 0.25))
+                    }
                 }
             }
             

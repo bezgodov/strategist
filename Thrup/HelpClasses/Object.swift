@@ -142,7 +142,7 @@ class Object: SKSpriteNode {
     /// - Parameter hide: если true, то показаться траекторию
     func path(hide: Bool = false) {
         
-        pathLayer.run(SKAction.fadeOut(withDuration: 0.5), completion: {
+        pathLayer.run(SKAction.fadeOut(withDuration: 0.25), completion: {
             self.pathLayer.removeFromParent()
         })
         
