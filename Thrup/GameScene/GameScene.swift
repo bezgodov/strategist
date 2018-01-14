@@ -5,7 +5,7 @@ import SpriteKit
 var TileWidth: CGFloat!
 var TileHeight: CGFloat!
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+class GameScene: SKScene {
     
     /// Массив перемещающихся объектов
     var movingObjects = Set<Object>()
@@ -66,6 +66,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /// Последний выбранный объект
     var objectTypeClickedLast: ObjectType?
     
+    /// Полсдений клик, который был сделан на игровом поле
+    var lastClickOnGameBoard = Point(column: -1, row: -1)
+    
+    /// Если последний там был сделан долгим зажатием
+    var isLastTapLongPress = false
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
@@ -91,6 +97,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 Model.sharedInstance.setCompletedLevel(index, value: false)
             }
         }
+        
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
+        longPressRecognizer.minimumPressDuration = 0.65
+        longPressRecognizer.allowableMovement = 15
+        
+        self.view?.addGestureRecognizer(longPressRecognizer)
     
         /*
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
@@ -460,6 +472,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         tilesLayer.removeFromParent()
         heartsStackView.removeFromSuperview()
         objectTypeClickedLast = nil
+        isLastTapLongPress = false
+        lastClickOnGameBoard = Point(column: -1, row: -1)
         
 //        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
         heartsStackView.removeFromSuperview()
