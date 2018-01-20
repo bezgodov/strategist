@@ -29,7 +29,6 @@
 		2B9330781FD81F93002E5933 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9330771FD81F93002E5933 /* Character.swift */; };
 		2B99C12E1FFE2844008485BF /* Checked.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B99C12D1FFE2844008485BF /* Checked.png */; };
 		2B99C1341FFE42DE008485BF /* Locked.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B99C1331FFE42DE008485BF /* Locked.png */; };
-		2B99C1381FFE5B42008485BF /* StopSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B99C1371FFE5B41008485BF /* StopSign.png */; };
 		2B9D14931FAFD57F00D3D52C /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2B9D14921FAFD57F00D3D52C /* GameScene.sks */; };
 		2BA41FEC1FFFAB860023E8FD /* Heart_empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BA41FEA1FFFAB850023E8FD /* Heart_empty.png */; };
 		2BA41FED1FFFAB860023E8FD /* Heart.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BA41FEB1FFFAB860023E8FD /* Heart.png */; };
@@ -42,6 +41,9 @@
 		2BCD9DCE1FF672B60097C4F2 /* Tile_top.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BCD9DCD1FF672B60097C4F2 /* Tile_top.png */; };
 		2BD002A61FDAAD2000A95001 /* StaticObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD002A51FDAAD2000A95001 /* StaticObject.swift */; };
 		2BD002AC1FDBAB2900A95001 /* Level_5.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BD002AB1FDBAB2900A95001 /* Level_5.json */; };
+		2BDCDFDD2011B04D00DCFA6D /* Level_7.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BDCDFDC2011B04D00DCFA6D /* Level_7.json */; };
+		2BDCDFE52011B6C100DCFA6D /* StopSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BDCDFE42011B6C100DCFA6D /* StopSign.png */; };
+		2BDCE0012012B9B200DCFA6D /* AlarmClock.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BDCE0002012B9B200DCFA6D /* AlarmClock.png */; };
 		2BF041831FF7196D00624C4C /* Star.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041821FF7196D00624C4C /* Star.png */; };
 		2BF041861FF71A5A00624C4C /* PlayerPinkClimbs_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */; };
 		2BF041871FF71A5A00624C4C /* PlayerPinkClimbs_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */; };
@@ -80,7 +82,6 @@
 		2B9330771FD81F93002E5933 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
 		2B99C12D1FFE2844008485BF /* Checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Checked.png; sourceTree = "<group>"; };
 		2B99C1331FFE42DE008485BF /* Locked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Locked.png; sourceTree = "<group>"; };
-		2B99C1371FFE5B41008485BF /* StopSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = StopSign.png; sourceTree = "<group>"; };
 		2B9D14921FAFD57F00D3D52C /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		2BA41FEA1FFFAB850023E8FD /* Heart_empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Heart_empty.png; sourceTree = "<group>"; };
 		2BA41FEB1FFFAB860023E8FD /* Heart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Heart.png; sourceTree = "<group>"; };
@@ -93,6 +94,9 @@
 		2BCD9DCD1FF672B60097C4F2 /* Tile_top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tile_top.png; sourceTree = "<group>"; };
 		2BD002A51FDAAD2000A95001 /* StaticObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticObject.swift; sourceTree = "<group>"; };
 		2BD002AB1FDBAB2900A95001 /* Level_5.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_5.json; sourceTree = "<group>"; };
+		2BDCDFDC2011B04D00DCFA6D /* Level_7.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_7.json; sourceTree = "<group>"; };
+		2BDCDFE42011B6C100DCFA6D /* StopSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = StopSign.png; sourceTree = "<group>"; };
+		2BDCE0002012B9B200DCFA6D /* AlarmClock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AlarmClock.png; sourceTree = "<group>"; };
 		2BF041821FF7196D00624C4C /* Star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Star.png; sourceTree = "<group>"; };
 		2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerPinkClimbs_1.png; sourceTree = "<group>"; };
 		2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerPinkClimbs_2.png; sourceTree = "<group>"; };
@@ -194,6 +198,7 @@
 				2B309A8B1FDCA2D70095D11E /* Level_4.json */,
 				2BD002AB1FDBAB2900A95001 /* Level_5.json */,
 				2B309554200B1C5E00F571DA /* Level_6.json */,
+				2BDCDFDC2011B04D00DCFA6D /* Level_7.json */,
 			);
 			path = Levels;
 			sourceTree = "<group>";
@@ -206,13 +211,14 @@
 				2B99C12D1FFE2844008485BF /* Checked.png */,
 				2B99C1331FFE42DE008485BF /* Locked.png */,
 				2BF041921FF7276000624C4C /* Finish.png */,
-				2B99C1371FFE5B41008485BF /* StopSign.png */,
 				2BA41FEA1FFFAB850023E8FD /* Heart_empty.png */,
 				2BA41FEB1FFFAB860023E8FD /* Heart.png */,
 				2BF041821FF7196D00624C4C /* Star.png */,
 				2BFEF9AC200A3DC200A7AB79 /* PlayerStaysFront.png */,
 				2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */,
 				2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */,
+				2BDCDFE42011B6C100DCFA6D /* StopSign.png */,
+				2BDCE0002012B9B200DCFA6D /* AlarmClock.png */,
 			);
 			path = Sprites;
 			sourceTree = "<group>";
@@ -345,8 +351,10 @@
 				2B0B63D81FAFD1AF002C0322 /* Actions.sks in Resources */,
 				2B54018E1FDA81E800E03C63 /* Level_3.json in Resources */,
 				2B54018C1FDA41B400E03C63 /* Level_2.json in Resources */,
-				2B99C1381FFE5B42008485BF /* StopSign.png in Resources */,
+				2BDCE0012012B9B200DCFA6D /* AlarmClock.png in Resources */,
+				2BDCDFE52011B6C100DCFA6D /* StopSign.png in Resources */,
 				2BD002AC1FDBAB2900A95001 /* Level_5.json in Resources */,
+				2BDCDFDD2011B04D00DCFA6D /* Level_7.json in Resources */,
 				2B99C12E1FFE2844008485BF /* Checked.png in Resources */,
 				2BF041931FF7276000624C4C /* Finish.png in Resources */,
 				2BCD9DCE1FF672B60097C4F2 /* Tile_top.png in Resources */,

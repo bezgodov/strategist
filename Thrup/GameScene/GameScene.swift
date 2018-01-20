@@ -40,6 +40,9 @@ class GameScene: SKScene {
     /// Вспомогательная переменная для выбора траектории с помощью TouchedMoved
     var addedLastPointByMove: Bool = false
     
+    /// Вспомогательная переменная для, которая определяет был ли последний блок удалён с помощью TouchedMoved
+    var removedLastPointByMove: Bool = false
+    
     /// Количество звёзд на уровне, которые необходимо собрать
     var stars: Int = 0
     
@@ -71,6 +74,9 @@ class GameScene: SKScene {
     
     /// Если последний там был сделан долгим зажатием
     var isLastTapLongPress = false
+    
+    /// Флаг, указывающий на начало раунда
+    var gameBegan = false
     
 //    var motionManager: CMMotionManager!
     
@@ -237,6 +243,8 @@ class GameScene: SKScene {
             if move == 0 {
                 // Если траектория ГП состоит более, чем 1 хода
                 if character.moves.count > 1 {
+                    gameBegan = true
+                    
                     character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
                     
                     gameTimer = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true) { (_) in
@@ -459,6 +467,7 @@ class GameScene: SKScene {
         checkChoosingPath = Point(column: 0, row: 0)
         checkChoosingPathArray.removeAll()
         addedLastPointByMove = false
+        removedLastPointByMove = false
         stars = 0
         gameTimer.invalidate()
         gameLayer.removeAllChildren()
@@ -474,6 +483,7 @@ class GameScene: SKScene {
         objectTypeClickedLast = nil
         isLastTapLongPress = false
         lastClickOnGameBoard = Point(column: -1, row: -1)
+        gameBegan = false
         
 //        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
         heartsStackView.removeFromSuperview()

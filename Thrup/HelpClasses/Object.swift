@@ -15,7 +15,7 @@ import SpriteKit
 /// - rotator: поворот (неготовый блок);
 /// - rotatorPointer: поворот со стрелкой (неготовый блок);
 enum ObjectType: Int {
-    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, accelerator, bridge, electric, star, rotator, rotatorPointer
+    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, electric, star, rotator, rotatorPointer
     
     /// Свойство для получения имя спрайта перемещающегося блока;
     var spriteName: String {
@@ -26,7 +26,7 @@ enum ObjectType: Int {
             "Spinner",
             "Bomb",
             "StopSign",
-            "Accelerator",
+            "AlarmClock",
             "Stopper",
             "Donut",
             "Star",
@@ -46,7 +46,7 @@ enum ObjectType: Int {
             "Spinner never changes its position. If you get at spinner's position you lose",
             "Bomb will destroy everything around its in N moves. You can't get at bomb's position",
             "Stop sing stops you for one move",
-            "Accelerator pushes you through one cell",
+            "Alarm Clock stops all objects for one move except a space alien",
             "Bridge",
             "Eletro destroys you if you get at any position around its",
             "Star doesn't destroy you and never moves. You should collect all stars to win",

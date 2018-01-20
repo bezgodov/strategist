@@ -48,6 +48,8 @@ class StaticObject: SKSpriteNode {
             size = 0.5
         case ObjectType.bomb:
             size = 0.5
+        case ObjectType.alarmclock:
+            size = 0.525
         default:
             size = 0.65
         }
