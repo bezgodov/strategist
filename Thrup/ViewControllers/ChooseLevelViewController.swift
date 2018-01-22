@@ -52,6 +52,14 @@ class ChooseLevelViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Если нет сохранённых уровней, то задаём кол-во жизней на каждый уровень равным 5
+        if Model.sharedInstance.emptySavedLevelsLives() == true {
+            for index in 1...Model.sharedInstance.countLevels {
+                Model.sharedInstance.setLevelLives(level: index, newValue: 5)
+                Model.sharedInstance.setCompletedLevel(index, value: false)
+            }
+        }
+        
         menuSettings()
         
         characterInitial()
