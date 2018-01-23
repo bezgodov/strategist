@@ -8,14 +8,15 @@ import SpriteKit
 /// - spinner: объект, который не перемещается, если ГП попадает на его позицию, то ГП погибает;
 /// - bomb: бомба, которая уничтожает ГП, если тот попадает в радиус вокруг бомбы;
 /// - stopper: остановщик, который останавливает ГП на 1 ход;
-/// - accelerator: ускоритель, который перекидывает ГП на клетку, которая находится после ускорителя по траектории ГП (2 хода за 1);
+/// - alarmclock: будильник, который останавливает все объекты на игровом поле кроме ГП
 /// - bridge: мост, который вращается каждый ход. При несоответствии траекторий ГП погибает;
+/// - spikes: шипы - блок, который попеременно вытаскивает и убирает шипы вокруг себя (ортогонально), каждое действие за один ход
 /// - electric: электрический блок, который уничтожает ГП, если тот попадает в радиус вокруг блока;
 /// - star: звезда, которую ГП должен собрать. Если ГП не собрал все звёзды за уровень, то он погибает;
 /// - rotator: поворот (неготовый блок);
 /// - rotatorPointer: поворот со стрелкой (неготовый блок);
 enum ObjectType: Int {
-    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, electric, star, rotator, rotatorPointer
+    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, spikes, electric, star, rotator, rotatorPointer
     
     /// Свойство для получения имя спрайта перемещающегося блока;
     var spriteName: String {
@@ -27,7 +28,8 @@ enum ObjectType: Int {
             "Bomb",
             "StopSign",
             "AlarmClock",
-            "Stopper",
+            "Bridge",
+            "SpikesBox",
             "Donut",
             "Star",
             "Rotator",
@@ -48,6 +50,7 @@ enum ObjectType: Int {
             "Stop sing stops you for one move",
             "Alarm Clock stops all objects for one move except a space alien",
             "Bridge",
+            "Spikes",
             "Eletro destroys you if you get at any position around its",
             "Star doesn't destroy you and never moves. You should collect all stars to win",
             "Rotator"
@@ -105,7 +108,7 @@ class Object: SKSpriteNode {
         super.init(texture: texture, color: UIColor.white, size: CGSize(width: TileWidth * size, height: texture.size().height / (texture.size().width / (TileWidth * size))))
         
         self.type = type
-        self.zPosition = 3
+        self.zPosition = 4
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -183,7 +186,7 @@ class Object: SKSpriteNode {
             pathLayer.lineCap = CGLineCap.round
             pathLayer.lineJoin = CGLineJoin.round
             pathLayer.fillColor = UIColor.clear
-            pathLayer.zPosition = 2
+            pathLayer.zPosition = 3
             pathLayer.alpha = 0.0
             pathLayer.run(SKAction.fadeIn(withDuration: 0.5))
             Model.sharedInstance.gameScene.objectsLayer.addChild(pathLayer)

@@ -83,6 +83,26 @@ extension GameScene {
                         newObj.movesToExplode = movesToExplode
                     }
                     
+                    // Если объект "мост", то считываем направление его или ставим по умолчанию (top)
+                    if type == ObjectType.bridge {
+                        let rotate = object["rotate"] as? Int
+                        
+                        if rotate != nil && rotate! < 4 {
+                            newObj.rotate = RotationDirection(rawValue: rotate!)!
+                        }
+                        else {
+                            // Устанавливаем случайные поворот моста на уровень
+                            let randomAngle = arc4random_uniform(4)
+                            newObj.rotate = RotationDirection(rawValue: Int(randomAngle))!
+                        }
+                    }
+                    
+                    if type == ObjectType.spikes {
+                        let spikesActive = object["spikesActive"] as? Bool
+                        
+                        newObj.spikesActive = spikesActive == nil ? false : spikesActive!
+                    }
+                    
                     // Если объект "звезда", то увеличиваем кол-во звёзд, которые необходимо собрать на уровне
                     if type == ObjectType.star {
                         stars += 1

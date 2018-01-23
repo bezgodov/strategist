@@ -178,9 +178,13 @@ extension GameScene {
                                         if object.type == ObjectType.bridge {
                                             if object.active {
                                                 object.active = false
-                                                object.run(SKAction.rotate(toAngle: object.zRotation - CGFloat(90 * Double.pi / 180), duration: 0.5), completion: {
+                                                
+                                                object.rotate = object.rotate.nextPoint()
+                                                self.animateBridgeWall(object: object)
+                                                
+                                                object.run(SKAction.rotate(toAngle: object.zRotation - CGFloat(90 * Double.pi / 180), duration: 0.35), completion: {
                                                     object.active = true
-                                                    object.rotate = object.rotate.nextPoint()
+                                                    
                                                 })
                                             }
                                         }
@@ -241,8 +245,12 @@ extension GameScene {
                                 objectTypeClicked = ObjectType.gem
                             }
                             
-                            if !removedLastPointByMove {
+                            if !removedLastPointByMove && objectTypeClicked != ObjectType.bridge {
                                 prepareObjectInfoView(objectTypeClicked, boardClick: boardClick.point)
+                            }
+                            
+                            if objectTypeClicked == ObjectType.bridge {
+                                removeObjectInfoView(toAlpha: 0)
                             }
                             
                             lastClickOnGameBoard = boardClick.point
@@ -331,6 +339,73 @@ extension GameScene {
             UIView.animate(withDuration: 0.25, animations: {
                 self.objectInfoView.frame.origin.x = 0
             })
+        }
+    }
+    
+    /// Функция, которая анимирует стены (мост)
+    func animateBridgeWall(object: StaticObject) {
+        
+        /// Переменная, которая определяет на сколько нужно уменьшить размер стен
+        let downScale: CGFloat = 2.5
+    
+        var defaultRightLeft = CGSize(width: 10, height: 0)
+        var defaultTopBottom = CGSize(width: 0, height: 10)
+
+        var rightLeft = CGSize(width: 10, height: 0)
+        var topBottom = CGSize(width: 0, height: 10)
+
+        if object.rotate == RotationDirection.top || object.rotate == RotationDirection.bottom {
+            defaultRightLeft.height = 0
+            rightLeft.height = TileHeight / (downScale / 2)
+
+            defaultTopBottom.width = TileWidth / (downScale / 2)
+            topBottom.width = 0
+        }
+        else {
+            defaultRightLeft.height = TileHeight / (downScale / 2)
+            rightLeft.height = 0
+
+            defaultTopBottom.width = 0
+            topBottom.width = TileWidth / (downScale / 2)
+        }
+        
+        /// Координаты блока (моста)
+        let bridgeTilePos = pointFor(column: object.point.column, row: object.point.row)
+        let countOfWalls = 4
+        
+        // Коэффициенты, которые определяют в какую сторону от блока сместить стену
+        let xPositions = [1, -1, -1, 1]
+        let yPositions = [-1, 1, 1, -1]
+        
+        let defaultAnchorPoint = [CGPoint(x: 1, y: 0), CGPoint(x: 0, y: 1), CGPoint(x: 0, y: 1), CGPoint(x: 1, y: 0)]
+        
+        for index in 0..<countOfWalls {
+            let bridgeWall = objectsLayer.childNode(withName: "BridgeWall_\(index)-Object_\(object.hash)") as! SKSpriteNode
+            
+            if index == 0 || index == 2 {
+                bridgeWall.run(SKAction.resize(toHeight: rightLeft.height, duration: 0.3), completion: {
+                    if rightLeft.height == 0 {
+                        bridgeWall.anchorPoint = CGPoint(x: defaultAnchorPoint[index].x, y: abs(defaultAnchorPoint[index].y - 1))
+                        bridgeWall.position = CGPoint(x: bridgeTilePos.x + (TileWidth / downScale) * CGFloat(xPositions[index]), y: bridgeTilePos.y + (TileHeight / downScale) * CGFloat(yPositions[index]) * -1)
+                    }
+                    else {
+                        bridgeWall.anchorPoint = defaultAnchorPoint[index]
+                        bridgeWall.position = CGPoint(x: bridgeTilePos.x + (TileWidth / downScale) * CGFloat(xPositions[index]), y: bridgeTilePos.y + (TileHeight / downScale) * CGFloat(yPositions[index]))
+                    }
+                })
+            }
+            else {
+                bridgeWall.run(SKAction.resize(toWidth: topBottom.width, duration: 0.3), completion: {
+                    if topBottom.width == 0 {
+                        bridgeWall.anchorPoint = defaultAnchorPoint[index]
+                        bridgeWall.position = CGPoint(x: bridgeTilePos.x + (TileWidth / downScale) * CGFloat(xPositions[index]), y: bridgeTilePos.y + (TileHeight / downScale) * CGFloat(yPositions[index]))
+                    }
+                    else {
+                        bridgeWall.anchorPoint.y = abs(defaultAnchorPoint[index].y - 1)
+                        bridgeWall.position = CGPoint(x: bridgeTilePos.x + (TileWidth / downScale) * CGFloat(xPositions[index]), y: bridgeTilePos.y + (TileHeight / downScale) * CGFloat(yPositions[index]) * -1)
+                    }
+                })
+            }
         }
     }
 }

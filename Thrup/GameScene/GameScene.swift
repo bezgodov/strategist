@@ -78,6 +78,9 @@ class GameScene: SKScene {
     /// Флаг, указывающий на начало раунда
     var gameBegan = false
     
+    /// Если ГП перемещается на мост (проигрышная позиция)
+    var isNextCharacterMoveAtBridgeLose = false
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
@@ -96,13 +99,6 @@ class GameScene: SKScene {
     func sceneSettings() {
         // Функция показа всех ходов пока не будет работать
         Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
-        // Если нет сохранённых уровней, то задаём кол-во жизней на каждый уровень равным 5
-        if Model.sharedInstance.emptySavedLevelsLives() == true {
-            for index in 1...Model.sharedInstance.countLevels {
-                Model.sharedInstance.setLevelLives(level: index, newValue: 5)
-                Model.sharedInstance.setCompletedLevel(index, value: false)
-            }
-        }
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         longPressRecognizer.minimumPressDuration = 0.65
@@ -156,12 +152,12 @@ class GameScene: SKScene {
                 let playerTextureName = "PlayerWalks_\(i)"
                 walkFrames.append(playerAnimatedAtlas.textureNamed(playerTextureName))
             }
-        
+            
             playerWalkingFrames = walkFrames
         
             // Инициализируем ГП
             character = Character(texture: playerWalkingFrames[1])
-            character.zPosition = 3
+            character.zPosition = 4
             character.position = pointFor(column: characterStart.column, row: characterStart.row)
             character.size = CGSize(width: TileWidth * 0.5, height: (character.texture?.size().height)! / ((character.texture?.size().width)! / (TileWidth * 0.5)))
             character.moves.append(characterStart)
@@ -178,7 +174,7 @@ class GameScene: SKScene {
                 if object.type == ObjectType.bomb {
                     let movesToExplodeLabel = SKLabelNode(text: String(object.movesToExplode))
                     movesToExplodeLabel.name = "movesToExplode"
-                    movesToExplodeLabel.zPosition = 6
+                    movesToExplodeLabel.zPosition = 7
                     movesToExplodeLabel.color = UIColor.green
                     movesToExplodeLabel.fontColor = UIColor.green
                     movesToExplodeLabel.fontSize = 65
@@ -191,6 +187,90 @@ class GameScene: SKScene {
                 if object.type == ObjectType.spinner {
                     object.run(SKAction.repeatForever(SKAction.rotate(byAngle: lastDirectionSpinnerLeft * CGFloat(Double.pi * 2), duration: 1)))
                     lastDirectionSpinnerLeft *= -1
+                }
+                
+                if object.type == ObjectType.bridge {
+                    // Поворачиваем мост в сторону, которая задана в json
+                    object.zRotation += CGFloat(Double(object.rotate.rawValue - 1) * 90 * Double.pi / 180)
+                    
+                    /// Переменная, которая определяет на сколько нужно уменьшить размер стен
+                    let downScale: CGFloat = 2.5
+                    
+                    // Коэффициенты, которые определяют в какую сторону от блока сместить стену
+                    let xPositions = [1, -1, -1, 1]
+                    var yPositions = [-1, 1, 1, -1]
+                    
+                    
+                    /// Размер стен (если вертикаль стоит по умолчанию, то стены справа и слева)
+                    var defaultSize = [CGSize(width: 10, height: TileHeight / (downScale / 2)), CGSize(width: 0, height: 10)]
+                    
+                    var defaultAnchorPoint = [CGPoint(x: 1, y: 0), CGPoint(x: 0, y: 1), CGPoint(x: 0, y: 1), CGPoint(x: 1, y: 0)]
+                    
+                    
+                    // Если у моста установлена вертикаль по умолчанию, то подстраиваем коэффициенты
+                    if object.rotate.rawValue == 0 || object.rotate.rawValue == 2 {
+                        defaultSize = [CGSize(width: 10, height: 0), CGSize(width: TileWidth / (downScale / 2), height: 10)]
+                        defaultAnchorPoint = [CGPoint(x: 1, y: 1), CGPoint(x: 0, y: 0), CGPoint(x: 0, y: 0), CGPoint(x: 1, y: 1)]
+                        yPositions = [1, -1, -1, 1]
+                    }
+                    
+                    /// Координаты блока (моста)
+                    let bridgeTilePos = pointFor(column: object.point.column, row: object.point.row)
+                    
+                    /// Кол-во стен вокруг блока (две скрытых)
+                    let countOfWalls = 4
+                    
+                    for index in 0..<countOfWalls {
+                        let bridgeWall = SKSpriteNode(color: UIColor(red: 32/255, green: 149/255, blue: 242/255, alpha: 1), size: defaultSize[index % defaultSize.count])
+                        
+                        bridgeWall.position = CGPoint(x: bridgeTilePos.x + (TileWidth / downScale) * CGFloat(xPositions[index]), y: bridgeTilePos.y + (TileHeight / downScale) * CGFloat(yPositions[index]))
+                        bridgeWall.anchorPoint = defaultAnchorPoint[index]
+                        
+                        bridgeWall.zPosition = 4
+                        // Имя c hash, т.к. на сцене может быть больше одного моста, прикрепить к самому мосту не получается, ибо он каждый ход крутится и, соответственно, всё вокруг
+                        bridgeWall.name = "BridgeWall_\(index)-Object_\(object.hash)"
+                        objectsLayer.addChild(bridgeWall)
+                    }
+                }
+                
+                if object.type == ObjectType.spikes {
+                    
+                    /// Количество шипов вокруг блока
+                    let countOfSpikes = 4
+                    
+                    /// Позиции на которые необходимо смещать
+                    let moveToPosValue = CGPoint(x: TileWidth / 1.65, y: TileHeight / 1.65)
+                    
+                    for index in 0..<countOfSpikes {
+                        
+                        let offsetFromParent = getNewPointForSpike(index: index)
+                        
+                        /// Позиция, куда спрайт шипов будет выпущен
+                        let newPointForSpike = Point(column: object.point.column + offsetFromParent.column, row: object.point.row + offsetFromParent.row)
+                        
+                        // Если шип не будет выходить за границы игрового поля, то добавляем его
+                        if newPointForSpike.column >= 0 && newPointForSpike.column < boardSize.column && newPointForSpike.row >= 0 && newPointForSpike.row < boardSize.row {
+                            let spikesSprite = SKSpriteNode(imageNamed: "Spikes")
+                            spikesSprite.size = CGSize(width: object.size.width - 20, height: object.size.height - 10)
+                            spikesSprite.zRotation = CGFloat(Double((index - 1) * 90) * Double.pi / 180)
+                            
+                            // Если по умолчанию стоит, что шипы уже выпущены, то отрисовываем их выпущенными
+                            if object.spikesActive {
+                                spikesSprite.position = CGPoint(x: CGFloat(offsetFromParent.column) * moveToPosValue.x, y: CGFloat(offsetFromParent.row) * moveToPosValue.y)
+                            }
+                            else {
+                                spikesSprite.run(SKAction.repeatForever(SKAction.sequence([
+                                    SKAction.move(to: CGPoint(x: CGFloat(offsetFromParent.column) * 25, y: CGFloat(offsetFromParent.row) * 25), duration: 0.75),
+                                    SKAction.move(to: CGPoint(x: 0, y: 0), duration: 0.75)
+                                    ])), withKey: "preloadSpikesAnimation")
+                            }
+                            
+                            // = -1 that's because parent's node has zPosition = 3 (3 - 1) > tile's zPosition. It means that spikes are above tiles but behind parent's node
+                            spikesSprite.zPosition = -1
+                            spikesSprite.name = "Spike_\(index)"
+                            object.addChild(spikesSprite)
+                        }
+                    }
                 }
             }
         
@@ -219,7 +299,7 @@ class GameScene: SKScene {
             // Инициализируем финишный блок
             let finishSprite = SKSpriteNode(imageNamed: "Gem_blue")
             finishSprite.position = pointFor(column: finish.column, row: finish.row)
-            finishSprite.zPosition = 2
+            finishSprite.zPosition = 3
             finishSprite.size = CGSize(width: TileWidth * 0.4, height: (finishSprite.texture?.size().height)! / ((finishSprite.texture?.size().width)! / (TileWidth * 0.4)))
             objectsLayer.addChild(finishSprite)
         
@@ -367,6 +447,25 @@ class GameScene: SKScene {
         return -1
     }
     
+    /// Получаем новую координату для очередного спрайта шипа
+    func getNewPointForSpike(index: Int) -> Point {
+        var offsetFromParent = Point(column: 1, row: 0)
+        
+        // Если верхний или нижний, то меняем Y-координату
+        if index == 1 || index == 3 {
+            offsetFromParent.row = 1
+            offsetFromParent.column = 0
+        }
+        
+        // Если левый или нижний, то координаты должны быть отрицательными
+        if index == 2  || index == 3 {
+            offsetFromParent.column *= -1
+            offsetFromParent.row *= -1
+        }
+        
+        return offsetFromParent
+    }
+    
     override func didSimulatePhysics() {
     }
     
@@ -484,6 +583,7 @@ class GameScene: SKScene {
         isLastTapLongPress = false
         lastClickOnGameBoard = Point(column: -1, row: -1)
         gameBegan = false
+        isNextCharacterMoveAtBridgeLose = false
         
 //        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
         heartsStackView.removeFromSuperview()

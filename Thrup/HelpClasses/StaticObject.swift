@@ -2,7 +2,7 @@ import Foundation
 import SpriteKit
 
 
-/// Enumeration, который определяет содержит движения блока
+/// Enumeration, который определяет движения блока
 enum RotationDirection: Int {
     case right = 0, top, left, bottom
     
@@ -39,6 +39,9 @@ class StaticObject: SKSpriteNode {
     /// Количество ходов до уничтожения (счетчик, который необходим для бомб)
     var movesToExplode: Int!
     
+    /// Выдвинуты ли шипы или нет (флаг, который необходим для объекта "шип")
+    var spikesActive = false
+    
     init(type: ObjectType, point: Point, size: CGSize) {
         let texture = SKTexture(imageNamed: type.spriteName)
         var size: CGFloat = 0.65
@@ -50,6 +53,10 @@ class StaticObject: SKSpriteNode {
             size = 0.5
         case ObjectType.alarmclock:
             size = 0.525
+        case ObjectType.bridge:
+            size = 0.7
+        case ObjectType.spikes:
+            size = 0.715
         default:
             size = 0.65
         }
@@ -59,7 +66,7 @@ class StaticObject: SKSpriteNode {
         self.type = type
         self.point = point
         
-        self.zPosition = 2
+        self.zPosition = 3
     }
     
     required init?(coder aDecoder: NSCoder) {

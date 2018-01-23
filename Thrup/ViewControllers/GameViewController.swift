@@ -60,6 +60,8 @@ class GameViewController: UIViewController {
     // При нажатии "Start" в верхней части экрана (запуск уровня)
     @IBAction func startLevel(sender: UIButton) {
         Model.sharedInstance.gameScene.startLevel()
+        // Скрываем подсказку об объекте, если она открыта
+        Model.sharedInstance.gameScene.removeObjectInfoView(toAlpha: 0)
     }
     
     /// При нажатии на "Restart" после проигранного раунда

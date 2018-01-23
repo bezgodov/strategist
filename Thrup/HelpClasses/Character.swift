@@ -31,7 +31,7 @@ class Character: SKSpriteNode {
                 
                 pathNode = SKShapeNode(path: path.cgPath)
                 pathNode.strokeColor = UIColor.green
-                pathNode.zPosition = 2
+                pathNode.zPosition = 3
                 pathNode.lineCap = CGLineCap.round
                 pathNode.lineJoin = CGLineJoin.round
                 pathNode.lineWidth = 18
