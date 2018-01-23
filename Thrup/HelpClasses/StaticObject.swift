@@ -50,7 +50,7 @@ class StaticObject: SKSpriteNode {
         case ObjectType.star:
             size = 0.5
         case ObjectType.bomb:
-            size = 0.5
+            size = 0.625
         case ObjectType.alarmclock:
             size = 0.525
         case ObjectType.bridge:
