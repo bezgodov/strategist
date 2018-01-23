@@ -49,6 +49,9 @@ class ChooseLevelViewController: UIViewController {
     /// Стартовая позиция ГП после перехода из уровня
     var characterPosLevelFromScene = -1
     
+    /// Открыть модальное окно при открытии меню
+    var presentModalWindowByDefault: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -73,6 +76,15 @@ class ChooseLevelViewController: UIViewController {
         
         if countCompletedLevels == 0 {
             moveToPoint(from: Point(column: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].column, row: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].row - distanceBetweenLevels), to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        
+        // Если необходимо открыть модальное окно по умолчанию (при переходе в меню)
+        if presentModalWindowByDefault {
+            modalWindowPresent()
         }
     }
     
@@ -300,7 +312,7 @@ class ChooseLevelViewController: UIViewController {
             btnExtraLives.layer.cornerRadius = 5
             btnExtraLives.backgroundColor = UIColor.green
             btnExtraLives.setTitleColor(UIColor.black, for: UIControlState.normal)
-//            btnExtraLives.addTarget(self, action: #selector(startLevel), for: .touchUpInside)
+            btnExtraLives.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
             btnExtraLives.setTitle("EXTRA LIFE", for: UIControlState.normal)
             modalWindow.addSubview(btnExtraLives)
         }
@@ -331,6 +343,31 @@ class ChooseLevelViewController: UIViewController {
     
     @objc func shakeScreen() {
         shakeView(self.view)
+    }
+    
+    @objc func addExtraLife(_ sender: UIButton) {
+        Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + 1)
+        UIView.animate(withDuration: 0.215, animations: {
+            self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
+        }, completion: { (_) in
+            self.modalWindowBg.removeFromSuperview()
+            
+            // Ищем кнопку-уровень на scrollView
+            var tileLevelSubView: UIView!
+            for tileSubview in self.scrollView.subviews {
+                if tileSubview.restorationIdentifier == "levelTile_\(Model.sharedInstance.currentLevel)" {
+                    tileLevelSubView = tileSubview
+                }
+            }
+            // Ищем view, который выводит состояние уровня
+            for subview in tileLevelSubView.subviews {
+                if subview.restorationIdentifier == "levelStateImage" {
+                    subview.removeFromSuperview()
+                }
+            }
+            
+            self.modalWindowPresent()
+        })
     }
     
     func shakeView(_ viewToShake: UIView, repeatCount: Float = 3, amplitude: CGFloat = 5) {
@@ -433,6 +470,7 @@ class ChooseLevelViewController: UIViewController {
     func addLevelImageState(spriteName: String = "Locked", buttonToPin: UIButton, sizeKoef: CGSize = CGSize(width: 0.275, height: 0.275)) {
         let levelStateImage = UIImageView(image: UIImage(named: spriteName))
         levelStateImage.frame.size = CGSize(width: buttonToPin.frame.size.width * sizeKoef.width, height: buttonToPin.frame.size.height * sizeKoef.height)
+        levelStateImage.restorationIdentifier = "levelStateImage"
         levelStateImage.frame.origin = CGPoint(x: buttonToPin.frame.size.width - levelStateImage.frame.size.width - 5, y: buttonToPin.frame.size.height - levelStateImage.frame.size.height - 5)
         buttonToPin.addSubview(levelStateImage)
     }
@@ -516,6 +554,8 @@ class ChooseLevelViewController: UIViewController {
                         button.addTarget(self, action: #selector(shakeScreen), for: .touchUpInside)
                         addLevelImageState(spriteName: "Locked", buttonToPin: button, sizeKoef: CGSize(width: 0.3, height: 0.3))
                     }
+                    
+                    button.restorationIdentifier = "levelTile_\(button.tag)"
                     
                     levelButtonsPositions.append(Point(column: randColumn, row: row + 1))
                     

@@ -530,7 +530,7 @@ class GameScene: SKScene {
         }
         
         if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
-            Model.sharedInstance.gameViewControllerConnect.goToNextLevel(moveCharacterFlag: false)
+            Model.sharedInstance.gameViewControllerConnect.goToMenuCurrentLevel(presentModalWindow: true)
         }
         
         gameTimer.invalidate()
