@@ -8,16 +8,12 @@ class MenuViewController: UIViewController {
     
     /// При нажатии на Switch, удаление сохранённых данных
     @IBAction func resetData(sender: UISwitch) {
+        UserDefaults.standard.removeObject(forKey: "countLives")
+        UserDefaults.standard.removeObject(forKey: "completedLevels")
+        UserDefaults.standard.removeObject(forKey: "countCompletedLevels")
+        UserDefaults.standard.synchronize()
         
-        UserDefaults.standard.set([Int](), forKey: "countLives")
-        UserDefaults.standard.set(0, forKey: "countCompletedLevels")
-        UserDefaults.standard.set([Bool](), forKey: "completedLevels")
-        
-        Model.sharedInstance.setCountCompletedLevels(0)
-        for index in 1...Model.sharedInstance.countLevels {
-            Model.sharedInstance.setLevelLives(level: index, newValue: 5)
-            Model.sharedInstance.setCompletedLevel(index, value: false)
-        }
+        exit(0)
     }
     
     @IBAction func goBack(sender: UIButton) {

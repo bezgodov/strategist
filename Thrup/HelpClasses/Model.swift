@@ -20,7 +20,7 @@ class Model {
         }
         
         // Если были добавлены новые уровни (т.е. выделенное кол-во элементов в массиве для пройденных уровней не соответствует текущему кол-ву уровней)
-        if countLevels != completedLevels.count {
+        if countLevels > completedLevels.count {
             for index in completedLevels.count + 1...countLevels {
                 setLevelLives(level: index, newValue: 5)
                 setCompletedLevel(index, value: false)
