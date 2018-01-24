@@ -19,6 +19,9 @@ class GameScene: SKScene {
     /// Доступное количество ходов
     var moves: Int = 0
     
+    /// Обязательно ли использовать все ходы на уровне?
+    var isNecessaryUseAllMoves: Bool = false
+    
     /// Координаты финишного блока
     var finish: Point = Point(column: 0, row: 0)
     
@@ -584,6 +587,7 @@ class GameScene: SKScene {
         lastClickOnGameBoard = Point(column: -1, row: -1)
         gameBegan = false
         isNextCharacterMoveAtBridgeLose = false
+        isNecessaryUseAllMoves = false
         
 //        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
         heartsStackView.removeFromSuperview()

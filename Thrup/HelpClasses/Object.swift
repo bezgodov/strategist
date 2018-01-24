@@ -49,8 +49,8 @@ enum ObjectType: Int {
             "Bomb will destroy everything around its in N moves. You can't get at bomb's position",
             "Stop sing stops you for one move",
             "Alarm Clock stops all objects for one move except a space alien",
-            "Bridge",
-            "Spikes",
+            "Bridge is rotated each move. You can tap bridge to change its direction",
+            "Spikes appear one move and disappear next one. If you get at them you lose",
             "Eletro destroys you if you get at any position around its",
             "Star doesn't destroy you and never moves. You should collect all stars to win",
             "Rotator"
@@ -149,24 +149,6 @@ class Object: SKSpriteNode {
             self.pathLayer.removeFromParent()
         })
         
-        /*
-        // На стеке говорят, что нельзя CALayer засунуть ниже/между объектами, не вижу причии им не верить, но ход пока оставлю, мало ли
-         
-        if hide {
-            pathStateHide = true
-            
-            let pathRemoveAnimation = CABasicAnimation(keyPath: "strokeEnd")
-//            pathRemoveAnimation.fromValue = 1.0
-            pathRemoveAnimation.toValue = 0.0
-            pathRemoveAnimation.duration = 0.25
-            pathRemoveAnimation.repeatCount = 1
-            pathRemoveAnimation.fillMode = kCAFillModeForwards
-            pathRemoveAnimation.isRemovedOnCompletion = false
-            pathRemoveAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-            pathLayer.add(pathRemoveAnimation, forKey: nil)
-        }
-        */
-        
         if !hide {
             
             let path = UIBezierPath()
@@ -190,38 +172,6 @@ class Object: SKSpriteNode {
             pathLayer.alpha = 0.0
             pathLayer.run(SKAction.fadeIn(withDuration: 0.5))
             Model.sharedInstance.gameScene.objectsLayer.addChild(pathLayer)
-            
-            /*
-            pathLayer.removeAllAnimations()
-            pathLayer.removeFromSuperlayer()
-            
-            pathLayer = CAShapeLayer()
-            pathLayer.zPosition = 0
-            
-            pathLayer.strokeEnd = 0.0
-            
-            pathLayer.frame = CGRect(x: 0, y: 0, width: (Model.sharedInstance.gameScene.view?.frame.width)!, height: (Model.sharedInstance.gameScene.view?.frame.height)!)
-            
-            pathLayer.path = path.cgPath
-            pathLayer.anchorPoint = CGPoint(x: 0, y: 0)
-            pathLayer.lineWidth = 10
-            pathLayer.strokeColor = UIColor.red.cgColor
-            pathLayer.fillColor = nil
-            pathLayer.lineJoin = kCALineJoinRound
-            
-            Model.sharedInstance.gameScene.view?.layer.addSublayer(pathLayer)
-            
-            let pathAnimation = CABasicAnimation(keyPath: "strokeEnd")
-            pathAnimation.fromValue = 0.0
-            pathAnimation.toValue = 1.0
-            pathAnimation.duration = 0.25
-            pathAnimation.repeatCount = 1
-            pathAnimation.fillMode = kCAFillModeForwards
-            pathAnimation.isRemovedOnCompletion = false
-            pathAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-            
-            pathLayer.add(pathAnimation, forKey: nil)
-            */
         }
     }
     

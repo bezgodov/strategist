@@ -57,6 +57,14 @@ class ChooseLevelViewController: UIViewController {
         
         // Если нет сохранённых уровней, то задаём кол-во жизней на каждый уровень равным 5
         if Model.sharedInstance.emptySavedLevelsLives() == true {
+            
+            // Стираем все данные
+            UserDefaults.standard.set([Int](), forKey: "countLives")
+            UserDefaults.standard.set(0, forKey: "countCompletedLevels")
+            UserDefaults.standard.set([Bool](), forKey: "completedLevels")
+            
+            // Инициализируем все данные для уровней
+            Model.sharedInstance.setCountCompletedLevels(0)
             for index in 1...Model.sharedInstance.countLevels {
                 Model.sharedInstance.setLevelLives(level: index, newValue: 5)
                 Model.sharedInstance.setCompletedLevel(index, value: false)

@@ -33,7 +33,7 @@ class Model {
     var gameScene: GameScene!
     
     /// Общее количество уровней
-    var countLevels: Int = 9
+    var countLevels: Int = 10
     
     /// Текущий уровень
     var currentLevel: Int = 1

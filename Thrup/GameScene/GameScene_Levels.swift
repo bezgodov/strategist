@@ -12,10 +12,20 @@ extension GameScene {
         
         let staticObjects = dictionary["staticObjects"] as? NSArray
         
+        /// Позиция финишного блока
         guard let finishVal = dictionary["finish"] as? [Int] else { return }
+        
+        /// Начальная позиция ГП
         guard let characterStartVal = dictionary["character"] as? [Int] else { return }
+        
+        /// Размеры игрового поля
         guard let boardSizeVal = dictionary["boardSize"] as? [Int] else { return }
+        
+        /// Количество ходов на уровень
         guard let movesVal = dictionary["moves"] as? Int else { return }
+        
+        /// Обязательно ли использовать все ходы на уровне?
+        let isNecessaryUseAllMovesVal = dictionary["isNecessaryUseAllMoves"] as? Bool
         
         // Размер игрового поля
         boardSize = Point(column: boardSizeVal[0], row: boardSizeVal[1])
@@ -36,6 +46,10 @@ extension GameScene {
         
         // Кол-во ходов, за которые необходимо выиграть уровень
         moves = movesVal
+        
+        if isNecessaryUseAllMovesVal != nil {
+            isNecessaryUseAllMoves = isNecessaryUseAllMovesVal!
+        }
         
         Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.text = String(moves)
         

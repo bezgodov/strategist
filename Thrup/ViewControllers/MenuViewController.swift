@@ -13,11 +13,11 @@ class MenuViewController: UIViewController {
         UserDefaults.standard.set(0, forKey: "countCompletedLevels")
         UserDefaults.standard.set([Bool](), forKey: "completedLevels")
         
-//        Model.sharedInstance.setCountCompletedLevels(0)
-//        for index in 1...Model.sharedInstance.countLevels {
-//            Model.sharedInstance.setLevelLives(level: index, newValue: 5)
-//            Model.sharedInstance.setCompletedLevel(index, value: false)
-//        }
+        Model.sharedInstance.setCountCompletedLevels(0)
+        for index in 1...Model.sharedInstance.countLevels {
+            Model.sharedInstance.setLevelLives(level: index, newValue: 5)
+            Model.sharedInstance.setCompletedLevel(index, value: false)
+        }
     }
     
     @IBAction func goBack(sender: UIButton) {
