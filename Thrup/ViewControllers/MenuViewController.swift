@@ -11,6 +11,7 @@ class MenuViewController: UIViewController {
         UserDefaults.standard.removeObject(forKey: "countLives")
         UserDefaults.standard.removeObject(forKey: "completedLevels")
         UserDefaults.standard.removeObject(forKey: "countCompletedLevels")
+        UserDefaults.standard.removeObject(forKey: "countGems")
         UserDefaults.standard.synchronize()
         
         exit(0)

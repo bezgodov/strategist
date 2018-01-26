@@ -27,6 +27,9 @@ extension GameScene {
         /// Обязательно ли использовать все ходы на уровне?
         let isNecessaryUseAllMovesVal = dictionary["isNecessaryUseAllMoves"] as? Bool
         
+        /// Количество драгоценных камней, которые можно получить за уровень
+        let gemsForLevelVal = dictionary["gems"] as? Int
+        
         // Размер игрового поля
         boardSize = Point(column: boardSizeVal[0], row: boardSizeVal[1])
         
@@ -49,6 +52,10 @@ extension GameScene {
         
         if isNecessaryUseAllMovesVal != nil {
             isNecessaryUseAllMoves = isNecessaryUseAllMovesVal!
+        }
+        
+        if gemsForLevelVal != nil {
+            gemsForLevel = gemsForLevelVal!
         }
         
         Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.text = String(moves)

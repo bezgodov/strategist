@@ -19,6 +19,9 @@ class GameScene: SKScene {
     /// Доступное количество ходов
     var moves: Int = 0
     
+    /// Количество драгоценных камней, которые можно получить за уровень
+    var gemsForLevel: Int = 1
+    
     /// Обязательно ли использовать все ходы на уровне?
     var isNecessaryUseAllMoves: Bool = false
     
@@ -52,7 +55,7 @@ class GameScene: SKScene {
     var gameTimer = Timer()
     
     /// Слой, на который добавляются все остальные Nodes
-    let gameLayer = SKNode()
+    var gameLayer = SKSpriteNode()
     
     /// Слой, на который добавляются все объекты
     let objectsLayer = SKNode()
@@ -142,9 +145,77 @@ class GameScene: SKScene {
          */
     }
     
+    /// Функция, которая генерирует задний фон
+    func createBg() {
+        let bgNode = SKNode()
+        // Отображаем слой с объектами по центру экрана
+        bgNode.position = CGPoint(x: -self.size.width, y: -self.size.height / 2)
+        addTilesBg(toNode: bgNode)
+        
+        bgNode.zRotation = CGFloat(-25 * Double.pi / 180)
+        
+        _ = Timer.scheduledTimer(withTimeInterval: 15, repeats: true, block: { (_) in
+            let characterBg = SKSpriteNode(texture: self.playerWalkingFrames[1])
+            characterBg.zPosition = 4
+            characterBg.alpha = 0.125
+            characterBg.position = self.pointFor(column: -1, row: 0)
+            characterBg.size = CGSize(width: TileWidth * 0.5, height: (characterBg.texture?.size().height)! / ((characterBg.texture?.size().width)! / (TileWidth * 0.5)))
+            characterBg.run(SKAction.repeatForever(SKAction.animate(with: self.playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
+            bgNode.addChild(characterBg)
+            
+            var moves = [Point]()
+            for row in -2...self.boardSize.row + 5 {
+                
+                let randLimit = self.boardSize.row + 1
+                let rand = arc4random_uniform(UInt32(randLimit))
+                
+                if moves.count > 0 {
+                    while moves.last?.column != Int(rand) {
+                        let newRowValue = moves.last!.column + ((moves.last!.column < Int(rand)) ? 1 : -1)
+                        moves.append(Point(column: newRowValue, row: moves.last!.row))
+                    }
+                }
+                moves.append(Point(column: Int(rand), row: row))
+            }
+            
+            var move = 0
+            _ = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true, block: { (timer) in
+                if move < moves.count {
+                    
+                    if move > 0 {
+                        let characterDirectionWalks = self.getObjectDirection(from: moves[move - 1], to: moves[move])
+                        
+                        if characterDirectionWalks == RotationDirection.right {
+                            characterBg.run(SKAction.scaleX(to: 1, duration: 0.25))
+                        }
+                        
+                        if characterDirectionWalks == RotationDirection.left {
+                            characterBg.run(SKAction.scaleX(to: -1, duration: 0.25))
+                        }
+                    }
+                    
+                    characterBg.run(SKAction.move(to: self.pointFor(column: moves[move].column, row: moves[move].row), duration: 0.5), completion: {
+                        move += 1
+                        
+                        if move == moves.count {
+                            characterBg.removeFromParent()
+                            timer.invalidate()
+                        }
+                    })
+                }
+            })
+        })
+        
+        bgNode.zPosition = -5
+        gameLayer.addChild(bgNode)
+    }
+    
     func createLevel() {
         if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
+            
             goToLevel(Model.sharedInstance.currentLevel)
+            
+            createBg()
         
             let playerAnimatedAtlas = SKTextureAtlas(named: "PlayerWalks")
             var walkFrames = [SKTexture]()
@@ -190,6 +261,14 @@ class GameScene: SKScene {
                 if object.type == ObjectType.spinner {
                     object.run(SKAction.repeatForever(SKAction.rotate(byAngle: lastDirectionSpinnerLeft * CGFloat(Double.pi * 2), duration: 1)))
                     lastDirectionSpinnerLeft *= -1
+                }
+                
+                if object.type == ObjectType.star {
+                    let pulseUp = SKAction.scale(to: 1.15, duration: 1.5)
+                    let pulseDown = SKAction.scale(to: 1, duration: 1.5)
+                    let pulse = SKAction.sequence([pulseUp, pulseDown])
+                    let repeatPulse = SKAction.repeatForever(pulse)
+                    object.run(repeatPulse)
                 }
                 
                 if object.type == ObjectType.bridge {
@@ -309,7 +388,7 @@ class GameScene: SKScene {
             self.addChild(gameLayer)
         
             // Добавляем ячейке игрового поля
-            addTiles()
+            addTiles(toNode: tilesLayer)
             
             drawHearts()
         
@@ -336,6 +415,7 @@ class GameScene: SKScene {
                     
                     character.pathNode.removeFromParent()
                     Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = true
+                    Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isEnabled = false
                 }
             }
         }
@@ -547,6 +627,11 @@ class GameScene: SKScene {
             Model.sharedInstance.setCountCompletedLevels(Model.sharedInstance.currentLevel)
         }
         
+        // Если уровень не был пройден, то обновляем кол-во драг. камней
+        if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+            Model.sharedInstance.setCountGems(amountGems: gemsForLevel)
+        }
+        
         Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
         
         Model.sharedInstance.currentLevel += 1
@@ -590,6 +675,7 @@ class GameScene: SKScene {
         isNecessaryUseAllMoves = false
         
 //        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
+        Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isEnabled = true
         heartsStackView.removeFromSuperview()
         
         self.removeAllChildren()
@@ -616,7 +702,8 @@ class GameScene: SKScene {
      */
     
     /// Функция добавляет игровые ячейки (создание игрового поля)
-    func addTiles() {
+    func addTiles(toNode: SKNode) {
+        
         var scale = Scale(xScale: 1.0, yScale: 1.0)
         for row in 0..<boardSize.row {
             for column in 0..<boardSize.column {
@@ -673,9 +760,51 @@ class GameScene: SKScene {
                 tileNode.size = CGSize(width: TileWidth, height: TileHeight)
                 tileNode.position = pointFor(column: column, row: row)
                 tileNode.zPosition = 1
-                tilesLayer.addChild(tileNode)
+                toNode.addChild(tileNode)
                 //}
             }
+        }
+    }
+    
+    func addTilesBg(toNode: SKNode) {
+        
+        var scale = Scale(xScale: 1.0, yScale: 1.0)
+        var pointBgTile: CGPoint = pointFor(column: 0, row: 0)
+        var row = -3
+        
+        while pointBgTile.y <= self.size.height + TileHeight * 3 {
+            for column in -3..<boardSize.column + 3 {
+                var tileSprite: String = "center"
+                var rotation: Double = 0.0
+                scale.xScale = 1.0
+                scale.yScale = 1.0
+                
+//                if column == 0 {
+////                    tileSprite = "top"
+//                    rotation = (90 * Double.pi / 180)
+//                }
+//
+//                if column == boardSize.column - 1 {
+////                    tileSprite = "top"
+//                    rotation = (-90 * Double.pi / 180)
+//                }
+                
+                pointBgTile = pointFor(column: column, row: row)
+                
+                let tileNode = SKSpriteNode(imageNamed: "Tile_\(tileSprite)")
+//                let tileNode = SKSpriteNode(color: UIColor(red: 149/255, green: 201/255, blue: 45/255, alpha: 1), size: CGSize(width: TileWidth, height: TileHeight))
+                
+                
+                tileNode.xScale = scale.xScale
+                tileNode.yScale = scale.yScale
+                tileNode.zRotation += CGFloat(rotation)
+                tileNode.alpha = 0.125
+                tileNode.size = CGSize(width: TileWidth, height: TileHeight)
+                tileNode.position = pointBgTile
+                tileNode.zPosition = 1
+                toNode.addChild(tileNode)
+            }
+            row += 1
         }
     }
     

@@ -288,14 +288,15 @@ extension GameScene {
             else {
                 character.run(SKAction.move(to: self.pointFor(column: self.character.moves[self.move].column, row: self.character.moves[self.move].row), duration: 0.5), completion: {
                     
-                    for object in self.staticObjects {
-                        self.checkStatisObjectPos(object: object)
+                    if !characterAtAlarmClock {
+                        for object in self.staticObjects {
+                            self.checkStatisObjectPos(object: object)
+                        }
                     }
-                    
                     // Если ГП находится на будильнике, то останавливаем все движущиейся объекты на 1 ход и толкаем ГП на 1 ход вперёд
-                    if characterAtAlarmClock {
+                    else {
                         DispatchQueue.main.async() {
-                            self.character.run(SKAction.wait(forDuration: 0.15), completion: {
+                            self.character.run(SKAction.wait(forDuration: 0.1), completion: {
                                 self.checkCharacterDirection(characterAtAlarmClock: true)
                                 self.move += 1
                             

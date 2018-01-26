@@ -3,6 +3,7 @@
     "character": [0,0],
     "boardSize": [4,4],
     "moves": 15,
+    "gems": 2,
     "movingObjects": [{
                 "type": "bee",
                 "move": [

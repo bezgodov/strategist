@@ -38,6 +38,9 @@ class Model {
     /// Текущий уровень
     var currentLevel: Int = 1
     
+    /// Количество собранных драгоценных камней
+    private var countGems: Int = UserDefaults.standard.integer(forKey: "countGemns")
+    
     /// Количество пройденных уровней (последний пройденный уровень)
     private var countCompletedLevels: Int = UserDefaults.standard.integer(forKey: "countCompletedLevels")
     
@@ -89,5 +92,19 @@ class Model {
         }
         completedLevels.insert(value, at: level - 1)
         UserDefaults.standard.set(completedLevels, forKey: "completedLevels")
+    }
+    
+    /// Функция задаёт новое значение количества драгоценных камней
+    ///
+    /// - Parameter amountGems: значение, которое необходимо прибать к текущему кол-ву драг. камней
+    func setCountGems(amountGems: Int) {
+        countGems += amountGems
+        
+        UserDefaults.standard.set(countGems, forKey: "countGems")
+    }
+    
+    /// Функция возвращает общее кол-во драгоценных камней
+    func getCountGems() -> Int {
+        return countGems
     }
 }
