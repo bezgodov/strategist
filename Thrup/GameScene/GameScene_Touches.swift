@@ -5,7 +5,7 @@ extension GameScene {
     
     @objc func longPressed(sender: UILongPressGestureRecognizer)
     {
-        if !gameBegan {
+        if !gameBegan && Model.sharedInstance.getShowTips() {
             /// Был ли клик сделан по какому-либо объекту
             var objectTypeClicked: ObjectType?
             
@@ -245,7 +245,7 @@ extension GameScene {
                                 objectTypeClicked = ObjectType.gem
                             }
                             
-                            if !removedLastPointByMove && objectTypeClicked != ObjectType.bridge {
+                            if !removedLastPointByMove && objectTypeClicked != ObjectType.bridge && Model.sharedInstance.getShowTips() {
                                 prepareObjectInfoView(objectTypeClicked, boardClick: boardClick.point)
                             }
                             

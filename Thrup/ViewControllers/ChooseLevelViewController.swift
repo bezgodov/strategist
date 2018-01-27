@@ -317,6 +317,18 @@ class ChooseLevelViewController: UIViewController {
             btnExtraLives.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
             btnExtraLives.setTitle("EXTRA LIFE", for: UIControlState.normal)
             modalWindow.addSubview(btnExtraLives)
+            
+            let countOfGemsToUnlockImage = UIImageView(image: UIImage(named: "Gem_blue"))
+            countOfGemsToUnlockImage.frame.size = CGSize(width: countOfGemsToUnlockImage.frame.size.width * 0.75, height: countOfGemsToUnlockImage.frame.size.height * 0.75)
+            countOfGemsToUnlockImage.frame.origin = CGPoint(x: btnExtraLives.frame.size.width + 5, y: btnExtraLives.frame.size.height / 2 - countOfGemsToUnlockImage.frame.size.height / 2 - 5)
+            btnExtraLives.addSubview(countOfGemsToUnlockImage)
+            
+            let countOfGemsToUnlockLabel = UILabel(frame: CGRect(x: countOfGemsToUnlockImage.frame.size.width / 2 - 35 / 2, y: countOfGemsToUnlockImage.frame.size.height + 7 - 50 / 2, width: 35, height: 50))
+            countOfGemsToUnlockLabel.font = UIFont(name: "Avenir Next", size: 13)
+            countOfGemsToUnlockLabel.text = "X10"
+            countOfGemsToUnlockLabel.textAlignment = NSTextAlignment.center
+            countOfGemsToUnlockLabel.textColor = UIColor.white
+            countOfGemsToUnlockImage.addSubview(countOfGemsToUnlockLabel)
         }
         
         modalWindow.addSubview(btnStart)
@@ -348,28 +360,38 @@ class ChooseLevelViewController: UIViewController {
     }
     
     @objc func addExtraLife(_ sender: UIButton) {
-        Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + 1)
-        UIView.animate(withDuration: 0.215, animations: {
-            self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
-        }, completion: { (_) in
-            self.modalWindowBg.removeFromSuperview()
+        // Если больше 10 драг. камней, то добавляем новую жизнь
+        if Model.sharedInstance.getCountGems() >= 10 {
             
-            // Ищем кнопку-уровень на scrollView
-            var tileLevelSubView: UIView!
-            for tileSubview in self.scrollView.subviews {
-                if tileSubview.restorationIdentifier == "levelTile_\(Model.sharedInstance.currentLevel)" {
-                    tileLevelSubView = tileSubview
-                }
-            }
-            // Ищем view, который выводит состояние уровня
-            for subview in tileLevelSubView.subviews {
-                if subview.restorationIdentifier == "levelStateImage" {
-                    subview.removeFromSuperview()
-                }
-            }
+            // Отнимаем 10 драг. камней
+            Model.sharedInstance.setCountGems(amountGems: -10)
             
-            self.modalWindowPresent()
-        })
+            Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + 1)
+            UIView.animate(withDuration: 0.215, animations: {
+                self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
+            }, completion: { (_) in
+                self.modalWindowBg.removeFromSuperview()
+                
+                // Ищем кнопку-уровень на scrollView
+                var tileLevelSubView: UIView!
+                for tileSubview in self.scrollView.subviews {
+                    if tileSubview.restorationIdentifier == "levelTile_\(Model.sharedInstance.currentLevel)" {
+                        tileLevelSubView = tileSubview
+                    }
+                }
+                // Ищем view, который выводит состояние уровня
+                for subview in tileLevelSubView.subviews {
+                    if subview.restorationIdentifier == "levelStateImage" {
+                        subview.removeFromSuperview()
+                    }
+                }
+                
+                self.modalWindowPresent()
+            })
+        }
+        else {
+            presentMenu()
+        }
     }
     
     func shakeView(_ viewToShake: UIView, repeatCount: Float = 3, amplitude: CGFloat = 5) {
@@ -589,6 +611,10 @@ class ChooseLevelViewController: UIViewController {
     
     /// Переход в настройки
     @IBAction func goToMenu(sender: UIButton) {
+        presentMenu()
+    }
+    
+    func presentMenu() {
         if let storyboard = storyboard {
             let menuViewController = storyboard.instantiateViewController(withIdentifier: "MenuViewController") as! MenuViewController
             navigationController?.pushViewController(menuViewController, animated: true)

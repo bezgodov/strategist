@@ -39,7 +39,10 @@ class Model {
     var currentLevel: Int = 1
     
     /// Количество собранных драгоценных камней
-    private var countGems: Int = UserDefaults.standard.integer(forKey: "countGemns")
+    private var countGems: Int = UserDefaults.standard.integer(forKey: "countGems")
+    
+    /// Показывать ли подсказки при клике на объекты на сцене?
+    private var showTips = UserDefaults.standard.bool(forKey: "showTips")
     
     /// Количество пройденных уровней (последний пройденный уровень)
     private var countCompletedLevels: Int = UserDefaults.standard.integer(forKey: "countCompletedLevels")
@@ -106,5 +109,16 @@ class Model {
     /// Функция возвращает общее кол-во драгоценных камней
     func getCountGems() -> Int {
         return countGems
+    }
+    
+    /// Функция, которая устанавливает флаг, которые отвечает за показ подсказок при клике на объекты
+    func setShowTips(val: Bool) {
+        showTips = val
+        
+        UserDefaults.standard.set(showTips, forKey: "showTips")
+    }
+    
+    func getShowTips() -> Bool {
+        return showTips
     }
 }
