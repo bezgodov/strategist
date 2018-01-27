@@ -324,7 +324,7 @@ class ChooseLevelViewController: UIViewController {
             btnExtraLives.addSubview(countOfGemsToUnlockImage)
             
             let countOfGemsToUnlockLabel = UILabel(frame: CGRect(x: countOfGemsToUnlockImage.frame.size.width / 2 - 35 / 2, y: countOfGemsToUnlockImage.frame.size.height + 7 - 50 / 2, width: 35, height: 50))
-            countOfGemsToUnlockLabel.font = UIFont(name: "Avenir Next", size: 13)
+            countOfGemsToUnlockLabel.font = UIFont(name: "Avenir Next", size: 14)
             countOfGemsToUnlockLabel.text = "X10"
             countOfGemsToUnlockLabel.textAlignment = NSTextAlignment.center
             countOfGemsToUnlockLabel.textColor = UIColor.white

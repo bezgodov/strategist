@@ -230,7 +230,7 @@ class GameScene: SKScene {
             playerWalkingFrames = walkFrames
         
             // Инициализируем ГП
-            character = Character(texture: playerWalkingFrames[1])
+            character = Character(imageNamed: "PlayerStaysFront")
             character.zPosition = 4
             character.position = pointFor(column: characterStart.column, row: characterStart.row)
             character.size = CGSize(width: TileWidth * 0.5, height: (character.texture?.size().height)! / ((character.texture?.size().width)! / (TileWidth * 0.5)))
@@ -264,7 +264,7 @@ class GameScene: SKScene {
                 }
                 
                 if object.type == ObjectType.star {
-                    let pulseUp = SKAction.scale(to: 1.15, duration: 1.5)
+                    let pulseUp = SKAction.scale(to: 1.225, duration: 1.5)
                     let pulseDown = SKAction.scale(to: 1, duration: 1.5)
                     let pulse = SKAction.sequence([pulseUp, pulseDown])
                     let repeatPulse = SKAction.repeatForever(pulse)
@@ -395,6 +395,11 @@ class GameScene: SKScene {
             Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel?.isHidden = true
             Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = false
             Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.isHidden = false
+            
+            // Если уровень необходимо пройти за определённое количество ходов, то выделяет кол-во ходов красным цветом
+            if isNecessaryUseAllMoves {
+                Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.textColor = UIColor.red
+            }
         }
     }
     
@@ -768,36 +773,18 @@ class GameScene: SKScene {
     
     func addTilesBg(toNode: SKNode) {
         
-        var scale = Scale(xScale: 1.0, yScale: 1.0)
         var pointBgTile: CGPoint = pointFor(column: 0, row: 0)
         var row = -3
         
         while pointBgTile.y <= self.size.height + TileHeight * 3 {
             for column in -3..<boardSize.column + 3 {
-                var tileSprite: String = "center"
-                var rotation: Double = 0.0
-                scale.xScale = 1.0
-                scale.yScale = 1.0
-                
-//                if column == 0 {
-////                    tileSprite = "top"
-//                    rotation = (90 * Double.pi / 180)
-//                }
-//
-//                if column == boardSize.column - 1 {
-////                    tileSprite = "top"
-//                    rotation = (-90 * Double.pi / 180)
-//                }
+                let tileSprite: String = "center"
                 
                 pointBgTile = pointFor(column: column, row: row)
                 
                 let tileNode = SKSpriteNode(imageNamed: "Tile_\(tileSprite)")
 //                let tileNode = SKSpriteNode(color: UIColor(red: 149/255, green: 201/255, blue: 45/255, alpha: 1), size: CGSize(width: TileWidth, height: TileHeight))
                 
-                
-                tileNode.xScale = scale.xScale
-                tileNode.yScale = scale.yScale
-                tileNode.zRotation += CGFloat(rotation)
                 tileNode.alpha = 0.125
                 tileNode.size = CGSize(width: TileWidth, height: TileHeight)
                 tileNode.position = pointBgTile
