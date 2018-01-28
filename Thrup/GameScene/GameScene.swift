@@ -412,9 +412,10 @@ class GameScene: SKScene {
                 if character.moves.count > 1 {
                     gameBegan = true
                     
-                    character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
-                    
                     gameTimer = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true) { (_) in
+                        if self.move == 0 {
+                            self.character.run(SKAction.repeatForever(SKAction.animate(with: self.playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
+                        }
                         self.worldMove()
                     }
                     
