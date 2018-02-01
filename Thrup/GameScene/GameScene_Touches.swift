@@ -2,10 +2,10 @@ import Foundation
 import SpriteKit
 
 extension GameScene {
-    
+
     @objc func longPressed(sender: UILongPressGestureRecognizer)
     {
-        if !gameBegan && Model.sharedInstance.getShowTips() {
+        if !gameBegan && Model.sharedInstance.getShowTips() && !isLevelWithTutorial {
             /// Был ли клик сделан по какому-либо объекту
             var objectTypeClicked: ObjectType?
             
@@ -81,7 +81,7 @@ extension GameScene {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if !gameBegan {
+        if !gameBegan && !isLevelWithTutorial {
             if let touch = touches.first {
                 let touchLocation = touch.location(in: objectsLayer)
                 if !isLastTapLongPress {
@@ -142,7 +142,7 @@ extension GameScene {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if !gameBegan {
+        if !gameBegan && !isLevelWithTutorial {
             if let touch = touches.first {
                 if !isLastTapLongPress {
                     if move == 0 {

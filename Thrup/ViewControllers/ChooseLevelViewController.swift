@@ -55,6 +55,10 @@ class ChooseLevelViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if Model.sharedInstance.getCountCompletedLevels() == 1 && !Model.sharedInstance.isCompletedLevel(2) {
+            Model.sharedInstance.currentLevel = 2
+        }
+        
         // Если нет сохранённых уровней, то задаём кол-во жизней на каждый уровень равным 5
         if Model.sharedInstance.emptySavedLevelsLives() == true {
             // Инициализируем все данные для уровней
@@ -88,6 +92,12 @@ class ChooseLevelViewController: UIViewController {
         // Если необходимо открыть модальное окно по умолчанию (при переходе в меню)
         if presentModalWindowByDefault {
             modalWindowPresent()
+        }
+        else {
+            // Если обучение было "прервано" после 1-ого уровня
+            if !moveCharacterToNextLevel && Model.sharedInstance.currentLevel == 2 && Model.sharedInstance.getCountCompletedLevels() == 1 && !Model.sharedInstance.isCompletedLevel(2) {
+                modalWindowPresent()
+            }
         }
     }
     
@@ -164,10 +174,6 @@ class ChooseLevelViewController: UIViewController {
         }
     }
     
-//    @IBAction func chooseLevel(sender: UIButton) {
-//
-//    }
-    
     @objc func buttonAction(sender: UIButton!) {
         let buttonSenderAction: UIButton = sender
         
@@ -203,31 +209,33 @@ class ChooseLevelViewController: UIViewController {
                 
                 CATransaction.begin()
                 
-                DispatchQueue.main.async {
-                    if !self.moveCharacterToNextLevel {
-                        var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -1 : 0)
-                        extremeKoef = ((self.characterPointStart.row - 1) / self.distanceBetweenLevels + 1) > self.countCompletedLevels + 2 ? -2 : extremeKoef
-                        extremeKoef = (((self.characterPointStart.row - 1) / self.distanceBetweenLevels) - 1) < 0 ? 0 : -1
-                        
-                        UIView.animate(withDuration: 0.25, animations: {
-                            self.scrollView.contentOffset.y = CGFloat((((self.characterPointStart.row - 1) / self.distanceBetweenLevels) + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
-                        }, completion: { (_) in
+                if !presentModalWindowByDefault {
+                    DispatchQueue.main.async {
+                        if !self.moveCharacterToNextLevel {
+                            var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -1 : 0)
+                            extremeKoef = ((self.characterPointStart.row - 1) / self.distanceBetweenLevels + 1) > self.countCompletedLevels + 2 ? -2 : extremeKoef
+                            extremeKoef = (((self.characterPointStart.row - 1) / self.distanceBetweenLevels) - 1) < 0 ? 0 : -1
                             
-                            var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -2 : 0)
-                            extremeKoef = (Model.sharedInstance.currentLevel - 1 - 1 < 0) ? 0 : -1
-                            
-                            
-                            UIView.animate(withDuration: 0.25 * Double(path.count), delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
-                                self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
+                            UIView.animate(withDuration: 0.25, animations: {
+                                self.scrollView.contentOffset.y = CGFloat((((self.characterPointStart.row - 1) / self.distanceBetweenLevels) + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
+                            }, completion: { (_) in
+                                
+                                var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -2 : 0)
+                                extremeKoef = (Model.sharedInstance.currentLevel - 1 - 1 < 0) ? 0 : -1
+                                
+                                
+                                UIView.animate(withDuration: 0.25 * Double(path.count), delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+                                    self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
+                                })
                             })
-                        })
-                    }
-                    else {
-                        let extremeKoef = (Model.sharedInstance.currentLevel >= self.countCompletedLevels + 2 || Model.sharedInstance.currentLevel >= self.countLevels) ? -1 : 0
-                        
-                        UIView.animate(withDuration: 0.25 * Double(path.count), delay: delay, options: UIViewAnimationOptions.curveLinear, animations: {
-                            self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel + extremeKoef - 1) * self.distanceBetweenLevels) * self.levelTileSize.height
-                        })
+                        }
+                        else {
+                            let extremeKoef = (Model.sharedInstance.currentLevel >= self.countCompletedLevels + 2 || Model.sharedInstance.currentLevel >= self.countLevels) ? -1 : 0
+                            
+                            UIView.animate(withDuration: 0.25 * Double(path.count), delay: delay, options: UIViewAnimationOptions.curveLinear, animations: {
+                                self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel + extremeKoef - 1) * self.distanceBetweenLevels) * self.levelTileSize.height
+                            })
+                        }
                     }
                 }
                 
@@ -236,26 +244,30 @@ class ChooseLevelViewController: UIViewController {
                     self.character.layer.removeAnimation(forKey: "movement")
                     self.character.stopAnimating()
                     self.scrollView.isScrollEnabled = true
-                    
+                    if !self.presentModalWindowByDefault {
                     self.modalWindowPresent()
+                    }
                     self.characterPointStart = to
                 })
                 
-                movement.beginTime = CACurrentMediaTime() + delay
-                movement.path = path.bezier.cgPath
-                movement.fillMode = kCAFillModeForwards
-                movement.isRemovedOnCompletion = false
-                movement.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-                movement.duration = 0.25 * Double(path.count)
-//                movement.rotationMode = kCAAnimationRotateAuto
-                
-                character.layer.add(movement, forKey: "movement")
-                
+                if !self.presentModalWindowByDefault {
+                    movement.beginTime = CACurrentMediaTime() + delay
+                    movement.path = path.bezier.cgPath
+                    movement.fillMode = kCAFillModeForwards
+                    movement.isRemovedOnCompletion = false
+                    movement.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
+                    movement.duration = 0.25 * Double(path.count)
+    //                movement.rotationMode = kCAAnimationRotateAuto
+                    
+                    character.layer.add(movement, forKey: "movement")
+                }
                 CATransaction.commit()
             }
         }
         else {
-            self.modalWindowPresent()
+            if !self.presentModalWindowByDefault {
+                self.modalWindowPresent()
+            }
             self.characterPointStart = to
         }
     }
@@ -265,7 +277,11 @@ class ChooseLevelViewController: UIViewController {
         // Добавляем бг, чтобы при клике на него закрыть всё модальное окно
         modalWindowBg = UIView(frame: scrollView.bounds)
         modalWindowBg.backgroundColor = UIColor.clear
-        modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+        
+        // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
+        if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
+            modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+        }
         modalWindowBg.isUserInteractionEnabled = true
         
         scrollView.addSubview(modalWindowBg)
@@ -287,7 +303,11 @@ class ChooseLevelViewController: UIViewController {
         modalWindow.layer.shadowOpacity = 0.35
         modalWindow.layer.shadowRadius = 10
         
-        modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+        // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
+        if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
+            modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+        }
+        
         modalWindowBg.addSubview(modalWindow)
         
         /// Название выбранного уровня
@@ -446,8 +466,6 @@ class ChooseLevelViewController: UIViewController {
         if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
             if Model.sharedInstance.gameScene != nil {
                 Model.sharedInstance.gameScene.cleanLevel()
-                Model.sharedInstance.gameScene.createLevel()
-                Model.sharedInstance.gameScene.startLevel()
             }
             
             if let storyboard = storyboard {

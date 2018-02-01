@@ -30,6 +30,9 @@ extension GameScene {
         /// Количество драгоценных камней, которые можно получить за уровень
         let gemsForLevelVal = dictionary["gems"] as? Int
         
+        /// Если вначале уровня необходимо показать обучение
+        let isLevelWithTutorialVal = dictionary["isLevelWithTutorial"] as? Bool
+        
         // Размер игрового поля
         boardSize = Point(column: boardSizeVal[0], row: boardSizeVal[1])
         
@@ -56,6 +59,10 @@ extension GameScene {
         
         if gemsForLevelVal != nil {
             gemsForLevel = gemsForLevelVal!
+        }
+        
+        if isLevelWithTutorialVal != nil {
+            isLevelWithTutorial = isLevelWithTutorialVal!
         }
         
         Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.text = String(moves)

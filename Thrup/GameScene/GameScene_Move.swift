@@ -2,18 +2,16 @@ import Foundation
 import SpriteKit
 
 extension GameScene {
-    
-    
     /// Проверяем не попал ли ГП на движущийся объект
     func checkMovingObjectPos(object: Object, characterMove: Int) {
-        if object.moves[object.move] == self.character.moves[characterMove] {
-            self.loseLevel()
+        if object.moves[object.move] == character.moves[characterMove] {
+            loseLevel()
         }
         
         if object.type == ObjectType.electric {
-            for point in self.getPointsAround(object.moves[object.move]) {
-                if point == self.character.moves[self.move] {
-                    self.loseLevel()
+            for point in getPointsAround(object.moves[object.move]) {
+                if point == character.moves[move] {
+                    loseLevel()
                 }
             }
         }

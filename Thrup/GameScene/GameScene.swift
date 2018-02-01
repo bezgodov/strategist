@@ -87,6 +87,9 @@ class GameScene: SKScene {
     /// Если ГП перемещается на мост (проигрышная позиция)
     var isNextCharacterMoveAtBridgeLose = false
     
+    /// Если вначале уровня необходимо показать обучение
+    var isLevelWithTutorial = false
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
@@ -99,6 +102,10 @@ class GameScene: SKScene {
         sceneSettings()
         
         createLevel()
+        
+        if isLevelWithTutorial && !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+            alphaBlackLayerPresent(alpha: 0.35)
+        }
     }
     
     /* Настройка сцены */
@@ -400,6 +407,14 @@ class GameScene: SKScene {
             if isNecessaryUseAllMoves {
                 Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.textColor = UIColor.red
             }
+            
+            // Т.к. в обучении на 1-ом уровне есть проигрыш, то флаг сбрасывается
+            if Model.sharedInstance.currentLevel != 1 {
+                // Проверяем пройден ли уровень, если пройден, то убирает обучение
+                if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) < 5 || Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                    isLevelWithTutorial = false
+                }
+            }
         }
     }
     
@@ -641,6 +656,7 @@ class GameScene: SKScene {
         Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
         
         Model.sharedInstance.currentLevel += 1
+        
         Model.sharedInstance.gameViewControllerConnect.goToNextLevel()
         
         cleanLevel()
@@ -656,7 +672,7 @@ class GameScene: SKScene {
         finish = Point(column: 0, row: 0)
         characterStart = Point(column: 0, row: 0)
         boardSize = Point(column: 0, row: 0)
-        character = Character()
+//        character = Character()
         checkChoosingPath = Point(column: 0, row: 0)
         checkChoosingPathArray.removeAll()
         addedLastPointByMove = false
@@ -803,15 +819,17 @@ class GameScene: SKScene {
             y: CGFloat(row) * TileHeight + TileHeight / 2)
     }
     
-    /// Функция конвертирует CGPoint в позицию на игровом поле, если клик был сделан по игровому полю
+    /// Функция конвертирует CGPoint в позицию на игровом поле
     func convertPoint(point: CGPoint) -> (success: Bool, point: Point) {
+        
+        var isSuccess = false
+        
         if point.x >= 0 && point.x < CGFloat(boardSize.column) * TileWidth &&
             point.y >= 0 && point.y < CGFloat(boardSize.row) * TileHeight {
-            return (true, Point(column: Int(point.x / TileWidth), row: Int(point.y / TileHeight)))
+            isSuccess = true
         }
-        else {
-            return (false, Point(column: 0, row: 0))
-        }
+        
+        return (isSuccess, Point(column: Int(point.x / TileWidth), row: Int(point.y / TileHeight)))
     }
     
     /// Функиця отображает траектории всех перемещающихся объектов
