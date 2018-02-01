@@ -1,55 +1,44 @@
 {
-    "finish": [0,1],
-    "character": [3,3],
+    "finish": [4,4],
+    "character": [0,0],
     "boardSize": [5,5],
-    "moves": 18,
+    "moves": 25,
     "movingObjects": [
-                {
-                "type": "bee",
-                "move": [
-                         [4,2],
-                         [4,1],
-                         [3,1],
-                         [2,1]]
-                },
-                {
-                "type": "bee",
-                "move": [
-                        [1,4],
-                        [2,4],
-                        [2,3],
-                        [2,2],
-                        [2,1],
-                        [2,0],
-                        [3,0]]
-                },
-                {
-                "type": "bee",
-                "move": [
-                       [4,4],
-                       [4,3],
-                       [4,2],
-                       [4,1]]
-                }],
+                      {
+                      "type": "bee",
+                      "move": [
+                               [2,1],
+                               [3,1],
+                               [4,1],
+                               [4,0],
+                               [3,0]]
+                      },
+                      {
+                      "type": "bee",
+                      "move": [
+                               [2,2],
+                               [2,3],
+                               [2,4],
+                               [3,4]]
+                      }],
     "staticObjects": [
-                {
-                "type": "spinner",
-                "point": [1,0]
-                },
-                {
-                "type": "spinner",
-                "point": [0,3]
-                },
-                {
-                "type": "alarmclock",
-                "point": [2,2]
-                },
-                {
-                "type": "star",
-                "point": [1,2]
-                },
-                {
-                "type": "star",
-                "point": [4,0]
-                }]
+                      {
+                      "type": "bomb",
+                      "point": [1,3],
+                      "movesToExplode": 5
+                      },
+                      {
+                      "type": "bomb",
+                      "point": [3,1],
+                      "movesToExplode": 3
+                      },
+                      {
+                      "type": "star",
+                      "point": [0,4]
+                      },
+                      {
+                      "type": "star",
+                      "point": [3,0]
+                      }]
 }
+

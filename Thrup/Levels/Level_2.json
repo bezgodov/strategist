@@ -2,33 +2,26 @@
     "finish": [3,3],
     "character": [0,0],
     "boardSize": [4,4],
-    "moves": 15,
-    "gems": 2,
+    "moves": 6,
+    "gems": 1,
+    "isLevelWithTutorial": true,
     "movingObjects": [{
                 "type": "bee",
                 "move": [
                          [1,2],
-                         [2,2],
-                         [3,2]]
+                         [0,2],
+                         [0,3]]
                 },
                 {
                 "type": "bee",
                 "move": [
+                         [2,1],
                          [1,1],
-                         [0,1],
-                         [0,2]]
+                         [1,2]]
                 }],
     "staticObjects": [
                 {
                 "type": "star",
-                "point": [0,3]
-                },
-                {
-                "type": "star",
-                "point": [2,0]
-                },
-                {
-                "type": "star",
-                "point": [3,2]
+                "point": [1,3]
                 }]
 }
