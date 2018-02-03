@@ -4,6 +4,14 @@
     "boardSize": [3,3],
     "moves": 5,
     "gems": 1,
+    "winningPath":
+    [
+        [0,0],
+        [1,0],
+        [2,0],
+        [2,1],
+        [2,2]
+    ],
     "isLevelWithTutorial": true,
     "movingObjects": [
                 {
