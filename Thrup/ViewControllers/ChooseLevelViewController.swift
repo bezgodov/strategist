@@ -59,17 +59,6 @@ class ChooseLevelViewController: UIViewController {
             Model.sharedInstance.currentLevel = 2
         }
         
-        // Если нет сохранённых уровней, то задаём кол-во жизней на каждый уровень равным 5
-        if Model.sharedInstance.emptySavedLevelsLives() == true {
-            // Инициализируем все данные для уровней
-            Model.sharedInstance.setCountCompletedLevels(0)
-            Model.sharedInstance.setShowTips(val: true)
-            for index in 1...Model.sharedInstance.countLevels {
-                Model.sharedInstance.setLevelLives(level: index, newValue: 5)
-                Model.sharedInstance.setCompletedLevel(index, value: false)
-            }
-        }
-        
         menuSettings()
         
         characterInitial()

@@ -26,6 +26,7 @@ class MenuViewController: UIViewController {
             UserDefaults.standard.removeObject(forKey: "countCompletedLevels")
             UserDefaults.standard.removeObject(forKey: "countGems")
             UserDefaults.standard.removeObject(forKey: "showTips")
+            UserDefaults.standard.removeObject(forKey: "levelsCompletedWithHelp")
             UserDefaults.standard.synchronize()
             
             exit(0)
@@ -68,12 +69,14 @@ class MenuViewController: UIViewController {
     }
     
     @IBAction func goBack(sender: UIButton) {
-        if let storyboard = storyboard {
-            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
-            chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
-            
-            navigationController?.pushViewController(chooseLevelViewController, animated: true)
-        }
+//        if let storyboard = storyboard {
+//            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
+//            chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
+//
+//            navigationController?.pushViewController(chooseLevelViewController, animated: true)
+//        }
+        navigationController?.popViewController(animated: true)
+        navigationController?.dismiss(animated: true, completion: nil)
     }
     
     override var prefersStatusBarHidden: Bool {

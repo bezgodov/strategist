@@ -90,6 +90,8 @@ class GameScene: SKScene {
     /// Если вначале уровня необходимо показать обучение
     var isLevelWithTutorial = false
     
+    var winningPath = [Point]()
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
@@ -105,6 +107,22 @@ class GameScene: SKScene {
         
         if isLevelWithTutorial && !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
             alphaBlackLayerPresent(alpha: 0.35)
+        }
+    }
+    
+    /// Функция выводит кнопку "Help" для покупки показа пути
+    func helpButtonInit() {
+        // Если выйгрышный путь задан, то выводим кнопку "Help"
+        if !winningPath.isEmpty {
+            // Кнопка, с помощью которой можно посмотреть правильное решение
+            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel = UIButton(frame: CGRect(x: 25, y: (self.view?.frame.height)! - 35 - 25 / 2, width: 75, height: 25))
+            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.setTitleColor(UIColor.blue, for: UIControlState.normal)
+            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.setTitle("HELP", for: UIControlState.normal)
+            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.addTarget(self, action: #selector(buyLevel), for: UIControlEvents.touchUpInside)
+            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.titleLabel?.font = UIFont(name: "Avenir Next", size: 20)
+            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.sizeToFit()
+            
+            self.view?.addSubview(Model.sharedInstance.gameViewControllerConnect.btnBuyLevel)
         }
     }
     
@@ -415,6 +433,14 @@ class GameScene: SKScene {
                     isLevelWithTutorial = false
                 }
             }
+            else {
+                if Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                    isLevelWithTutorial = false
+                }
+            }
+            
+            // Добавляем кнопку "Help"
+            helpButtonInit()
         }
     }
     
@@ -437,6 +463,7 @@ class GameScene: SKScene {
                     character.pathNode.removeFromParent()
                     Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = true
                     Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isEnabled = false
+                    Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.isEnabled = false
                 }
             }
         }
@@ -616,6 +643,7 @@ class GameScene: SKScene {
         Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isHidden = true
         Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.isHidden = true
         Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
+        Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.removeFromSuperview()
 
         if Model.sharedInstance.emptySavedLevelsLives() == false {
             if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
@@ -660,7 +688,6 @@ class GameScene: SKScene {
         Model.sharedInstance.gameViewControllerConnect.goToNextLevel()
         
         cleanLevel()
-        createLevel()
     }
     
     /// Очистка уровня
@@ -699,6 +726,7 @@ class GameScene: SKScene {
 //        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
         Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isEnabled = true
         heartsStackView.removeFromSuperview()
+        Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.removeFromSuperview()
         
         self.removeAllChildren()
         self.removeAllActions()
@@ -849,6 +877,60 @@ class GameScene: SKScene {
                 object.path(hide: true)
             }
             
+        }
+    }
+    
+    func showWinningPath() {
+        
+        // Если "покупаем" уровень (показать правильный путь)
+        if !Model.sharedInstance.isLevelsCompletedWithHelp(Model.sharedInstance.currentLevel) {
+            // Устанавливаем в массив, что данный уровень пройден с помощью кнопки "Help"
+            Model.sharedInstance.setLevelsCompletedWithHelp(Model.sharedInstance.currentLevel)
+            // Отнимаем 25 драг. камней, ибо мы покупаем
+            Model.sharedInstance.setCountGems(amountGems: -25)
+        }
+        
+        updateMoves(character.moves.count - 1)
+        character.moves.removeAll()
+        
+        updateMoves(-winningPath.count + 1)
+        character.moves = winningPath
+        character.path()
+        
+    }
+    
+    /// Функция, которая показывает верное решение
+    @objc func buyLevel(_ sender: UIButton) {
+        if Model.sharedInstance.isLevelsCompletedWithHelp(Model.sharedInstance.currentLevel) {
+            showWinningPath()
+        }
+        else {
+            if Model.sharedInstance.getCountGems() >= 25 {
+                let alert = UIAlertController(title: "Buying winning path", message: "Buying winning path is worth 25 GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+                
+                let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+                let actionOk = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: {_ in
+                    self.showWinningPath()
+                })
+                
+                alert.addAction(actionOk)
+                alert.addAction(actionCancel)
+                
+                Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
+            }
+            else {
+                let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy winning path. You need 25 GEMS, but you have \(Model.sharedInstance.getCountGems()) GEMS. Touch 'Ok' to buy some GEMS", preferredStyle: UIAlertControllerStyle.alert)
+                
+                let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+                let actionOk = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: {_ in
+                    Model.sharedInstance.gameViewControllerConnect.presentMenu()
+                })
+                
+                alert.addAction(actionOk)
+                alert.addAction(actionCancel)
+                
+                Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
+            }
         }
     }
     

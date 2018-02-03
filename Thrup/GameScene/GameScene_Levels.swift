@@ -33,6 +33,9 @@ extension GameScene {
         /// Если вначале уровня необходимо показать обучение
         let isLevelWithTutorialVal = dictionary["isLevelWithTutorial"] as? Bool
         
+        /// Путь, с помощью которого можно пройти уровень
+        let winningPathVal = dictionary["winningPath"] as? [[Int]]
+        
         // Размер игрового поля
         boardSize = Point(column: boardSizeVal[0], row: boardSizeVal[1])
         
@@ -63,6 +66,20 @@ extension GameScene {
         
         if isLevelWithTutorialVal != nil {
             isLevelWithTutorial = isLevelWithTutorialVal!
+        }
+        
+        if winningPathVal != nil {
+            // Если уже был куплен выйгрышный путь, то сначала очистим его
+            if !winningPath.isEmpty {
+                winningPath.removeAll()
+            }
+            
+            winningPath.append(characterStart)
+            
+            for pointsForPoint in winningPathVal! {
+                let point = Point(column: pointsForPoint[0], row: pointsForPoint[1])
+                winningPath.append(point)
+            }
         }
         
         Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.text = String(moves)

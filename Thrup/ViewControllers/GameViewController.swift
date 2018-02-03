@@ -10,6 +10,8 @@ class GameViewController: UIViewController {
     @IBOutlet weak var showMoves: UIButton!
     @IBOutlet weak var movesRemainLabel: UILabel!
     
+    var btnBuyLevel: UIButton!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,6 +108,13 @@ class GameViewController: UIViewController {
             chooseLevelViewController.moveCharacterToNextLevel = moveCharacterFlag
             
             navigationController?.pushViewController(chooseLevelViewController, animated: true)
+        }
+    }
+    
+    func presentMenu() {
+        if let storyboard = storyboard {
+            let menuViewController = storyboard.instantiateViewController(withIdentifier: "MenuViewController") as! MenuViewController
+            navigationController?.pushViewController(menuViewController, animated: true)
         }
     }
 }

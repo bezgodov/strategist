@@ -3,7 +3,7 @@ import SpriteKit
 
 class Model {
     init() {
-        /// Получаем значения жизней на каждом уровне
+        // Получаем значения жизней на каждом уровне
         if let countLivesArr = UserDefaults.standard.array(forKey: "countLives") as? [Int] {
             countLives = countLivesArr
         }
@@ -11,12 +11,27 @@ class Model {
             countLives = [Int]()
         }
         
-        /// Получаем коказатели пройденности ан каждом уровне
+        // Получаем коказатели пройденности ан каждом уровне
         if let completedLevelsArr = UserDefaults.standard.array(forKey: "completedLevels") as? [Bool] {
             completedLevels = completedLevelsArr
         }
         else {
             completedLevels = [Bool]()
+        }
+        
+        // Получаем уровни, которые были пройдены с помощью кнопки "Help"
+        if let levelsCompletedWithHelpArr = UserDefaults.standard.array(forKey: "levelsCompletedWithHelp") as? [Int] {
+            levelsCompletedWithHelp = levelsCompletedWithHelpArr
+        }
+        else {
+            levelsCompletedWithHelp = [Int]()
+        }
+        
+        // Если нет сохранённых уровней, то задаём кол-во пройденных уровней равным 0 и показываем подсказки по умолчанию
+        if emptySavedLevelsLives() == true {
+            // Инициализируем все данные для уровней
+            setCountCompletedLevels(0)
+            setShowTips(val: true)
         }
         
         // Если были добавлены новые уровни (т.е. выделенное кол-во элементов в массиве для пройденных уровней не соответствует текущему кол-ву уровней)
@@ -53,6 +68,9 @@ class Model {
     /// Количество жизней на каждом уровне
     private var countLives: [Int]!
     
+    /// Массив, который содержит номера уровней, которые были пройдены с помощью кнопки "Help"
+    private var levelsCompletedWithHelp: [Int]!
+    
     /// Функция, которая проверяет наличие сохранённых данных
     func emptySavedLevelsLives() -> Bool {
         return countLives.isEmpty
@@ -66,9 +84,11 @@ class Model {
     /// Функция, которая изменяет значение количества жизней на уровне
     func setLevelLives(level: Int, newValue: Int = -1) {
         if level - 1 < countLives.count {
-            countLives.remove(at: level - 1)
+            countLives[level - 1] = newValue
         }
-        countLives.insert(newValue, at: level - 1)
+        else {
+            countLives.append(newValue)
+        }
         UserDefaults.standard.set(countLives, forKey: "countLives")
     }
     
@@ -91,9 +111,11 @@ class Model {
     /// Функция задаёт значение для выбранного уровня: пройден или нет
     func setCompletedLevel(_ level: Int, value: Bool = true) {
         if level - 1 < completedLevels.count {
-            completedLevels.remove(at: level - 1)
+            completedLevels[level - 1] = value
         }
-        completedLevels.insert(value, at: level - 1)
+        else {
+            completedLevels.append(value)
+        }
         UserDefaults.standard.set(completedLevels, forKey: "completedLevels")
     }
     
@@ -120,5 +142,18 @@ class Model {
     
     func getShowTips() -> Bool {
         return showTips
+    }
+    
+    /// Запомнить уровень, который был пройден с помощью кнопки "Help"
+    func setLevelsCompletedWithHelp(_ level: Int) {
+        if !isLevelsCompletedWithHelp(level) {
+            levelsCompletedWithHelp.append(level)
+            UserDefaults.standard.set(levelsCompletedWithHelp, forKey: "levelsCompletedWithHelp")
+        }
+    }
+    
+    /// Если уровень был пройден с помощью кнопки "Help"
+    func isLevelsCompletedWithHelp(_ level: Int) -> Bool {
+        return levelsCompletedWithHelp.contains(level)
     }
 }
