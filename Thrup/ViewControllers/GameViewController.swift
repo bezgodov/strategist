@@ -7,11 +7,9 @@ class GameViewController: UIViewController {
     @IBOutlet weak var stackViewLoseLevel: UIStackView!
     @IBOutlet weak var menuButtonTopRight: UIButton!
     @IBOutlet weak var startLevel: UIButton!
-    @IBOutlet weak var showMoves: UIButton!
     @IBOutlet weak var movesRemainLabel: UILabel!
-    
-    var btnBuyLevel: UIButton!
-    
+    @IBOutlet weak var buyLevelButton: UIButton!
+    @IBOutlet weak var viewHearts: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,6 +65,9 @@ class GameViewController: UIViewController {
             // Скрываем подсказку об объекте, если она открыта
             Model.sharedInstance.gameScene.removeObjectInfoView(toAlpha: 0)
         }
+        else {
+            Model.sharedInstance.gameScene.shakeView(movesRemainLabel, repeatCount: 2, amplitude: 4.25)
+        }
     }
     
     /// При нажатии на "Restart" после проигранного раунда
@@ -82,6 +83,10 @@ class GameViewController: UIViewController {
         goToMenuCurrentLevel()
     }
     
+    @IBAction func buyLevel(sender: UIButton) {
+        Model.sharedInstance.gameScene.buyLevel()
+    }
+    
     func goToMenuCurrentLevel(presentModalWindow: Bool = false) {
         if let storyboard = storyboard {
             let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
@@ -95,11 +100,6 @@ class GameViewController: UIViewController {
         }
         
         Model.sharedInstance.gameScene.cleanLevel()
-    }
-    
-    /// При нажатии на "Show moves" во время игрового цикла
-    @IBAction func showMoves(sender: UIButton) {
-        Model.sharedInstance.gameScene.showMoves()
     }
     
     func goToNextLevel(moveCharacterFlag: Bool = true) {

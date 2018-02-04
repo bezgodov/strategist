@@ -1,5 +1,6 @@
 import UIKit
 import SpriteKit
+import StoreKit
 
 class MenuViewController: UIViewController {
     
@@ -69,18 +70,29 @@ class MenuViewController: UIViewController {
     }
     
     @IBAction func goBack(sender: UIButton) {
-//        if let storyboard = storyboard {
-//            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
-//            chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
-//
-//            navigationController?.pushViewController(chooseLevelViewController, animated: true)
-//        }
-        navigationController?.popViewController(animated: true)
-        navigationController?.dismiss(animated: true, completion: nil)
+        if let storyboard = storyboard {
+            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
+            chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
+
+            navigationController?.pushViewController(chooseLevelViewController, animated: true)
+        }
+//        navigationController?.popViewController(animated: true)
+//        navigationController?.dismiss(animated: true, completion: nil)
+    }
+    
+    /// Функция, которая предназначена для оценки игры
+    @IBAction func rateApp(sender: UIButton) {
+        if #available(iOS 10.3,*) {
+            SKStoreReviewController.requestReview()
+        }
+        else {
+            let appId = 123
+            let url = URL(string: "itms-apps:itunes.apple.com/us/app/apple-store/id\(appId)?mt=8&action=write-review")!
+            UIApplication.shared.openURL(url)
+        }
     }
     
     override var prefersStatusBarHidden: Bool {
         return true
     }
-    
 }

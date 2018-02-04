@@ -55,7 +55,7 @@ extension GameScene {
                         2: getRectFromPoint(point: Point(column: 1, row: 1)),
                         3: getRectFromPoint(point: Point(column: 2, row: 1)),
                         4: getRectFromPoint(point: Point(column: 2, row: 2)),
-                        5: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.superview!.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.superview!.frame.origin.y, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7),
+                        5: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7),
                         6: CGRect(x: Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.frame.origin.y + 15, width: Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.frame.size.height / 2 - 30),
                         7: getRectFromPoint(point: Point(column: 2, row: 0)),
                         9: getRectFromPoint(point: Point(column: 0, row: 0)),
@@ -63,7 +63,7 @@ extension GameScene {
                         11: getRectFromPoint(point: Point(column: 2, row: 0)),
                         12: getRectFromPoint(point: Point(column: 2, row: 1)),
                         13: getRectFromPoint(point: Point(column: 2, row: 2)),
-                        14: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.superview!.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.superview!.frame.origin.y, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
+                        14: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
                     ],
                 2:
                     [
@@ -208,6 +208,7 @@ extension GameScene {
             12: Point(column: 2, row: 1),
             13: Point(column: 2, row: 2)]
         
+        updateMoves(-1)
         self.character.moves.append(tapPoints[slide]!)
         self.character.path()
     }

@@ -105,32 +105,14 @@ class GameScene: SKScene {
         
         createLevel()
         
+        // Если началось обучение
         if isLevelWithTutorial && !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
             alphaBlackLayerPresent(alpha: 0.35)
         }
     }
     
-    /// Функция выводит кнопку "Help" для покупки показа пути
-    func helpButtonInit() {
-        // Если выйгрышный путь задан, то выводим кнопку "Help"
-        if !winningPath.isEmpty {
-            // Кнопка, с помощью которой можно посмотреть правильное решение
-            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel = UIButton(frame: CGRect(x: 25, y: (self.view?.frame.height)! - 35 - 25 / 2, width: 75, height: 25))
-            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.setTitleColor(UIColor.blue, for: UIControlState.normal)
-            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.setTitle("HELP", for: UIControlState.normal)
-            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.addTarget(self, action: #selector(buyLevel), for: UIControlEvents.touchUpInside)
-            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.titleLabel?.font = UIFont(name: "Avenir Next", size: 20)
-            Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.sizeToFit()
-            
-            self.view?.addSubview(Model.sharedInstance.gameViewControllerConnect.btnBuyLevel)
-        }
-    }
-    
     /* Настройка сцены */
     func sceneSettings() {
-        // Функция показа всех ходов пока не будет работать
-        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
-        
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         longPressRecognizer.minimumPressDuration = 0.65
         longPressRecognizer.allowableMovement = 15
@@ -264,6 +246,7 @@ class GameScene: SKScene {
         
             /// Флаг, чтобы Spinner крутились в разные стороны
             var lastDirectionSpinnerLeft: CGFloat = 1
+            var lastAngleMovesToExplodeLabel: CGFloat = arc4random_uniform(2) == 1 ? 0 : -60
             // Инициализируем статичные объекты
             for object in staticObjects {
                 object.position = pointFor(column: object.point.column, row: object.point.row)
@@ -273,14 +256,26 @@ class GameScene: SKScene {
                 if object.type == ObjectType.bomb {
                     let movesToExplodeLabel = SKLabelNode(text: String(object.movesToExplode))
                     movesToExplodeLabel.name = "movesToExplode"
-                    movesToExplodeLabel.zPosition = 7
-                    movesToExplodeLabel.color = UIColor.green
-                    movesToExplodeLabel.fontColor = UIColor.green
+                    movesToExplodeLabel.zPosition = 1
+                    movesToExplodeLabel.fontColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1)
                     movesToExplodeLabel.fontSize = 65
-                    movesToExplodeLabel.fontName = "Helvetica Neue"
+                    movesToExplodeLabel.fontName = "AvenirNext-Bold"
                     movesToExplodeLabel.horizontalAlignmentMode = .center
                     movesToExplodeLabel.verticalAlignmentMode = .center
+                    movesToExplodeLabel.position.y -= 5
+                    movesToExplodeLabel.position.x += 5
+                    
+                    if lastAngleMovesToExplodeLabel == 0 {
+                        movesToExplodeLabel.zRotation = CGFloat(Double(35) * Double.pi / 180)
+                    }
+                    else {
+                        movesToExplodeLabel.zRotation += CGFloat(Double(25) * Double.pi / 180)
+                    }
+                    
+                    object.zRotation = CGFloat(Double(lastAngleMovesToExplodeLabel) * Double.pi / 180)
                     object.addChild(movesToExplodeLabel)
+                    
+                    lastAngleMovesToExplodeLabel = (lastAngleMovesToExplodeLabel + 60) * -1
                 }
                 
                 if object.type == ObjectType.spinner {
@@ -418,12 +413,12 @@ class GameScene: SKScene {
             drawHearts()
         
             Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel?.isHidden = true
-            Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = false
+            Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
             Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.isHidden = false
             
             // Если уровень необходимо пройти за определённое количество ходов, то выделяет кол-во ходов красным цветом
             if isNecessaryUseAllMoves {
-                Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.textColor = UIColor.red
+                Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.textColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1)
             }
             
             // Т.к. в обучении на 1-ом уровне есть проигрыш, то флаг сбрасывается
@@ -438,9 +433,6 @@ class GameScene: SKScene {
                     isLevelWithTutorial = false
                 }
             }
-            
-            // Добавляем кнопку "Help"
-            helpButtonInit()
         }
     }
     
@@ -461,9 +453,12 @@ class GameScene: SKScene {
                     }
                     
                     character.pathNode.removeFromParent()
-                    Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = true
+                    Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = false
+                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isEnabled = false
-                    Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.isEnabled = false
+                }
+                else {
+                    shakeView(self.view!)
                 }
             }
         }
@@ -608,30 +603,31 @@ class GameScene: SKScene {
             
             if livesOnLevel > 0 {
                 var heartTexture = SKTexture(imageNamed: "Heart")
-                let heartSize = CGSize(width: heartTexture.size().width / 1.5, height: heartTexture.size().height / 1.5)
-                heartsStackView = UIStackView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.bounds.maxX)! - CGFloat(heartSize.width + 3) * CGFloat(allLivesPerLevel) - 10, y: (Model.sharedInstance.gameScene.view?.bounds.maxY)! - 50 + 5, width: heartSize.width * CGFloat(livesOnLevel), height: heartSize.height))
+                let heartSize = CGSize(width: heartTexture.size().width / 1.9, height: heartTexture.size().height / 1.9)
+                let eachHeartXpos = (CGFloat(heartSize.width + 1) * CGFloat(allLivesPerLevel)) / 2
+                let xKoefForHeartStack = eachHeartXpos - CGFloat((allLivesPerLevel - 1) / 2)
+                heartsStackView = UIStackView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.bounds.midX)! - xKoefForHeartStack, y: 13 + 35 / 2 - heartSize.height / 2, width: heartSize.width * CGFloat(livesOnLevel), height: heartSize.height))
                 
                 for index in 0...allLivesPerLevel - 1 {
                     heartTexture = allLivesPerLevel - 1 - index < livesOnLevel ? SKTexture(imageNamed: "Heart") : SKTexture(imageNamed: "Heart_empty")
-                    
-                    let button = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 3) * CGFloat(index)), y: 0, width: heartTexture.size().width / 1.5, height: heartTexture.size().height / 1.5))
-                    button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
-                    button.isUserInteractionEnabled = false
+                    let heartImageView = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 1) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
+                    heartImageView.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
+                    heartImageView.isUserInteractionEnabled = false
     //                button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-                    button.tag = index + 1
+                    heartImageView.tag = index + 1
                     
                     if allLivesPerLevel - livesOnLevel == index {
-                        lastHeartButton = button
+                        lastHeartButton = heartImageView
                         
                         // Добавляем пустое сердце под последнее непустое сердце (если проигрывает, то скрываем непустое и убедт анимация)
-                        let losesButton = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 3) * CGFloat(index)), y: 0, width: heartTexture.size().width / 1.5, height: heartTexture.size().height / 1.5))
+                        let losesButton = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 1) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
                         losesButton.setBackgroundImage(UIImage(named: "Heart_empty"), for: UIControlState.normal)
                         heartsStackView.addSubview(losesButton)
                     }
                     
-                    heartsStackView.addSubview(button)
+                    heartsStackView.addSubview(heartImageView)
                 }
-                Model.sharedInstance.gameScene.view?.addSubview(heartsStackView)
+                Model.sharedInstance.gameViewControllerConnect.viewHearts.addSubview(heartsStackView)
             }
         }
     }
@@ -640,14 +636,13 @@ class GameScene: SKScene {
     func loseLevel() {
         Model.sharedInstance.gameViewControllerConnect.backgroundBlurEffect.isHidden = false
         Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.isHidden = false
-        Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isHidden = true
-        Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.isHidden = true
-        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = true
-        Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.removeFromSuperview()
+        Model.sharedInstance.gameViewControllerConnect.viewHearts.isHidden = true
 
-        if Model.sharedInstance.emptySavedLevelsLives() == false {
-            if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-                Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
+        if Model.sharedInstance.currentLevel != 1 {
+            if Model.sharedInstance.emptySavedLevelsLives() == false {
+                if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                    Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
+                }
             }
         }
         
@@ -723,10 +718,11 @@ class GameScene: SKScene {
         isNextCharacterMoveAtBridgeLose = false
         isNecessaryUseAllMoves = false
         
-//        Model.sharedInstance.gameViewControllerConnect.showMoves.isHidden = false
+        Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
+        Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true
         Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isEnabled = true
+        Model.sharedInstance.gameViewControllerConnect.viewHearts.isHidden = false
         heartsStackView.removeFromSuperview()
-        Model.sharedInstance.gameViewControllerConnect.btnBuyLevel.removeFromSuperview()
         
         self.removeAllChildren()
         self.removeAllActions()
@@ -736,6 +732,7 @@ class GameScene: SKScene {
     func restartLevel() {
         Model.sharedInstance.gameViewControllerConnect.backgroundBlurEffect.isHidden = true
         Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isHidden = false
+        
         
         cleanLevel()
         createLevel()
@@ -860,26 +857,6 @@ class GameScene: SKScene {
         return (isSuccess, Point(column: Int(point.x / TileWidth), row: Int(point.y / TileHeight)))
     }
     
-    /// Функиця отображает траектории всех перемещающихся объектов
-    func showMoves() {
-        if Model.sharedInstance.gameViewControllerConnect.showMoves.titleLabel?.text == "SHOW MOVES" {
-            Model.sharedInstance.gameViewControllerConnect.showMoves.setTitle("HIDE MOVES", for: UIControlState.normal)
-            
-            for object in movingObjects {
-                object.path()
-            }
-            
-        }
-        else {
-            Model.sharedInstance.gameViewControllerConnect.showMoves.setTitle("SHOW MOVES", for: UIControlState.normal)
-            
-            for object in movingObjects {
-                object.path(hide: true)
-            }
-            
-        }
-    }
-    
     func showWinningPath() {
         
         // Если "покупаем" уровень (показать правильный путь)
@@ -899,8 +876,7 @@ class GameScene: SKScene {
         
     }
     
-    /// Функция, которая показывает верное решение
-    @objc func buyLevel(_ sender: UIButton) {
+    func buyLevel() {
         if Model.sharedInstance.isLevelsCompletedWithHelp(Model.sharedInstance.currentLevel) {
             showWinningPath()
         }
@@ -909,7 +885,7 @@ class GameScene: SKScene {
                 let alert = UIAlertController(title: "Buying winning path", message: "Buying winning path is worth 25 GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
                 
                 let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-                let actionOk = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: {_ in
+                let actionOk = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {_ in
                     self.showWinningPath()
                 })
                 
@@ -919,7 +895,7 @@ class GameScene: SKScene {
                 Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
             }
             else {
-                let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy winning path. You need 25 GEMS, but you have \(Model.sharedInstance.getCountGems()) GEMS. Touch 'Ok' to buy some GEMS", preferredStyle: UIAlertControllerStyle.alert)
+                let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to look at winning path. You need 25 GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS. Touch 'Ok' to buy some GEMS", preferredStyle: UIAlertControllerStyle.alert)
                 
                 let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
                 let actionOk = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: {_ in
@@ -932,6 +908,17 @@ class GameScene: SKScene {
                 Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
             }
         }
+    }
+    
+    func shakeView(_ viewToShake: UIView, repeatCount: Float = 3, amplitude: CGFloat = 5) {
+        let animation = CABasicAnimation(keyPath: "position")
+        animation.duration = 0.07
+        animation.repeatCount = repeatCount
+        animation.autoreverses = true
+        animation.fromValue = NSValue(cgPoint: CGPoint(x: viewToShake.center.x - amplitude, y: viewToShake.center.y))
+        animation.toValue = NSValue(cgPoint: CGPoint(x: viewToShake.center.x + amplitude, y: viewToShake.center.y))
+        
+        viewToShake.layer.add(animation, forKey: "position")
     }
     
     override func update(_ currentTime: TimeInterval) {

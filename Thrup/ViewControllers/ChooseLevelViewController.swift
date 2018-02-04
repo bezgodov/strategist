@@ -63,15 +63,17 @@ class ChooseLevelViewController: UIViewController {
         
         characterInitial()
         
-        if Model.sharedInstance.currentLevel - 1 < countLevels {
-            // Если перешли в меню после прохождения уровня, то запускаем анимацию перехода на след. уровень
-            if moveCharacterToNextLevel {
-                moveToPoint(from: levelButtonsPositions[Model.sharedInstance.currentLevel - 1 - 1], to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
+        if !presentModalWindowByDefault {
+            if Model.sharedInstance.currentLevel - 1 < countLevels {
+                // Если перешли в меню после прохождения уровня, то запускаем анимацию перехода на след. уровень
+                if moveCharacterToNextLevel {
+                    moveToPoint(from: levelButtonsPositions[Model.sharedInstance.currentLevel - 1 - 1], to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
+                }
             }
-        }
-        
-        if countCompletedLevels == 0 {
-            moveToPoint(from: Point(column: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].column, row: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].row - distanceBetweenLevels), to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
+            
+            if countCompletedLevels == 0 {
+                moveToPoint(from: Point(column: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].column, row: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].row - distanceBetweenLevels), to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
+            }
         }
     }
     
@@ -197,34 +199,32 @@ class ChooseLevelViewController: UIViewController {
                 character.startAnimating()
                 
                 CATransaction.begin()
-                
-                if !presentModalWindowByDefault {
-                    DispatchQueue.main.async {
-                        if !self.moveCharacterToNextLevel {
-                            var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -1 : 0)
-                            extremeKoef = ((self.characterPointStart.row - 1) / self.distanceBetweenLevels + 1) > self.countCompletedLevels + 2 ? -2 : extremeKoef
-                            extremeKoef = (((self.characterPointStart.row - 1) / self.distanceBetweenLevels) - 1) < 0 ? 0 : -1
+            
+                DispatchQueue.main.async {
+                    if !self.moveCharacterToNextLevel {
+                        var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -1 : 0)
+                        extremeKoef = ((self.characterPointStart.row - 1) / self.distanceBetweenLevels + 1) > self.countCompletedLevels + 2 ? -2 : extremeKoef
+                        extremeKoef = (((self.characterPointStart.row - 1) / self.distanceBetweenLevels) - 1) < 0 ? 0 : -1
+                        
+                        UIView.animate(withDuration: 0.25, animations: {
+                            self.scrollView.contentOffset.y = CGFloat((((self.characterPointStart.row - 1) / self.distanceBetweenLevels) + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
+                        }, completion: { (_) in
                             
-                            UIView.animate(withDuration: 0.25, animations: {
-                                self.scrollView.contentOffset.y = CGFloat((((self.characterPointStart.row - 1) / self.distanceBetweenLevels) + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
-                            }, completion: { (_) in
-                                
-                                var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -2 : 0)
-                                extremeKoef = (Model.sharedInstance.currentLevel - 1 - 1 < 0) ? 0 : -1
-                                
-                                
-                                UIView.animate(withDuration: 0.25 * Double(path.count), delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
-                                    self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
-                                })
-                            })
-                        }
-                        else {
-                            let extremeKoef = (Model.sharedInstance.currentLevel >= self.countCompletedLevels + 2 || Model.sharedInstance.currentLevel >= self.countLevels) ? -1 : 0
+                            var extremeKoef = (Model.sharedInstance.currentLevel - 1 == self.countCompletedLevels + 2 ? -2 : 0)
+                            extremeKoef = (Model.sharedInstance.currentLevel - 1 - 1 < 0) ? 0 : -1
                             
-                            UIView.animate(withDuration: 0.25 * Double(path.count), delay: delay, options: UIViewAnimationOptions.curveLinear, animations: {
-                                self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel + extremeKoef - 1) * self.distanceBetweenLevels) * self.levelTileSize.height
+                            
+                            UIView.animate(withDuration: 0.25 * Double(path.count), delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+                                self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel - 1 + extremeKoef) * self.distanceBetweenLevels) * self.levelTileSize.height
                             })
-                        }
+                        })
+                    }
+                    else {
+                        let extremeKoef = (Model.sharedInstance.currentLevel >= self.countCompletedLevels + 2 || Model.sharedInstance.currentLevel >= self.countLevels) ? -1 : 0
+                        
+                        UIView.animate(withDuration: 0.25 * Double(path.count), delay: delay, options: UIViewAnimationOptions.curveLinear, animations: {
+                            self.scrollView.contentOffset.y = CGFloat((Model.sharedInstance.currentLevel + extremeKoef - 1) * self.distanceBetweenLevels) * self.levelTileSize.height
+                        })
                     }
                 }
                 
@@ -233,30 +233,25 @@ class ChooseLevelViewController: UIViewController {
                     self.character.layer.removeAnimation(forKey: "movement")
                     self.character.stopAnimating()
                     self.scrollView.isScrollEnabled = true
-                    if !self.presentModalWindowByDefault {
+                    
                     self.modalWindowPresent()
-                    }
                     self.characterPointStart = to
                 })
                 
-                if !self.presentModalWindowByDefault {
-                    movement.beginTime = CACurrentMediaTime() + delay
-                    movement.path = path.bezier.cgPath
-                    movement.fillMode = kCAFillModeForwards
-                    movement.isRemovedOnCompletion = false
-                    movement.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-                    movement.duration = 0.25 * Double(path.count)
-    //                movement.rotationMode = kCAAnimationRotateAuto
-                    
-                    character.layer.add(movement, forKey: "movement")
-                }
+                movement.beginTime = CACurrentMediaTime() + delay
+                movement.path = path.bezier.cgPath
+                movement.fillMode = kCAFillModeForwards
+                movement.isRemovedOnCompletion = false
+                movement.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
+                movement.duration = 0.25 * Double(path.count)
+//                movement.rotationMode = kCAAnimationRotateAuto
+                
+                character.layer.add(movement, forKey: "movement")
                 CATransaction.commit()
             }
         }
         else {
-            if !self.presentModalWindowByDefault {
-                self.modalWindowPresent()
-            }
+            self.modalWindowPresent()
             self.characterPointStart = to
         }
     }

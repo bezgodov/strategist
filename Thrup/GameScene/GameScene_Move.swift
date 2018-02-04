@@ -19,14 +19,14 @@ extension GameScene {
     
     /// Проверяем не попал ли ГП на статичный объект
     func checkStatisObjectPos(object: StaticObject) {
-        var characterMove = self.move
-        if self.move >= self.character.moves.count {
-            characterMove = self.character.moves.count - 1
+        var characterMove = move
+        if move >= character.moves.count {
+            characterMove = character.moves.count - 1
         }
         
         if object.point == self.character.moves[characterMove] {
             if object.type != ObjectType.stopper && object.type != ObjectType.alarmclock && object.type != ObjectType.bridge && object.type != ObjectType.star && object.type != ObjectType.rotator {
-                self.loseLevel()
+                loseLevel()
             }
         }
         
@@ -38,39 +38,41 @@ extension GameScene {
             movesToExplodeLable?.text = String(object.movesToExplode)
             
             if object.movesToExplode == 0 {
-                object.removeChildren(in: [object.childNode(withName: "movesToExplode")!])
-                let points = self.getPointsAround(object.point)
+                object.removeFromParent()
+            
+                let bombFragment = SKSpriteNode(imageNamed: "Bomb_explosion")
+                let size = CGSize(width: bombFragment.size.width * 1.35, height: bombFragment.size.height * 1.35)
+                bombFragment.size = CGSize(width: 0, height: 0)
+                bombFragment.position = object.position
+                bombFragment.zPosition = 6
+                objectsLayer.addChild(bombFragment)
+                
+                bombFragment.run(SKAction.sequence([SKAction.resize(toWidth: size.width, height: size.height, duration: 0.15), SKAction.wait(forDuration: 0.05), SKAction.fadeAlpha(to: 0, duration: 0.25), SKAction.removeFromParent()]))
+                
+                let points = getPointsAround(object.point)
                 
                 for point in points {
-                    
-                    let bombFragment = SKSpriteNode(imageNamed: "Bomb")
-                    bombFragment.position = self.pointFor(column: point.column, row: point.row)
-                    bombFragment.zPosition = 6
-                    self.objectsLayer.addChild(bombFragment)
-                    bombFragment.run(SKAction.sequence([SKAction.wait(forDuration: 0.5), SKAction.removeFromParent()]))
-                    
-                    if point == self.character.moves[self.move] {
-                        self.loseLevel()
+                    if point == character.moves[move] {
+                        loseLevel()
                     }
                 }
                 
-                self.staticObjects.remove(object)
-                object.run(SKAction.sequence([SKAction.wait(forDuration: 0.5), SKAction.removeFromParent()]))
+                staticObjects.remove(object)
             }
         }
         
-        if object.type == ObjectType.stopper && self.character.moves[self.move] == object.point && object.active == true {
-            self.character.moves.insert(self.character.moves[self.move], at: self.move)
+        if object.type == ObjectType.stopper && character.moves[move] == object.point && object.active == true {
+            character.moves.insert(character.moves[move], at: move)
             
             object.active = false
         }
         
-        if object.type == ObjectType.bridge && self.character.moves[self.move] == object.point {
-            let characterDirection = self.getObjectDirection(from: self.character.moves[self.move - 1], to: self.character.moves[self.move])
+        if object.type == ObjectType.bridge && character.moves[move] == object.point {
+            let characterDirection = getObjectDirection(from: character.moves[move - 1], to: character.moves[move])
             
             // Если направления не совпадают, то проигрыш
-            if !self.checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.right, RotationDirection.left]) && !self.checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.top, RotationDirection.bottom]) {
-                self.loseLevel()
+            if !checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.right, RotationDirection.left]) && !checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.top, RotationDirection.bottom]) {
+                loseLevel()
             }
         }
         
@@ -87,21 +89,21 @@ extension GameScene {
                     let newPointForSpike = Point(column: object.point.column + offsetFromParent.column, row: object.point.row + offsetFromParent.row)
                     
                     // Если ГП находится хотя бы на одном из шипов, то уровень проигран
-                    if newPointForSpike == self.character.moves[self.move] {
-                        self.loseLevel()
+                    if newPointForSpike == character.moves[move] {
+                        loseLevel()
                     }
                 }
             }
         }
         
-        if object.type == ObjectType.star && self.character.moves[self.move] == object.point {
-            self.stars -= 1
+        if object.type == ObjectType.star && character.moves[move] == object.point {
+            stars -= 1
             object.removeFromParent()
         }
         
         /*
-         if object.type == ObjectType.rotator && self.character.moves[self.move] == object.point {
-         self.setExtraPath(direction: object.rotate, from: self.character.moves[self.move], to: self.character.moves[self.move + 1])
+         if object.type == ObjectType.rotator && character.moves[move] == object.point {
+         setExtraPath(direction: object.rotate, from: character.moves[move], to: character.moves[move + 1])
          }
          */
     }
@@ -144,7 +146,7 @@ extension GameScene {
             
             object.setPoint()
             
-            let movingObjectDirection = self.getObjectDirection(from: previousObjectPoint, to: object.getPoint())
+            let movingObjectDirection = getObjectDirection(from: previousObjectPoint, to: object.getPoint())
             
             if movingObjectDirection == RotationDirection.left {
                 object.run(SKAction.scaleX(to: 1, duration: 0.25))
@@ -154,14 +156,14 @@ extension GameScene {
                 object.run(SKAction.scaleX(to: -1, duration: 0.25))
             }
             
-            var characterMove = self.move
-            if self.move >= self.character.moves.count {
-                characterMove = self.character.moves.count - 1
+            var characterMove = move
+            if move >= character.moves.count {
+                characterMove = character.moves.count - 1
             }
             
             // Если объект и ГП "поменялись местами", то проигрыш
-            if object.moves[object.move] == self.character.moves[characterMove - 1] &&
-                previousObjectPoint == self.character.moves[characterMove] {
+            if object.moves[object.move] == character.moves[characterMove - 1] &&
+                previousObjectPoint == character.moves[characterMove] {
                 var moveToPointLose = pointFor(column: object.getPoint().column, row: object.getPoint().row)
                 
                 moveToPointLose = correctDirectionToHalfTile(pointToLose: moveToPointLose, movingDirection: movingObjectDirection)

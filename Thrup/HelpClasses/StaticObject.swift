@@ -57,6 +57,8 @@ class StaticObject: SKSpriteNode {
             size = 0.7
         case ObjectType.spikes:
             size = 0.715
+        case ObjectType.stopper:
+            size = 0.75
         default:
             size = 0.65
         }

@@ -46,7 +46,7 @@ enum ObjectType: Int {
             "You should pick up a gem to win. Space aliens like gems",
             "Bee moves one cell by one game's move. If your and bee's positions are same you lose",
             "Spinner never changes its position. If you get at spinner's position you lose",
-            "Bomb will destroy everything around its in N moves. You can't get at bomb's position",
+            "Bomb will destroy you if you are around its in N moves. You can't get at bomb's position",
             "Stop sing stops you for one move",
             "Alarm Clock stops all objects for one move except a space alien",
             "Bridge is rotated each move. You can tap bridge to change its direction",
@@ -108,7 +108,7 @@ class Object: SKSpriteNode {
         super.init(texture: texture, color: UIColor.white, size: CGSize(width: TileWidth * size, height: texture.size().height / (texture.size().width / (TileWidth * size))))
         
         self.type = type
-        self.zPosition = 4
+        self.zPosition = 5
     }
     
     required init?(coder aDecoder: NSCoder) {
