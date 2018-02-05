@@ -47,15 +47,17 @@ extension GameScene {
                 bombFragment.zPosition = 6
                 objectsLayer.addChild(bombFragment)
                 
-                bombFragment.run(SKAction.sequence([SKAction.resize(toWidth: size.width, height: size.height, duration: 0.15), SKAction.wait(forDuration: 0.05), SKAction.fadeAlpha(to: 0, duration: 0.25), SKAction.removeFromParent()]))
-                
-                let points = getPointsAround(object.point)
-                
-                for point in points {
-                    if point == character.moves[move] {
-                        loseLevel()
+                bombFragment.run(SKAction.resize(toWidth: size.width, height: size.height, duration: 0.15), completion: {
+                    let points = self.getPointsAround(object.point)
+                    
+                    for point in points {
+                        if point == self.character.moves[self.move - 1] {
+                            self.loseLevel()
+                        }
                     }
-                }
+                })
+                
+                bombFragment.run(SKAction.sequence([SKAction.wait(forDuration: 0.05), SKAction.fadeAlpha(to: 0, duration: 0.25), SKAction.removeFromParent()]))
                 
                 staticObjects.remove(object)
             }

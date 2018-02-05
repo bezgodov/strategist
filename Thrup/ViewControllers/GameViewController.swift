@@ -2,19 +2,15 @@ import UIKit
 import SpriteKit
 
 class GameViewController: UIViewController {
-
-    @IBOutlet weak var backgroundBlurEffect: UIVisualEffectView!
-    @IBOutlet weak var stackViewLoseLevel: UIStackView!
-    @IBOutlet weak var menuButtonTopRight: UIButton!
+    @IBOutlet weak var goToMenuButton: UIButton!
     @IBOutlet weak var startLevel: UIButton!
     @IBOutlet weak var movesRemainLabel: UILabel!
     @IBOutlet weak var buyLevelButton: UIButton!
-    @IBOutlet weak var viewHearts: UIView!
+    @IBOutlet weak var viewTopMenu: UIView!
+    @IBOutlet weak var moveRemainCircleBg: UIImageView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        stackViewLoseLevel.isHidden = true
         
         let view = self.view as! SKView
 
@@ -66,15 +62,8 @@ class GameViewController: UIViewController {
             Model.sharedInstance.gameScene.removeObjectInfoView(toAlpha: 0)
         }
         else {
+            Model.sharedInstance.gameScene.shakeView(moveRemainCircleBg, repeatCount: 2, amplitude: 2.25)
             Model.sharedInstance.gameScene.shakeView(movesRemainLabel, repeatCount: 2, amplitude: 4.25)
-        }
-    }
-    
-    /// При нажатии на "Restart" после проигранного раунда
-    @IBAction func restartLevel(sender: UIButton) {
-        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
-            Model.sharedInstance.gameViewControllerConnect = self
-            Model.sharedInstance.gameScene.restartLevel()
         }
     }
     

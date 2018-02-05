@@ -43,7 +43,7 @@ enum ObjectType: Int {
     var description: String {
         let descriptions = [
             "A cute space alien",
-            "You should pick up a gem to win. Space aliens like gems",
+            "You should pick up a gem to win. Space aliens need much gems",
             "Bee moves one cell by one game's move. If your and bee's positions are same you lose",
             "Spinner never changes its position. If you get at spinner's position you lose",
             "Bomb will destroy you if you are around its in N moves. You can't get at bomb's position",

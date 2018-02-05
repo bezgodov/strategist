@@ -281,7 +281,7 @@ class ChooseLevelViewController: UIViewController {
         
         modalWindow.backgroundColor = UIColor.blue
         
-        modalWindow.layer.cornerRadius = 10
+        modalWindow.layer.cornerRadius = 15
         modalWindow.layer.shadowColor = UIColor.black.cgColor
         modalWindow.layer.shadowOffset = CGSize.zero
         modalWindow.layer.shadowOpacity = 0.35
@@ -572,7 +572,7 @@ class ChooseLevelViewController: UIViewController {
                             if Model.sharedInstance.getLevelLives(row / distanceBetweenLevels + 1) <= 0 {
 //                                button.isEnabled = false
 //                                button.alpha = 0.5
-                                addLevelImageState(spriteName: "Heart_empty", buttonToPin: button, sizeKoef: CGSize(width: 0.275, height: 0.25))
+                                addLevelImageState(spriteName: "Heart_empty-unfilled", buttonToPin: button, sizeKoef: CGSize(width: 0.275, height: 0.25))
                             }
                         }
                     }

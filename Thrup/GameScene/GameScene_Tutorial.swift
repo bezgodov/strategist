@@ -3,20 +3,20 @@ import SpriteKit
 
 extension GameScene {
     func alphaBlackLayerPresent(alpha: CGFloat = 0.5) {
-        let mainBg = UIView(frame: CGRect(x: 0, y: 0, width: self.view!.frame.width, height: self.view!.frame.height))
-        mainBg.tag = 0
-        mainBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(mainBgClick(_:))))
-        self.view?.addSubview(mainBg)
+        mainBgTutorial = UIView(frame: CGRect(x: 0, y: 0, width: self.view!.frame.width, height: self.view!.frame.height))
+        mainBgTutorial.tag = 0
+        mainBgTutorial.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(mainBgClick(_:))))
+        self.view!.addSubview(mainBgTutorial)
         
         let bgView = UIView(frame: CGRect(x: 0, y: 0, width: self.view!.frame.width, height: self.view!.frame.height))
         bgView.alpha = alpha
         bgView.backgroundColor = UIColor.black
-        mainBg.addSubview(bgView)
+        mainBgTutorial.addSubview(bgView)
         
-        let tapIcon = UIImageView(frame: CGRect(x: mainBg.frame.maxX, y: 0, width: 42, height: 42))
+        let tapIcon = UIImageView(frame: CGRect(x: mainBgTutorial.frame.maxX, y: 0, width: 42, height: 42))
         tapIcon.image = UIImage(named: "Tap")
         tapIcon.restorationIdentifier = "tapIcon"
-        mainBg.addSubview(tapIcon)
+        mainBgTutorial.addSubview(tapIcon)
         
         nextSlideInfo(slide: 0, sender: nil)
     }
@@ -56,7 +56,7 @@ extension GameScene {
                         3: getRectFromPoint(point: Point(column: 2, row: 1)),
                         4: getRectFromPoint(point: Point(column: 2, row: 2)),
                         5: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7),
-                        6: CGRect(x: Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.frame.origin.y + 15, width: Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.frame.size.height / 2 - 30),
+                        6: CGRect(x: self.view!.bounds.midX - 200 / 2 + 20, y: self.view!.bounds.midY - 200 / 2 + 75, width: 160, height: 50),
                         7: getRectFromPoint(point: Point(column: 2, row: 0)),
                         9: getRectFromPoint(point: Point(column: 0, row: 0)),
                         10: getRectFromPoint(point: Point(column: 1, row: 0)),
@@ -75,7 +75,6 @@ extension GameScene {
     }
     
     @objc func mainBgClick(_ sender: UITapGestureRecognizer) {
-        
         let slideIndex = sender.view!.tag
         
         let tapPoints = getTapPoints(index: Model.sharedInstance.currentLevel)
@@ -133,7 +132,7 @@ extension GameScene {
                 "And finally tap at start button",
                 "Oooppps.. Be careful, everything in this planet wants to kill us. Tap restart to try again...",
                 "But we already know how each of them behaves itself. Tap at bee...",
-                "That red line shows how bee's moves. When a bee reaches last cell bee goes back and again...",
+                "That red line shows how bee moves. When a bee reaches last cell bee goes back and again...",
                 "Now let's find right way to get GEM. Tap at column#1 and row#1 (left-bottom cell)...",
                 "Next cell must be column#2 and row#1...",
                 "Next cell must be column#3 and row#1...",
@@ -143,7 +142,7 @@ extension GameScene {
                 ],
             2:
                 [
-                "For previous area you got one GEM. You can look how many gems you have in settings...",
+                "For previous area you got 3 GEMS. You can look how many gems you have in settings...",
                 "You can buy extra lives for GEMS...",
                 "You can tap at any object to find out how it behaves itself or how it moves...",
                 "Tap at the nearest star to find out what it is like...",
@@ -222,7 +221,7 @@ extension GameScene {
                 case 5, 14:
                     startLevel()
                 case 6:
-                    restartLevel()
+                    restartingLevel()
                 case 7:
                     for object in movingObjects {
                         if object.getPoint() == Point(column: 2, row: 0) {

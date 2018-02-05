@@ -14,6 +14,11 @@
 		2B0B63DF1FAFD1AF002C0322 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2B0B63DD1FAFD1AF002C0322 /* Main.storyboard */; };
 		2B0B63E11FAFD1AF002C0322 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B0B63E01FAFD1AF002C0322 /* Assets.xcassets */; };
 		2B0B63E41FAFD1AF002C0322 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2B0B63E21FAFD1AF002C0322 /* LaunchScreen.storyboard */; };
+		2B0CF13920283BBE0060BEF7 /* GameScene_ModalWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0CF13820283BBD0060BEF7 /* GameScene_ModalWindow.swift */; };
+		2B0CF13B20287D3A0060BEF7 /* TopMenuViewBorderDown.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B0CF13A20287D390060BEF7 /* TopMenuViewBorderDown.png */; };
+		2B0CF13D20287F610060BEF7 /* TopMenuViewBorderUp.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B0CF13C20287F600060BEF7 /* TopMenuViewBorderUp.png */; };
+		2B0CF14120288F0C0060BEF7 /* Settings_back.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B0CF14020288F0B0060BEF7 /* Settings_back.png */; };
+		2B0CF144202890C20060BEF7 /* Levels_settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B0CF142202890C00060BEF7 /* Levels_settings.png */; };
 		2B1178DA1FB84928006326E4 /* GameScene_Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1178D91FB84928006326E4 /* GameScene_Levels.swift */; };
 		2B22D1301FC78BFA00464F20 /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B22D12F1FC78BFA00464F20 /* Object.swift */; };
 		2B2CA4461FB93F4600AA35F1 /* ChooseLevelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2CA4451FB93F4600AA35F1 /* ChooseLevelViewController.swift */; };
@@ -31,6 +36,7 @@
 		2B5DCAB020269D22007E9A54 /* Menu_circle.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B5DCAAF20269D22007E9A54 /* Menu_circle.png */; };
 		2B5DCAB42026B7D3007E9A54 /* Menu_questionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B5DCAB32026B7D3007E9A54 /* Menu_questionMark.png */; };
 		2B5DCAB620272DAD007E9A54 /* Heart_empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B5DCAB520272DAC007E9A54 /* Heart_empty.png */; };
+		2B5DCAB92027E22F007E9A54 /* Menu_circle-red.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B5DCAB82027E22F007E9A54 /* Menu_circle-red.png */; };
 		2B70BAA82012FFC8001866D5 /* Level_11.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B70BAA72012FFC8001866D5 /* Level_11.json */; };
 		2B70BAC42014C9AF001866D5 /* Level_12.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B70BAC32014C9AF001866D5 /* Level_12.json */; };
 		2B70BAC7201574AD001866D5 /* Spikes.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B70BAC5201574AC001866D5 /* Spikes.png */; };
@@ -84,6 +90,11 @@
 		2B0B63E01FAFD1AF002C0322 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2B0B63E31FAFD1AF002C0322 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2B0B63E51FAFD1AF002C0322 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2B0CF13820283BBD0060BEF7 /* GameScene_ModalWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene_ModalWindow.swift; sourceTree = "<group>"; };
+		2B0CF13A20287D390060BEF7 /* TopMenuViewBorderDown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TopMenuViewBorderDown.png; sourceTree = "<group>"; };
+		2B0CF13C20287F600060BEF7 /* TopMenuViewBorderUp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TopMenuViewBorderUp.png; sourceTree = "<group>"; };
+		2B0CF14020288F0B0060BEF7 /* Settings_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Settings_back.png; sourceTree = "<group>"; };
+		2B0CF142202890C00060BEF7 /* Levels_settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Levels_settings.png; sourceTree = "<group>"; };
 		2B1178D91FB84928006326E4 /* GameScene_Levels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene_Levels.swift; sourceTree = "<group>"; };
 		2B22D12F1FC78BFA00464F20 /* Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
 		2B2CA4451FB93F4600AA35F1 /* ChooseLevelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseLevelViewController.swift; sourceTree = "<group>"; };
@@ -101,6 +112,7 @@
 		2B5DCAAF20269D22007E9A54 /* Menu_circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Menu_circle.png; sourceTree = "<group>"; };
 		2B5DCAB32026B7D3007E9A54 /* Menu_questionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Menu_questionMark.png; sourceTree = "<group>"; };
 		2B5DCAB520272DAC007E9A54 /* Heart_empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Heart_empty.png; sourceTree = "<group>"; };
+		2B5DCAB82027E22F007E9A54 /* Menu_circle-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Menu_circle-red.png"; sourceTree = "<group>"; };
 		2B70BAA72012FFC8001866D5 /* Level_11.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_11.json; sourceTree = "<group>"; };
 		2B70BAC32014C9AF001866D5 /* Level_12.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_12.json; sourceTree = "<group>"; };
 		2B70BAC5201574AC001866D5 /* Spikes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Spikes.png; sourceTree = "<group>"; };
@@ -194,6 +206,7 @@
 			children = (
 				2B0B63D91FAFD1AF002C0322 /* GameScene.swift */,
 				2B1178D91FB84928006326E4 /* GameScene_Levels.swift */,
+				2B0CF13820283BBD0060BEF7 /* GameScene_ModalWindow.swift */,
 				2BCD9DC11FF640910097C4F2 /* GameScene_Move.swift */,
 				2BCD9DBF1FF634BC0097C4F2 /* GameScene_Touches.swift */,
 				2BB481D52021DD0E009560B2 /* GameScene_Tutorial.swift */,
@@ -229,7 +242,10 @@
 				2B5DCAA920269B13007E9A54 /* Menu_levels.png */,
 				2B5DCAAB20269B14007E9A54 /* Menu_start.png */,
 				2B5DCAAF20269D22007E9A54 /* Menu_circle.png */,
+				2B5DCAB82027E22F007E9A54 /* Menu_circle-red.png */,
 				2B5DCAB32026B7D3007E9A54 /* Menu_questionMark.png */,
+				2B0CF142202890C00060BEF7 /* Levels_settings.png */,
+				2B0CF14020288F0B0060BEF7 /* Settings_back.png */,
 			);
 			path = MenuIcons;
 			sourceTree = "<group>";
@@ -297,6 +313,8 @@
 				2BCD9DC71FF665510097C4F2 /* Tile_top_left.png */,
 				2BCD9DCD1FF672B60097C4F2 /* Tile_top.png */,
 				2BCD9DCB1FF672210097C4F2 /* Tile_center.png */,
+				2B0CF13A20287D390060BEF7 /* TopMenuViewBorderDown.png */,
+				2B0CF13C20287F600060BEF7 /* TopMenuViewBorderUp.png */,
 			);
 			path = BackgroundImages;
 			sourceTree = "<group>";
@@ -384,6 +402,7 @@
 			files = (
 				2BB481DC202327CA009560B2 /* Level_2.json in Resources */,
 				2BF041831FF7196D00624C4C /* Star.png in Resources */,
+				2B0CF13D20287F610060BEF7 /* TopMenuViewBorderUp.png in Resources */,
 				2BFD739F20084C8A00968FB5 /* Gem_yellow.png in Resources */,
 				2B5DCA9A2025EEAB007E9A54 /* Bomb.png in Resources */,
 				2B5DCA9E2025F06A007E9A54 /* StopSign.png in Resources */,
@@ -407,6 +426,7 @@
 				2BFD739E20084C8A00968FB5 /* Gem_green.png in Resources */,
 				2B0B63E11FAFD1AF002C0322 /* Assets.xcassets in Resources */,
 				2B5DCAB020269D22007E9A54 /* Menu_circle.png in Resources */,
+				2B0CF13B20287D3A0060BEF7 /* TopMenuViewBorderDown.png in Resources */,
 				2B309A961FE39BF20095D11E /* Fish.png in Resources */,
 				2B5DCAAE20269B15007E9A54 /* Menu_start.png in Resources */,
 				2BFD739D20084C8A00968FB5 /* Gem_blue.png in Resources */,
@@ -418,12 +438,15 @@
 				2BFD73A020084C8A00968FB5 /* Gem_red.png in Resources */,
 				2B8407F91FE6A46F004B44CE /* PlayerWalks.atlas in Resources */,
 				2BB481E02023331C009560B2 /* Level_8.json in Resources */,
+				2B5DCAB92027E22F007E9A54 /* Menu_circle-red.png in Resources */,
 				2B0B63E41FAFD1AF002C0322 /* LaunchScreen.storyboard in Resources */,
 				2B0B63D81FAFD1AF002C0322 /* Actions.sks in Resources */,
 				2B54018E1FDA81E800E03C63 /* Level_4.json in Resources */,
 				2B54018C1FDA41B400E03C63 /* Level_3.json in Resources */,
 				2B70BAC42014C9AF001866D5 /* Level_12.json in Resources */,
+				2B0CF14120288F0C0060BEF7 /* Settings_back.png in Resources */,
 				2BA7D9F92016C09C0053BAA3 /* Bridge.png in Resources */,
+				2B0CF144202890C20060BEF7 /* Levels_settings.png in Resources */,
 				2BDCE0012012B9B200DCFA6D /* AlarmClock.png in Resources */,
 				2BD002AC1FDBAB2900A95001 /* Level_6.json in Resources */,
 				2B70BAD0201589B7001866D5 /* SpikesBox.png in Resources */,
@@ -451,6 +474,7 @@
 				2BBE77A01FB71F3F0042F79F /* MenuViewController.swift in Sources */,
 				2BCD9DC01FF634BC0097C4F2 /* GameScene_Touches.swift in Sources */,
 				2B9330781FD81F93002E5933 /* Character.swift in Sources */,
+				2B0CF13920283BBE0060BEF7 /* GameScene_ModalWindow.swift in Sources */,
 				2B1178DA1FB84928006326E4 /* GameScene_Levels.swift in Sources */,
 				2B0B63DA1FAFD1AF002C0322 /* GameScene.swift in Sources */,
 				2B0B63DC1FAFD1AF002C0322 /* GameViewController.swift in Sources */,

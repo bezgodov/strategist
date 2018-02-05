@@ -90,7 +90,14 @@ class GameScene: SKScene {
     /// Если вначале уровня необходимо показать обучение
     var isLevelWithTutorial = false
     
+    /// Выйгрышная траекторая, подсказка (из json)
     var winningPath = [Point]()
+    
+    /// Label, который хранит текущее кол-во драг. камней
+    var countGemsModalWindowLabel: UILabel!
+    
+    /// Переменные для модального окна
+    var mainBgTutorial, modalWindowBg, modalWindow: UIView!
     
 //    var motionManager: CMMotionManager!
     
@@ -392,12 +399,12 @@ class GameScene: SKScene {
             }
         
             // Отображаем слой с объектами по центру экрана
-            objectsLayer.position = CGPoint(x: -TileWidth * CGFloat(boardSize.column) / 2, y: -TileHeight * CGFloat(boardSize.row) / 2)
+            objectsLayer.position = CGPoint(x: -TileWidth * CGFloat(boardSize.column) / 2, y: -TileHeight * CGFloat(boardSize.column) / 2)
             tilesLayer.position = objectsLayer.position
         
             gameLayer.addChild(objectsLayer)
             gameLayer.addChild(tilesLayer)
-        
+            
             // Инициализируем финишный блок
             let finishSprite = SKSpriteNode(imageNamed: "Gem_blue")
             finishSprite.position = pointFor(column: finish.column, row: finish.row)
@@ -412,13 +419,12 @@ class GameScene: SKScene {
             
             drawHearts()
         
-            Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel?.isHidden = true
             Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
             Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.isHidden = false
             
             // Если уровень необходимо пройти за определённое количество ходов, то выделяет кол-во ходов красным цветом
             if isNecessaryUseAllMoves {
-                Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.textColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1)
+                Model.sharedInstance.gameViewControllerConnect.moveRemainCircleBg.image = UIImage(named: "Menu_circle-red")
             }
             
             // Т.к. в обучении на 1-ом уровне есть проигрыш, то флаг сбрасывается
@@ -455,7 +461,7 @@ class GameScene: SKScene {
                     character.pathNode.removeFromParent()
                     Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
-                    Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isEnabled = false
+                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
                 }
                 else {
                     shakeView(self.view!)
@@ -597,15 +603,28 @@ class GameScene: SKScene {
     
     /// Функция, отрисовывающая количество оставшихся жизней на уровне
     func drawHearts() {
+        let completedLabelRectWidth = 120
+        let completedLabelRect = CGRect(x: Int(self.view!.frame.midX - CGFloat(completedLabelRectWidth / 2)), y: 13, width: completedLabelRectWidth, height: 35)
+        
+        let completedLabel = UILabel(frame: completedLabelRect)
+        completedLabel.backgroundColor = UIColor.init(red: 0 / 255, green: 109 / 255, blue: 240 / 255, alpha: 1)
+        completedLabel.textColor = UIColor.white
+        
+        completedLabel.textAlignment = NSTextAlignment.center
+        completedLabel.layer.masksToBounds = true
+        completedLabel.layer.cornerRadius = 15
+        Model.sharedInstance.gameViewControllerConnect.viewTopMenu.addSubview(completedLabel)
+        
         if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
             let livesOnLevel = Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)
             let allLivesPerLevel = 5
             
+            var heartTexture = SKTexture(imageNamed: "Heart")
+            let heartSize = CGSize(width: heartTexture.size().width / 2.1, height: heartTexture.size().height / 2.1)
+            
             if livesOnLevel > 0 {
-                var heartTexture = SKTexture(imageNamed: "Heart")
-                let heartSize = CGSize(width: heartTexture.size().width / 1.9, height: heartTexture.size().height / 1.9)
                 let eachHeartXpos = (CGFloat(heartSize.width + 1) * CGFloat(allLivesPerLevel)) / 2
-                let xKoefForHeartStack = eachHeartXpos - CGFloat((allLivesPerLevel - 1) / 2)
+                let xKoefForHeartStack = eachHeartXpos + CGFloat((allLivesPerLevel - 1) / 2) - 2
                 heartsStackView = UIStackView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.bounds.midX)! - xKoefForHeartStack, y: 13 + 35 / 2 - heartSize.height / 2, width: heartSize.width * CGFloat(livesOnLevel), height: heartSize.height))
                 
                 for index in 0...allLivesPerLevel - 1 {
@@ -627,23 +646,34 @@ class GameScene: SKScene {
                     
                     heartsStackView.addSubview(heartImageView)
                 }
-                Model.sharedInstance.gameViewControllerConnect.viewHearts.addSubview(heartsStackView)
+                Model.sharedInstance.gameViewControllerConnect.viewTopMenu.addSubview(heartsStackView)
             }
+            
+            completedLabel.frame.size.width = heartSize.width * CGFloat(allLivesPerLevel) + 20
+            completedLabel.frame.origin.x = self.view!.frame.midX - completedLabel.frame.width / 2
+        }
+        else {
+            // (35 * 4) = 140, (7 * 6) = 42
+            completedLabel.font = UIFont(name: "AvenirNext-Medium", size: 18)
+            completedLabel.text = "Completed"
         }
     }
     
     /// Уровень не пройден
     func loseLevel() {
-        Model.sharedInstance.gameViewControllerConnect.backgroundBlurEffect.isHidden = false
-        Model.sharedInstance.gameViewControllerConnect.stackViewLoseLevel.isHidden = false
-        Model.sharedInstance.gameViewControllerConnect.viewHearts.isHidden = true
-
         if Model.sharedInstance.currentLevel != 1 {
             if Model.sharedInstance.emptySavedLevelsLives() == false {
                 if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
                     Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
                 }
             }
+        }
+        
+        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
+            modalWindowPresent(type: modalWindowType.nolives)
+        }
+        else {
+            modalWindowPresent(type: modalWindowType.lose)
         }
         
         if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
@@ -656,12 +686,7 @@ class GameScene: SKScene {
             lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
         }
         
-        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
-            Model.sharedInstance.gameViewControllerConnect.goToMenuCurrentLevel(presentModalWindow: true)
-        }
-        
         gameTimer.invalidate()
-        
         self.isPaused = true
     }
     
@@ -671,18 +696,37 @@ class GameScene: SKScene {
             Model.sharedInstance.setCountCompletedLevels(Model.sharedInstance.currentLevel)
         }
         
+        modalWindowPresent(type: modalWindowType.win)
+        
+        gameTimer.invalidate()
+        self.isPaused = true
+        
         // Если уровень не был пройден, то обновляем кол-во драг. камней
         if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
             Model.sharedInstance.setCountGems(amountGems: gemsForLevel)
-        }
         
+            for index in 1...gemsForLevel {
+                let gem = UIImageView(image: UIImage(named: "Gem_blue"))
+                
+                gem.frame.origin = CGPoint(x: self.view!.frame.width + 200, y: self.view!.frame.height + 200)
+                gem.frame.size = CGSize(width: gem.frame.width * 5, height: gem.frame.height * 5)
+                self.view!.addSubview(gem)
+                
+                DispatchQueue.main.async {
+                    UIView.animate(withDuration: TimeInterval(1 + CGFloat(index) * 0.425), animations: {
+                        gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 100 - 55, y: self.view!.frame.height / 2 - 78)
+                        gem.frame.size = CGSize(width: gem.frame.width / 5 * 0.75, height: gem.frame.height / 5 * 0.75)
+                    }, completion: { (_) in
+                        self.countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems() - self.gemsForLevel + index)"
+                        gem.removeFromSuperview()
+                    })
+                }
+            }
+        }
+    
         Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
         
         Model.sharedInstance.currentLevel += 1
-        
-        Model.sharedInstance.gameViewControllerConnect.goToNextLevel()
-        
-        cleanLevel()
     }
     
     /// Очистка уровня
@@ -720,8 +764,8 @@ class GameScene: SKScene {
         
         Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
         Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true
-        Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isEnabled = true
-        Model.sharedInstance.gameViewControllerConnect.viewHearts.isHidden = false
+        Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
+        Model.sharedInstance.gameViewControllerConnect.viewTopMenu.isHidden = false
         heartsStackView.removeFromSuperview()
         
         self.removeAllChildren()
@@ -730,14 +774,10 @@ class GameScene: SKScene {
     
     /// Срабатывает при нажатии на кнопку RESTART в меню после проигранного раунда
     func restartLevel() {
-        Model.sharedInstance.gameViewControllerConnect.backgroundBlurEffect.isHidden = true
-        Model.sharedInstance.gameViewControllerConnect.menuButtonTopRight.isHidden = false
-        
+        self.isPaused = false
         
         cleanLevel()
         createLevel()
-        
-        self.isPaused = false
     }
     
     /*
@@ -885,7 +925,7 @@ class GameScene: SKScene {
                 let alert = UIAlertController(title: "Buying winning path", message: "Buying winning path is worth 25 GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
                 
                 let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-                let actionOk = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {_ in
+                let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: {_ in
                     self.showWinningPath()
                 })
                 
@@ -895,10 +935,10 @@ class GameScene: SKScene {
                 Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
             }
             else {
-                let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to look at winning path. You need 25 GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS. Touch 'Ok' to buy some GEMS", preferredStyle: UIAlertControllerStyle.alert)
+                let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy winning path. You need 25 GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
                 
                 let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-                let actionOk = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: {_ in
+                let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
                     Model.sharedInstance.gameViewControllerConnect.presentMenu()
                 })
                 
