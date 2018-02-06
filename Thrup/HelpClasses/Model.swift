@@ -1,6 +1,12 @@
 import Foundation
 import SpriteKit
 
+/// Цена в драг. камнях доп. жизни
+let EXTRA_LIFE_PRICE = 10
+
+/// Цена в драг. камнях выйгрышного пути
+let WINNING_PATH_PRICE = 25
+
 class Model {
     init() {
         // Получаем значения жизней на каждом уровне

@@ -62,27 +62,26 @@ extension GameScene {
         // В зависимости от модального окна выставляем нужные кнопки и действия к ним
         if type == modalWindowType.win {
             startBtn.setTitle("CONTINUE", for: UIControlState.normal)
-            
             startBtn.addTarget(self, action: #selector(nextLevel), for: .touchUpInside)
+            
             goToSettingsBtn.addTarget(self, action: #selector(goToSettings), for: .touchUpInside)
             
             sentenceLabel.text = endingSentence[Int(arc4random_uniform(UInt32(endingSentence.count)))]
         }
         else {
+            
+            goToSettingsBtn.setTitle("LEVELS", for: UIControlState.normal)
+            goToSettingsBtn.addTarget(self, action: #selector(goToLevels), for: .touchUpInside)
+            
             if type == modalWindowType.lose {
                 startBtn.setTitle("RESTART", for: UIControlState.normal)
-                
                 startBtn.addTarget(self, action: #selector(restartLevelObjc), for: .touchUpInside)
-                goToSettingsBtn.addTarget(self, action: #selector(goToSettings), for: .touchUpInside)
                 
                 sentenceLabel.text = "You lose"
             }
             else {
                 startBtn.setTitle("EXTRA LIFE", for: UIControlState.normal)
                 startBtn.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
-                
-                goToSettingsBtn.setTitle("LEVELS", for: UIControlState.normal)
-                goToSettingsBtn.addTarget(self, action: #selector(goToLevels), for: .touchUpInside)
                 
                 sentenceLabel.text = "No lives"
             }
@@ -139,12 +138,13 @@ extension GameScene {
     }
     
     @objc func addExtraLife(_ sender: UIButton) {
-        if Model.sharedInstance.getCountGems() >= 10 {
-            let alert = UIAlertController(title: "Buying an extra life", message: "An extra life is worth 10 GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+        // Если больше 10 драг. камней
+        if Model.sharedInstance.getCountGems() >= EXTRA_LIFE_PRICE {
+            let alert = UIAlertController(title: "Buying an extra life", message: "An extra life is worth \(EXTRA_LIFE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
             
             let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
             let actionOk = UIAlertAction(title: "Buy one life", style: UIAlertActionStyle.default, handler: {_ in
-                Model.sharedInstance.setCountGems(amountGems: -10)
+                Model.sharedInstance.setCountGems(amountGems: -EXTRA_LIFE_PRICE)
                 
                 Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + 1)
                 
@@ -157,7 +157,7 @@ extension GameScene {
             Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
         }
         else {
-            let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy an extra life. You need 10 GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy an extra life. You need \(EXTRA_LIFE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
             
             let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
             let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in

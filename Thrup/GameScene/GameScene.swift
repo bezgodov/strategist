@@ -904,7 +904,7 @@ class GameScene: SKScene {
             // Устанавливаем в массив, что данный уровень пройден с помощью кнопки "Help"
             Model.sharedInstance.setLevelsCompletedWithHelp(Model.sharedInstance.currentLevel)
             // Отнимаем 25 драг. камней, ибо мы покупаем
-            Model.sharedInstance.setCountGems(amountGems: -25)
+            Model.sharedInstance.setCountGems(amountGems: -WINNING_PATH_PRICE)
         }
         
         updateMoves(character.moves.count - 1)
@@ -921,8 +921,8 @@ class GameScene: SKScene {
             showWinningPath()
         }
         else {
-            if Model.sharedInstance.getCountGems() >= 25 {
-                let alert = UIAlertController(title: "Buying winning path", message: "Buying winning path is worth 25 GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+            if Model.sharedInstance.getCountGems() >= WINNING_PATH_PRICE {
+                let alert = UIAlertController(title: "Buying winning path", message: "Buying winning path is worth \(WINNING_PATH_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
                 
                 let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
                 let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: {_ in
@@ -935,7 +935,7 @@ class GameScene: SKScene {
                 Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
             }
             else {
-                let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy winning path. You need 25 GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+                let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy winning path. You need \(WINNING_PATH_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
                 
                 let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
                 let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in

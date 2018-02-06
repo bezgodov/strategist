@@ -364,38 +364,62 @@ class ChooseLevelViewController: UIViewController {
         shakeView(self.view)
     }
     
+    func buyExtraLife() {
+        // Отнимаем 10 драг. камней
+        Model.sharedInstance.setCountGems(amountGems: -EXTRA_LIFE_PRICE)
+        
+        Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + 1)
+        UIView.animate(withDuration: 0.215, animations: {
+            self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
+        }, completion: { (_) in
+            self.modalWindowBg.removeFromSuperview()
+            
+            // Ищем кнопку-уровень на scrollView
+            var tileLevelSubView: UIView!
+            for tileSubview in self.scrollView.subviews {
+                if tileSubview.restorationIdentifier == "levelTile_\(Model.sharedInstance.currentLevel)" {
+                    tileLevelSubView = tileSubview
+                }
+            }
+            // Ищем view, который выводит состояние уровня
+            for subview in tileLevelSubView.subviews {
+                if subview.restorationIdentifier == "levelStateImage" {
+                    subview.removeFromSuperview()
+                }
+            }
+            
+            self.modalWindowPresent()
+        })
+    }
+    
     @objc func addExtraLife(_ sender: UIButton) {
         // Если больше 10 драг. камней, то добавляем новую жизнь
-        if Model.sharedInstance.getCountGems() >= 10 {
+        if Model.sharedInstance.getCountGems() >= EXTRA_LIFE_PRICE {
             
-            // Отнимаем 10 драг. камней
-            Model.sharedInstance.setCountGems(amountGems: -10)
+            let alert = UIAlertController(title: "Buying an extra life", message: "An extra life is worth \(EXTRA_LIFE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
             
-            Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + 1)
-            UIView.animate(withDuration: 0.215, animations: {
-                self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
-            }, completion: { (_) in
-                self.modalWindowBg.removeFromSuperview()
-                
-                // Ищем кнопку-уровень на scrollView
-                var tileLevelSubView: UIView!
-                for tileSubview in self.scrollView.subviews {
-                    if tileSubview.restorationIdentifier == "levelTile_\(Model.sharedInstance.currentLevel)" {
-                        tileLevelSubView = tileSubview
-                    }
-                }
-                // Ищем view, который выводит состояние уровня
-                for subview in tileLevelSubView.subviews {
-                    if subview.restorationIdentifier == "levelStateImage" {
-                        subview.removeFromSuperview()
-                    }
-                }
-                
-                self.modalWindowPresent()
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+            let actionOk = UIAlertAction(title: "Buy one life", style: UIAlertActionStyle.default, handler: {_ in
+                self.buyExtraLife()
             })
+            
+            alert.addAction(actionOk)
+            alert.addAction(actionCancel)
+            
+            self.present(alert, animated: true, completion: nil)
         }
         else {
-            presentMenu()
+            let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy an extra life. You need \(EXTRA_LIFE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
+                Model.sharedInstance.gameViewControllerConnect.presentMenu()
+            })
+            
+            alert.addAction(actionOk)
+            alert.addAction(actionCancel)
+            
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
