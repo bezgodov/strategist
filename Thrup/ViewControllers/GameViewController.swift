@@ -67,33 +67,23 @@ class GameViewController: UIViewController {
         }
     }
     
-    /// При нажатии на "Menu" после проигранного раунда
-    @IBAction func goToMenu(sender: UIButton) {
-        goToMenuCurrentLevel()
+    /// При нажатии на "Уровни"
+    @IBAction func goToLevels(sender: UIButton) {
+        goToLevels(moveCharacterFlag: false)
     }
     
     @IBAction func buyLevel(sender: UIButton) {
         Model.sharedInstance.gameScene.buyLevel()
     }
     
-    func goToMenuCurrentLevel(presentModalWindow: Bool = false) {
+    func goToLevels(moveCharacterFlag: Bool = false) {
         if let storyboard = storyboard {
             let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
-            chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
             
-            if presentModalWindow == true {
-                chooseLevelViewController.presentModalWindowByDefault = true
+            if moveCharacterFlag == false {
+                chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
             }
             
-            navigationController?.pushViewController(chooseLevelViewController, animated: true)
-        }
-        
-        Model.sharedInstance.gameScene.cleanLevel()
-    }
-    
-    func goToNextLevel(moveCharacterFlag: Bool = true) {
-        if let storyboard = storyboard {
-            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
             chooseLevelViewController.moveCharacterToNextLevel = moveCharacterFlag
             
             navigationController?.pushViewController(chooseLevelViewController, animated: true)

@@ -47,6 +47,8 @@ class Model {
                 setCompletedLevel(index, value: false)
             }
         }
+        
+        currentLevel = getCountCompletedLevels() + 1
     }
     
     static let sharedInstance = Model()

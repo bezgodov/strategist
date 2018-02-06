@@ -21,7 +21,6 @@ extension GameScene {
         
         // Если обучение на 1-ом уровне, то модальное окно должно быть ниже бг для обучения
         if Model.sharedInstance.currentLevel == 1 && !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-            self.view!.insertSubview(modalWindowBg, belowSubview: mainBgTutorial)
             self.view!.insertSubview(modalWindow, belowSubview: mainBgTutorial)
         }
         else {
@@ -69,7 +68,6 @@ extension GameScene {
             sentenceLabel.text = endingSentence[Int(arc4random_uniform(UInt32(endingSentence.count)))]
         }
         else {
-            
             goToSettingsBtn.setTitle("LEVELS", for: UIControlState.normal)
             goToSettingsBtn.addTarget(self, action: #selector(goToLevels), for: .touchUpInside)
             
@@ -110,7 +108,7 @@ extension GameScene {
     }
     
     @objc func nextLevel(_ sender: UIButton) {
-        Model.sharedInstance.gameViewControllerConnect.goToNextLevel()
+        Model.sharedInstance.gameViewControllerConnect.goToLevels(moveCharacterFlag: true)
     }
     
     @objc func restartLevelObjc(_ sender: UIButton) {
@@ -172,7 +170,7 @@ extension GameScene {
     }
     
     @objc func goToLevels(_ sender: UIButton) {
-        Model.sharedInstance.gameViewControllerConnect.goToMenuCurrentLevel(presentModalWindow: true)
+        Model.sharedInstance.gameViewControllerConnect.goToLevels()
     }
     
     @objc func goToSettings(_ sender: UIButton) {

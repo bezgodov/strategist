@@ -713,7 +713,7 @@ class GameScene: SKScene {
                 self.view!.addSubview(gem)
                 
                 DispatchQueue.main.async {
-                    UIView.animate(withDuration: TimeInterval(1 + CGFloat(index) * 0.425), animations: {
+                    UIView.animate(withDuration: TimeInterval(0.5 + CGFloat(index) * 0.425), animations: {
                         gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 100 - 55, y: self.view!.frame.height / 2 - 78)
                         gem.frame.size = CGSize(width: gem.frame.width / 5 * 0.75, height: gem.frame.height / 5 * 0.75)
                     }, completion: { (_) in
@@ -722,11 +722,9 @@ class GameScene: SKScene {
                     })
                 }
             }
+            Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
+            Model.sharedInstance.currentLevel += 1
         }
-    
-        Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
-        
-        Model.sharedInstance.currentLevel += 1
     }
     
     /// Очистка уровня

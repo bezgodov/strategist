@@ -212,7 +212,7 @@
                                             <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <connections>
-                                            <action selector="goToMenuWithSender:" destination="BV1-FR-VrT" eventType="touchUpInside" id="W9i-iO-PSv"/>
+                                            <action selector="goToLevelsWithSender:" destination="BV1-FR-VrT" eventType="touchUpInside" id="h53-FX-3hf"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UrQ-5o-ZCW" userLabel="BuyLevel">
