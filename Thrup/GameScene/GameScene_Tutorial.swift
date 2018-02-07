@@ -68,6 +68,18 @@ extension GameScene {
                 2:
                     [
                         3: getRectFromPoint(point: Point(column: 1, row: 3)),
+                    ],
+                3:
+                    [
+                        0: self.view!.bounds
+                    ],
+                4:
+                    [
+                        0: self.view!.bounds
+                    ],
+                5:
+                    [
+                        0: self.view!.bounds
                     ]
             ]
         
@@ -146,6 +158,18 @@ extension GameScene {
                 "You can buy extra lives for GEMS...",
                 "You can tap at any object to find out how it behaves itself or how it moves...",
                 "Tap at the nearest star to find out what it is like...",
+                ],
+            3:
+                [
+                "You can click at last your path's point and delete it [Tap somewhere to continue]"
+                ],
+            4:
+                [
+                "Except tapping at screen you can slide along the game board"
+                ],
+            5:
+                [
+                "If you already chose path you are still able to look at enemy's info. Just tap long at it "
                 ]
         ]
         

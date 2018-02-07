@@ -4,6 +4,7 @@
     "boardSize": [5,5],
     "moves": 25,
     "gems": 1,
+    "isLevelWithTutorial": true,
     "winningPath":
     [
      [0,1],
