@@ -135,14 +135,19 @@ class ChooseLevelViewController: UIViewController {
             characterPointStart = levelButtonsPositions[countCompletedLevels - lastLevelKoef]
         }
         else {
-            var levelFrom = countCompletedLevels - 1
-            if Model.sharedInstance.currentLevel > 2 {
-                if moveCharacterToNextLevel {
-                    if !Model.sharedInstance.isCompletedLevel(levelFrom) {
-                        levelFrom -= 1
+            if Model.sharedInstance.currentLevel > countLevels {
+                characterPointStart = levelButtonsPositions.last!
+            }
+            else {
+                var levelFrom = countCompletedLevels - 1
+                if Model.sharedInstance.currentLevel > 2 {
+                    if moveCharacterToNextLevel {
+                        if !Model.sharedInstance.isCompletedLevel(levelFrom) {
+                            levelFrom -= 1
+                        }
+                        
+                        characterPointStart = levelButtonsPositions[levelFrom]
                     }
-                    
-                    characterPointStart = levelButtonsPositions[levelFrom]
                 }
             }
         }
@@ -626,9 +631,10 @@ class ChooseLevelViewController: UIViewController {
         presentMenu()
     }
     
-    func presentMenu() {
+    func presentMenu(dismiss: Bool = false) {
         if let storyboard = storyboard {
             let menuViewController = storyboard.instantiateViewController(withIdentifier: "MenuViewController") as! MenuViewController
+            menuViewController.isDismissed = dismiss
             navigationController?.pushViewController(menuViewController, animated: true)
         }
     }

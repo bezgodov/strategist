@@ -28,6 +28,9 @@ class GameScene: SKScene {
     /// Координаты финишного блока
     var finish: Point = Point(column: 0, row: 0)
     
+    /// Спрайт для финиша (драг. камень)
+    var finishSprite: SKSpriteNode!
+    
     /// Координаты начальной позиции ГП
     var characterStart: Point = Point(column: 0, row: 0)
     
@@ -406,7 +409,7 @@ class GameScene: SKScene {
             gameLayer.addChild(tilesLayer)
             
             // Инициализируем финишный блок
-            let finishSprite = SKSpriteNode(imageNamed: "Gem_blue")
+            finishSprite = SKSpriteNode(imageNamed: "Gem_blue")
             finishSprite.position = pointFor(column: finish.column, row: finish.row)
             finishSprite.zPosition = 3
             finishSprite.size = CGSize(width: TileWidth * 0.4, height: (finishSprite.texture?.size().height)! / ((finishSprite.texture?.size().width)! / (TileWidth * 0.4)))
@@ -698,33 +701,36 @@ class GameScene: SKScene {
         
         modalWindowPresent(type: modalWindowType.win)
         
-        gameTimer.invalidate()
-        self.isPaused = true
-        
-        // Если уровень не был пройден, то обновляем кол-во драг. камней
-        if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-            Model.sharedInstance.setCountGems(amountGems: gemsForLevel)
-        
-            for index in 1...gemsForLevel {
-                let gem = UIImageView(image: UIImage(named: "Gem_blue"))
+        // Убираем финишный драг. камень
+        finishSprite.run(SKAction.sequence([SKAction.fadeAlpha(to: 0, duration: 0.25), SKAction.removeFromParent()]), completion: {
+            self.gameTimer.invalidate()
+            self.isPaused = true
+            
+            // Если уровень не был пройден, то обновляем кол-во драг. камней
+            if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                Model.sharedInstance.setCountGems(amountGems: self.gemsForLevel)
                 
-                gem.frame.origin = CGPoint(x: self.view!.frame.width + 200, y: self.view!.frame.height + 200)
-                gem.frame.size = CGSize(width: gem.frame.width * 5, height: gem.frame.height * 5)
-                self.view!.addSubview(gem)
-                
-                DispatchQueue.main.async {
-                    UIView.animate(withDuration: TimeInterval(0.5 + CGFloat(index) * 0.425), animations: {
-                        gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 100 - 55, y: self.view!.frame.height / 2 - 78)
-                        gem.frame.size = CGSize(width: gem.frame.width / 5 * 0.75, height: gem.frame.height / 5 * 0.75)
-                    }, completion: { (_) in
-                        self.countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems() - self.gemsForLevel + index)"
-                        gem.removeFromSuperview()
-                    })
+                for index in 1...self.gemsForLevel {
+                    let gem = UIImageView(image: UIImage(named: "Gem_blue"))
+                    
+                    gem.frame.origin = CGPoint(x: self.view!.frame.width + 200, y: self.view!.frame.height + 200)
+                    gem.frame.size = CGSize(width: gem.frame.width * 5, height: gem.frame.height * 5)
+                    self.view!.addSubview(gem)
+                    
+                    DispatchQueue.main.async {
+                        UIView.animate(withDuration: TimeInterval(0.5 + CGFloat(index) * 0.425), animations: {
+                            gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 100 - 55, y: self.view!.frame.height / 2 - 78)
+                            gem.frame.size = CGSize(width: gem.frame.width / 5 * 0.75, height: gem.frame.height / 5 * 0.75)
+                        }, completion: { (_) in
+                            self.countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems() - self.gemsForLevel + index)"
+                            gem.removeFromSuperview()
+                        })
+                    }
                 }
+                Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
+                Model.sharedInstance.currentLevel += 1
             }
-            Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
-            Model.sharedInstance.currentLevel += 1
-        }
+        })
     }
     
     /// Очистка уровня
@@ -937,7 +943,7 @@ class GameScene: SKScene {
                 
                 let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
                 let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
-                    Model.sharedInstance.gameViewControllerConnect.presentMenu()
+                    Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: true)
                 })
                 
                 alert.addAction(actionOk)

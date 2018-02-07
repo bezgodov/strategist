@@ -7,6 +7,8 @@ class MenuViewController: UIViewController {
     @IBOutlet weak var countOfGems: UILabel!
     @IBOutlet weak var showTipsSwitch: UISwitch!
     
+    var isDismissed: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -70,14 +72,19 @@ class MenuViewController: UIViewController {
     }
     
     @IBAction func goBack(sender: UIButton) {
-        if let storyboard = storyboard {
-            let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
-            chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
-
-            navigationController?.pushViewController(chooseLevelViewController, animated: true)
+        
+        if isDismissed {
+            navigationController?.popViewController(animated: true)
+            navigationController?.dismiss(animated: true, completion: nil)
         }
-//        navigationController?.popViewController(animated: true)
-//        navigationController?.dismiss(animated: true, completion: nil)
+        else {
+            if let storyboard = storyboard {
+                let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
+                chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
+
+                navigationController?.pushViewController(chooseLevelViewController, animated: true)
+            }
+        }
     }
     
     /// Функция, которая предназначена для оценки игры

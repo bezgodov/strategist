@@ -18,9 +18,10 @@ extension GameScene {
         
         // Добавляем модальное окно
         modalWindow = UIView(frame: CGRect(x: self.view!.frame.maxX, y: self.view!.bounds.midY - 200 / 2, width: 200, height: 200))
-        
+
         // Если обучение на 1-ом уровне, то модальное окно должно быть ниже бг для обучения
         if Model.sharedInstance.currentLevel == 1 && !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+            self.view!.insertSubview(modalWindowBg, belowSubview: mainBgTutorial)
             self.view!.insertSubview(modalWindow, belowSubview: mainBgTutorial)
         }
         else {
@@ -32,6 +33,11 @@ extension GameScene {
             self.modalWindowBg.alpha = 0.5
             
             self.modalWindow.frame.origin.x = self.view!.bounds.midX - self.modalWindow.frame.size.width / 2
+        }, completion: { (_) in
+            // Если выйгрыш, то добавляем фейерверк
+            if type == modalWindowType.win {
+                self.createFireWorks()
+            }
         })
         
         /// Название выбранного уровня (для выйгрышного модального окна)
@@ -92,7 +98,7 @@ extension GameScene {
         countOfGemsImage.frame.origin = CGPoint(x: modalWindow.frame.size.width - 35 - 20, y: 22)
         modalWindow.addSubview(countOfGemsImage)
         
-        countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 35 / 2, y: 10, width: 35, height: 50))
+        countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 75 / 2, y: 10, width: 75, height: 50))
         countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 14)
         countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems())"
         countGemsModalWindowLabel.textAlignment = NSTextAlignment.center
@@ -159,7 +165,7 @@ extension GameScene {
             
             let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
             let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
-                Model.sharedInstance.gameViewControllerConnect.presentMenu()
+                Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: true)
             })
             
             alert.addAction(actionOk)
@@ -174,6 +180,80 @@ extension GameScene {
     }
     
     @objc func goToSettings(_ sender: UIButton) {
-        Model.sharedInstance.gameViewControllerConnect.presentMenu()
+        Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: true)
+    }
+    
+    /// Функция отображает фейерверк при выйгрыше уровня
+    func createFireWorks() {
+        let rootLayer:CALayer = CALayer()
+        let emitterLayer:CAEmitterLayer = CAEmitterLayer()
+        
+        rootLayer.bounds = CGRect(x: 0 + self.view!.bounds.width / 4 / 2, y: 0 + self.view!.bounds.height / 2, width: self.view!.bounds.width - self.view!.bounds.width / 4, height: self.view!.bounds.height / 2)
+        
+        rootLayer.anchorPoint = CGPoint(x: 1, y: 1)
+        
+        let image = UIImage(named: "Fireworks_particle")
+        let img:CGImage = (image?.cgImage)!
+        
+        rootLayer.setAffineTransform(CGAffineTransform(rotationAngle: CGFloat(Double.pi)))
+        emitterLayer.emitterPosition = CGPoint(x: rootLayer.bounds.width/2,y: 0 - self.view!.bounds.height / 4)
+        emitterLayer.renderMode = kCAEmitterLayerAdditive
+        
+        let emitterCell = CAEmitterCell()
+        
+        emitterCell.emissionLongitude = CGFloat(Double.pi / 2)
+        emitterCell.emissionLatitude = 0
+        emitterCell.lifetime = 2.6
+        emitterCell.birthRate = 1.5
+        emitterCell.velocity = 300
+        emitterCell.velocityRange = 100
+        emitterCell.yAcceleration = 150
+        emitterCell.emissionRange = CGFloat(Double.pi / 4)
+        
+        let newColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5).cgColor
+        emitterCell.color = newColor;
+        
+        emitterCell.redRange = 0.9;
+        emitterCell.greenRange = 0.9;
+        emitterCell.blueRange = 0.9;
+        emitterCell.name = "base"
+        
+        let flareCell = CAEmitterCell()
+        
+        flareCell.contents = img;
+        flareCell.emissionLongitude = CGFloat(4 * Double.pi) / 2;
+        flareCell.scale = 0.4;
+        flareCell.velocity = 80;
+        flareCell.birthRate = 20;
+        flareCell.lifetime = 0.5;
+        flareCell.yAcceleration = -350;
+        flareCell.emissionRange = CGFloat(Double.pi / 7);
+        flareCell.alphaSpeed = -0.7;
+        flareCell.scaleSpeed = -0.1;
+        flareCell.scaleRange = 0.1;
+        flareCell.beginTime = 0.01;
+        flareCell.duration = 1.7;
+        
+        let fireworkCell = CAEmitterCell()
+        
+        fireworkCell.contents = img;
+        fireworkCell.birthRate = 15000;
+        fireworkCell.scale = 0.6;
+        fireworkCell.velocity = 130;
+        fireworkCell.lifetime = 100;
+        fireworkCell.alphaSpeed = -0.2;
+        fireworkCell.yAcceleration = -80;
+        fireworkCell.beginTime = 1.5;
+        fireworkCell.duration = 0.1;
+        fireworkCell.emissionRange = 2 * CGFloat(Double.pi);
+        fireworkCell.scaleSpeed = -0.1;
+        fireworkCell.spin = 2;
+        
+        emitterCell.emitterCells = [flareCell,fireworkCell]
+        emitterLayer.emitterCells = [emitterCell]
+        rootLayer.addSublayer(emitterLayer)
+        
+//        self.view!.insertSubview(rootLayer, belowSubview: modalWindow)
+        self.view!.layer.insertSublayer(rootLayer, below: modalWindow.layer)
     }
 }

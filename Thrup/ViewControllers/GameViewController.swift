@@ -90,9 +90,10 @@ class GameViewController: UIViewController {
         }
     }
     
-    func presentMenu() {
+    func presentMenu(dismiss: Bool = false) {
         if let storyboard = storyboard {
             let menuViewController = storyboard.instantiateViewController(withIdentifier: "MenuViewController") as! MenuViewController
+            menuViewController.isDismissed = dismiss
             navigationController?.pushViewController(menuViewController, animated: true)
         }
     }
