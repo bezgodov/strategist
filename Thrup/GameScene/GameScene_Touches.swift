@@ -101,6 +101,11 @@ extension GameScene {
                                             checkChoosingPath = boardClick.point
                                             checkChoosingPathArray = character.moves
                                             
+                                            if character.moves.count > 1 {
+                                                lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
+                                                lastPathStepSprite.alpha = 1
+                                            }
+                                            
                                             updateMoves(-1)
                                             character.path()
                                             
@@ -125,6 +130,13 @@ extension GameScene {
                                             character.moves.remove(at: character.moves.count - 1)
                                             checkChoosingPathArray.removeLast()
                                             checkChoosingPath = character.moves[character.moves.count - 1]
+                                            
+                                            if character.moves.count > 1 {
+                                                lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
+                                            }
+                                            else {
+                                                lastPathStepSprite.alpha = 0
+                                            }
                                             
                                             updateMoves(1)
                                             character.path()
@@ -216,6 +228,11 @@ extension GameScene {
                                                 updateMoves(-1)
                                                 character.path()
                                                 
+                                                if character.moves.count > 1 {
+                                                    lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
+                                                    lastPathStepSprite.alpha = 1
+                                                }
+                                                
                                                 // Так как мы начали строить траекторию ГП, то спрятать все траектории остальных объектов)
                                                 for object in movingObjects {
                                                     object.path(hide: true)
@@ -228,6 +245,13 @@ extension GameScene {
                                         //Если новая позиция не равна последней позиции в существующей траектории и TouchedMoved не был вызван после TouchedMoved
                                         if boardClick.point == character.moves.last! && !addedLastPointByMove {
                                             character.moves.remove(at: character.moves.count - 1)
+                                            
+                                            if character.moves.count > 1 {
+                                                lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
+                                            }
+                                            else {
+                                                lastPathStepSprite.alpha = 0
+                                            }
                                             
                                             updateMoves(1)
                                             character.path()

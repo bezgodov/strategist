@@ -108,7 +108,7 @@ class Object: SKSpriteNode {
         super.init(texture: texture, color: UIColor.white, size: CGSize(width: TileWidth * size, height: texture.size().height / (texture.size().width / (TileWidth * size))))
         
         self.type = type
-        self.zPosition = 5
+        self.zPosition = 6
     }
     
     required init?(coder aDecoder: NSCoder) {

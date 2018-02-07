@@ -68,7 +68,7 @@ class StaticObject: SKSpriteNode {
         self.type = type
         self.point = point
         
-        self.zPosition = 3
+        self.zPosition = 5
     }
     
     required init?(coder aDecoder: NSCoder) {

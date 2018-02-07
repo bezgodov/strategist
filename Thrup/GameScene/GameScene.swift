@@ -102,6 +102,8 @@ class GameScene: SKScene {
     /// Переменные для модального окна
     var mainBgTutorial, modalWindowBg, modalWindow: UIView!
     
+    var lastPathStepSprite: SKSpriteNode!
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
@@ -248,7 +250,7 @@ class GameScene: SKScene {
         
             // Инициализируем ГП
             character = Character(imageNamed: "PlayerStaysFront")
-            character.zPosition = 4
+            character.zPosition = 7
             character.position = pointFor(column: characterStart.column, row: characterStart.row)
             character.size = CGSize(width: TileWidth * 0.5, height: (character.texture?.size().height)! / ((character.texture?.size().width)! / (TileWidth * 0.5)))
             character.moves.append(characterStart)
@@ -411,7 +413,7 @@ class GameScene: SKScene {
             // Инициализируем финишный блок
             finishSprite = SKSpriteNode(imageNamed: "Gem_blue")
             finishSprite.position = pointFor(column: finish.column, row: finish.row)
-            finishSprite.zPosition = 3
+            finishSprite.zPosition = 5
             finishSprite.size = CGSize(width: TileWidth * 0.4, height: (finishSprite.texture?.size().height)! / ((finishSprite.texture?.size().width)! / (TileWidth * 0.4)))
             objectsLayer.addChild(finishSprite)
         
@@ -442,6 +444,13 @@ class GameScene: SKScene {
                     isLevelWithTutorial = false
                 }
             }
+            
+            lastPathStepSprite = SKSpriteNode(imageNamed: "ErasePath")
+            lastPathStepSprite.size = CGSize(width: TileWidth / 4, height: TileHeight / 4)
+            lastPathStepSprite.position = pointFor(column: -5, row: -5)
+            lastPathStepSprite.alpha = 0
+            lastPathStepSprite.zPosition = 4
+            objectsLayer.addChild(lastPathStepSprite)
         }
     }
     
@@ -765,6 +774,7 @@ class GameScene: SKScene {
         gameBegan = false
         isNextCharacterMoveAtBridgeLose = false
         isNecessaryUseAllMoves = false
+        lastPathStepSprite.removeFromParent()
         
         Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
         Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true

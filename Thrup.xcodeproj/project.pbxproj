@@ -68,6 +68,7 @@
 		2BD002AC1FDBAB2900A95001 /* Level_6.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BD002AB1FDBAB2900A95001 /* Level_6.json */; };
 		2BDCDFDD2011B04D00DCFA6D /* Level_10.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BDCDFDC2011B04D00DCFA6D /* Level_10.json */; };
 		2BDCE0012012B9B200DCFA6D /* AlarmClock.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BDCE0002012B9B200DCFA6D /* AlarmClock.png */; };
+		2BEB5506202B23E00003E397 /* ErasePath.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BEB5505202B23DF0003E397 /* ErasePath.png */; };
 		2BEF9FD5202A841200EFFB0F /* Fireworks_particle.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BEF9FD4202A841200EFFB0F /* Fireworks_particle.png */; };
 		2BF041831FF7196D00624C4C /* Star.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041821FF7196D00624C4C /* Star.png */; };
 		2BF041861FF71A5A00624C4C /* PlayerPinkClimbs_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */; };
@@ -145,6 +146,7 @@
 		2BD002AB1FDBAB2900A95001 /* Level_6.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_6.json; sourceTree = "<group>"; };
 		2BDCDFDC2011B04D00DCFA6D /* Level_10.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_10.json; sourceTree = "<group>"; };
 		2BDCE0002012B9B200DCFA6D /* AlarmClock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AlarmClock.png; sourceTree = "<group>"; };
+		2BEB5505202B23DF0003E397 /* ErasePath.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ErasePath.png; sourceTree = "<group>"; };
 		2BEF9FD4202A841200EFFB0F /* Fireworks_particle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Fireworks_particle.png; sourceTree = "<group>"; };
 		2BF041821FF7196D00624C4C /* Star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Star.png; sourceTree = "<group>"; };
 		2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerPinkClimbs_1.png; sourceTree = "<group>"; };
@@ -294,6 +296,7 @@
 				2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */,
 				2BB481D72023220D009560B2 /* Tap.png */,
 				2BEF9FD4202A841200EFFB0F /* Fireworks_particle.png */,
+				2BEB5505202B23DF0003E397 /* ErasePath.png */,
 				2B5DCAB720274166007E9A54 /* MenuIcons */,
 				2BDCC6FA1FEF2E18009F2A0E /* BackgroundImages */,
 			);
@@ -446,6 +449,7 @@
 				2B0B63E41FAFD1AF002C0322 /* LaunchScreen.storyboard in Resources */,
 				2B0B63D81FAFD1AF002C0322 /* Actions.sks in Resources */,
 				2B54018E1FDA81E800E03C63 /* Level_4.json in Resources */,
+				2BEB5506202B23E00003E397 /* ErasePath.png in Resources */,
 				2B54018C1FDA41B400E03C63 /* Level_3.json in Resources */,
 				2B70BAC42014C9AF001866D5 /* Level_12.json in Resources */,
 				2B0CF14120288F0C0060BEF7 /* Settings_back.png in Resources */,
