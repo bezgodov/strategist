@@ -49,6 +49,8 @@ class Model {
         }
         
         currentLevel = getCountCompletedLevels() + 1
+        
+        SKTAudio.sharedInstance().playBackgroundMusic(filename: "BgMusic.mp3")
     }
     
     static let sharedInstance = Model()

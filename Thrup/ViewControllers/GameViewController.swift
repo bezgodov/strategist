@@ -57,6 +57,9 @@ class GameViewController: UIViewController {
     @IBAction func startLevel(sender: UIButton) {
         // Либо использовать все ходы обязательно и они использованы (тогда начало уровня), либо можно не использовать все ходы на уровне
         if (Model.sharedInstance.gameScene.isNecessaryUseAllMoves == true && Model.sharedInstance.gameScene.moves == 0) || Model.sharedInstance.gameScene.isNecessaryUseAllMoves == false {
+            
+            SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+            
             Model.sharedInstance.gameScene.startLevel()
             // Скрываем подсказку об объекте, если она открыта
             Model.sharedInstance.gameScene.removeObjectInfoView(toAlpha: 0)
@@ -64,15 +67,20 @@ class GameViewController: UIViewController {
         else {
             Model.sharedInstance.gameScene.shakeView(moveRemainCircleBg, repeatCount: 2, amplitude: 2.25)
             Model.sharedInstance.gameScene.shakeView(movesRemainLabel, repeatCount: 2, amplitude: 4.25)
+            SKTAudio.sharedInstance().playSoundEffect(filename: "NoStart.mp3")
         }
     }
     
     /// При нажатии на "Уровни"
     @IBAction func goToLevels(sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
         goToLevels(moveCharacterFlag: false)
     }
     
     @IBAction func buyLevel(sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
         Model.sharedInstance.gameScene.buyLevel()
     }
     

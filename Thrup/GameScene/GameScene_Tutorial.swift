@@ -80,6 +80,10 @@ extension GameScene {
                 5:
                     [
                         0: self.view!.bounds
+                    ],
+                6:
+                    [
+                        0: self.view!.bounds
                     ]
             ]
         
@@ -169,7 +173,11 @@ extension GameScene {
                 ],
             5:
                 [
-                "If you already chose path you are still able to look at enemy's info. Just tap long at it "
+                "If you already chose path you are still able to look at enemy's info. Just tap long at it"
+                ],
+            6:
+                [
+                "If label with maximum count of moves has red color you should use all moves"
                 ]
         ]
         

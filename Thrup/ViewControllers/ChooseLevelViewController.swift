@@ -172,6 +172,8 @@ class ChooseLevelViewController: UIViewController {
     @objc func buttonAction(sender: UIButton!) {
         let buttonSenderAction: UIButton = sender
         
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
         // Если уровень не заблокирован
         if buttonSenderAction.tag != -1 {
             Model.sharedInstance.currentLevel = buttonSenderAction.tag
@@ -267,7 +269,7 @@ class ChooseLevelViewController: UIViewController {
             self.modalWindow.frame.origin.x = self.view.bounds.midX - self.modalWindow.frame.size.width / 2
         })
         
-        modalWindow.backgroundColor = UIColor.blue
+        modalWindow.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
         
         modalWindow.layer.cornerRadius = 15
         modalWindow.layer.shadowColor = UIColor.black.cgColor
@@ -283,53 +285,70 @@ class ChooseLevelViewController: UIViewController {
         modalWindowBg.addSubview(modalWindow)
         
         /// Название выбранного уровня
-        let levelNumberLabel = UILabel(frame: CGRect(x: modalWindow.bounds.midX - modalWindow.frame.size.width / 2, y: 0 + 15, width: modalWindow.frame.size.width, height: 35))
+        let levelNumberLabel = UILabel(frame: CGRect(x: 20, y: 25, width: modalWindow.frame.size.width - 40, height: 35))
         levelNumberLabel.text = "Level \(Model.sharedInstance.currentLevel)"
-        levelNumberLabel.textAlignment = NSTextAlignment.center
-        levelNumberLabel.font = UIFont(name: "Avenir Next", size: 24)
+        levelNumberLabel.textAlignment = NSTextAlignment.left
+        levelNumberLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
         levelNumberLabel.textColor = UIColor.white
         modalWindow.addSubview(levelNumberLabel)
         
         // Кнопка "старт" в модальном окне, которая переносит на выбранный уровень
-        let btnStart = UIButton(frame: CGRect(x: modalWindow.bounds.midX - 100 / 2, y: modalWindow.bounds.midY - 50 / 2, width: 100, height: 50))
-        btnStart.layer.cornerRadius = 5
-        btnStart.backgroundColor = UIColor.red
+        let btnStart = UIButton(frame: CGRect(x: modalWindow.bounds.midX - ((modalWindow.frame.width - 40) / 2), y: modalWindow.bounds.midY - 50 / 2, width: modalWindow.frame.width - 40, height: 50))
+        btnStart.layer.cornerRadius = 10
+        btnStart.backgroundColor = UIColor.init(red: 217 / 255, green: 29 / 255, blue: 29 / 255, alpha: 1)
+        btnStart.titleLabel?.font = UIFont(name: "AvenirNext-Medium", size: 19)
         btnStart.addTarget(self, action: #selector(startLevel), for: .touchUpInside)
         btnStart.setTitle("START", for: UIControlState.normal)
+        modalWindow.addSubview(btnStart)
+        
+        if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+            let countOfGemsImage = UIImageView(image: UIImage(named: "Heart"))
+            countOfGemsImage.frame.size = CGSize(width: countOfGemsImage.frame.size.width * 0.75, height: countOfGemsImage.frame.size.height * 0.75)
+            countOfGemsImage.frame.origin = CGPoint(x: modalWindow.frame.size.width - 35 - 20, y: 22)
+            modalWindow.addSubview(countOfGemsImage)
+        
+            let countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 75 / 2, y: countOfGemsImage.frame.height / 2 - 50 / 2, width: 75, height: 50))
+            countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 18)
+            countGemsModalWindowLabel.text = String(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel))
+            countGemsModalWindowLabel.textAlignment = NSTextAlignment.center
+            countGemsModalWindowLabel.textColor = UIColor.white
+            countOfGemsImage.addSubview(countGemsModalWindowLabel)
+        }
+        else {
+            let completedLevelLabel = UIImageView(image: UIImage(named: "Checked"))
+            completedLevelLabel.frame.size = CGSize(width: 32, height: 32)
+            completedLevelLabel.frame.origin = CGPoint(x: modalWindow.frame.size.width - 45, y: 22)
+            modalWindow.addSubview(completedLevelLabel)
+        }
+        
+        // Кнопка "дополнительная жизнь" или "настройки" в модальном окне в зависимости от кол-ва жизней
+        let secondButton = UIButton(frame: CGRect(x: modalWindow.bounds.midX - ((modalWindow.frame.width - 40) / 2), y: modalWindow.frame.size.height - 50 - 15, width: modalWindow.frame.width - 40, height: 50))
+        secondButton.layer.cornerRadius = 10
+        secondButton.backgroundColor = UIColor.init(red: 165 / 255, green: 240 / 255, blue: 16 / 255, alpha: 1)
+        secondButton.titleLabel?.font = UIFont(name: "AvenirNext-Medium", size: 19)
+        secondButton.setTitleColor(UIColor.black, for: UIControlState.normal)
+        modalWindow.addSubview(secondButton)
         
         // Если количество жизенй на уровне меньше 0, то добавляем кнопку получения новой жизни
         if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
-            btnStart.backgroundColor = UIColor(displayP3Red: 0.5, green: 0, blue: 0, alpha: 0.9)
+            btnStart.backgroundColor = UIColor.init(red: 187 / 255, green: 36 / 255, blue: 36 / 255, alpha: 0.9)
             btnStart.removeTarget(self, action: nil, for: .allEvents)
             btnStart.addTarget(self, action: #selector(shakeBtnStart), for: .touchUpInside)
-            // Кнопка "дополнительная жизнь" в модальном окне
-            let btnExtraLives = UIButton(frame: CGRect(x: modalWindow.bounds.midX - 100 / 2, y: modalWindow.frame.size.height - 50 - 15, width: 100, height: 50))
-            btnExtraLives.layer.cornerRadius = 5
-            btnExtraLives.backgroundColor = UIColor.green
-            btnExtraLives.setTitleColor(UIColor.black, for: UIControlState.normal)
-            btnExtraLives.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
-            btnExtraLives.setTitle("EXTRA LIFE", for: UIControlState.normal)
-            modalWindow.addSubview(btnExtraLives)
             
-            let countOfGemsToUnlockImage = UIImageView(image: UIImage(named: "Gem_blue"))
-            countOfGemsToUnlockImage.frame.size = CGSize(width: countOfGemsToUnlockImage.frame.size.width * 0.75, height: countOfGemsToUnlockImage.frame.size.height * 0.75)
-            countOfGemsToUnlockImage.frame.origin = CGPoint(x: btnExtraLives.frame.size.width + 5, y: btnExtraLives.frame.size.height / 2 - countOfGemsToUnlockImage.frame.size.height / 2 - 5)
-            btnExtraLives.addSubview(countOfGemsToUnlockImage)
-            
-            let countOfGemsToUnlockLabel = UILabel(frame: CGRect(x: countOfGemsToUnlockImage.frame.size.width / 2 - 35 / 2, y: countOfGemsToUnlockImage.frame.size.height + 7 - 50 / 2, width: 35, height: 50))
-            countOfGemsToUnlockLabel.font = UIFont(name: "Avenir Next", size: 14)
-            countOfGemsToUnlockLabel.text = "X10"
-            countOfGemsToUnlockLabel.textAlignment = NSTextAlignment.center
-            countOfGemsToUnlockLabel.textColor = UIColor.white
-            countOfGemsToUnlockImage.addSubview(countOfGemsToUnlockLabel)
+            secondButton.setTitle("EXTRA LIFE", for: UIControlState.normal)
+            secondButton.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
+        }
+        else {
+            secondButton.setTitle("SETTINGS", for: UIControlState.normal)
+            secondButton.addTarget(self, action: #selector(goToMenuFromModalWindow), for: .touchUpInside)
         }
         
-        modalWindow.addSubview(btnStart)
-        
-        drawHearts(Model.sharedInstance.currentLevel)
+//        drawHearts(Model.sharedInstance.currentLevel)
     }
     
     @objc func startLevel() {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
+        
         self.goToLevel()
     }
     
@@ -350,6 +369,14 @@ class ChooseLevelViewController: UIViewController {
     
     @objc func shakeScreen() {
         shakeView(self.view)
+        
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Disable.wav")
+    }
+    
+    @objc func goToMenuFromModalWindow(sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
+        
+        presentMenu(dismiss: true)
     }
     
     func buyExtraLife() {
@@ -381,6 +408,8 @@ class ChooseLevelViewController: UIViewController {
     }
     
     @objc func addExtraLife(_ sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
+        
         // Если больше 10 драг. камней, то добавляем новую жизнь
         if Model.sharedInstance.getCountGems() >= EXTRA_LIFE_PRICE {
             
@@ -401,7 +430,7 @@ class ChooseLevelViewController: UIViewController {
             
             let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
             let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
-                self.presentMenu()
+                self.presentMenu(dismiss: true)
             })
             
             alert.addAction(actionOk)
@@ -432,7 +461,7 @@ class ChooseLevelViewController: UIViewController {
                 var heartTexture = SKTexture(imageNamed: "Heart")
                 let heartSize = CGSize(width: heartTexture.size().width / 1.5, height: heartTexture.size().height / 1.5)
                 
-                let heartsStackView = UIView(frame: CGRect(x: 0, y: Int(modalWindow.frame.size.height - heartSize.height - 15), width: Int(modalWindow.frame.size.width), height: Int(heartSize.height)))
+                let heartsStackView = UIView(frame: CGRect(x: Int(modalWindow.bounds.midX - ((modalWindow.frame.width - 40) / 2)), y: Int(modalWindow.frame.size.height - heartSize.height - 15), width: Int(modalWindow.frame.size.width), height: Int(heartSize.height)))
                 
                 for index in 0...allLivesPerLevel - 1 {
                     heartTexture = allLivesPerLevel - 1 - index < livesOnLevel ? SKTexture(imageNamed: "Heart") : SKTexture(imageNamed: "Heart_empty")
@@ -628,6 +657,8 @@ class ChooseLevelViewController: UIViewController {
     
     /// Переход в настройки
     @IBAction func goToMenu(sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
         presentMenu()
     }
     

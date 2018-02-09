@@ -80,11 +80,6 @@
                 "point": [4,3]
                 },
                 {
-                "type": "bomb",
-                "point": [3,3],
-                "movesToExplode": 5
-                },
-                {
                 "type": "bridge",
                 "point": [1,2],
                 "rotate": 2

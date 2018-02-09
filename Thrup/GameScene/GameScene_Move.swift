@@ -38,6 +38,9 @@ extension GameScene {
             movesToExplodeLable?.text = String(object.movesToExplode)
             
             if object.movesToExplode == 0 {
+                
+                SKTAudio.sharedInstance().playSoundEffect(filename: "Explosion.wav")
+                
                 object.removeFromParent()
             
                 let bombFragment = SKSpriteNode(imageNamed: "Bomb_explosion")
@@ -100,6 +103,9 @@ extension GameScene {
         
         if object.type == ObjectType.star && character.moves[move] == object.point {
             stars -= 1
+            
+            SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpStar.mp3")
+            
             object.removeFromParent()
         }
         
@@ -144,6 +150,7 @@ extension GameScene {
         move += 1
         
         for object in movingObjects {
+            
             let previousObjectPoint = object.getPoint()
             
             object.setPoint()
@@ -178,7 +185,6 @@ extension GameScene {
                 object.run(SKAction.move(to: pointFor(column: object.getPoint().column, row: object.getPoint().row), duration: 0.5), completion: {
                     
                     self.checkMovingObjectPos(object: object, characterMove: characterMove)
-                    
                 })
             }
         }
@@ -285,15 +291,23 @@ extension GameScene {
                 
                 character.run(SKAction.move(to: moveToPointLose, duration: 0.25), completion: {
                     self.loseLevel()
+                    
+                    // Если прошёл один ход, то запускает следующий
+                    self.mainTimer(interval: 0.4)
                 })
             }
             else {
                 character.run(SKAction.move(to: self.pointFor(column: self.character.moves[self.move].column, row: self.character.moves[self.move].row), duration: 0.5), completion: {
                     
+                    SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
+                    
                     if !characterAtAlarmClock {
                         for object in self.staticObjects {
                             self.checkStatisObjectPos(object: object)
                         }
+                        
+                        // Если прошёл один ход, то запускает следующий
+                        self.mainTimer(interval: 0.15)
                     }
                     // Если ГП находится на будильнике, то останавливаем все движущиейся объекты на 1 ход и толкаем ГП на 1 ход вперёд
                     else {
@@ -313,15 +327,15 @@ extension GameScene {
                                             for object in self.staticObjects {
                                                 self.checkStatisObjectPos(object: object)
                                             }
+                                            
+                                            self.mainTimer(interval: 0.15)
                                         }
                                     }
                                 })
                             })
-                        
-                            self.gameTimer.invalidate()
-                            self.gameTimer = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true) { (_) in
-                                self.worldMove()
-                            }
+                            
+                            // Если прошёл один ход, то запускает следующий
+                            //self.mainTimer()
                         }
                     }
                 })
@@ -341,6 +355,10 @@ extension GameScene {
                 self.loseLevel()
             }
         }
+    }
+    
+    func checkForWinningPoint() {
+        
     }
     
     func correctDirectionToHalfTile(pointToLose: CGPoint, movingDirection: RotationDirection, downScale: CGFloat = 2) -> CGPoint {

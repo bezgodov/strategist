@@ -102,6 +102,7 @@ class GameScene: SKScene {
     /// Переменные для модального окна
     var mainBgTutorial, modalWindowBg, modalWindow: UIView!
     
+    /// Переменная для спрайта, который отображает крестик на последней точке выбранного пути
     var lastPathStepSprite: SKSpriteNode!
     
 //    var motionManager: CMMotionManager!
@@ -250,7 +251,7 @@ class GameScene: SKScene {
         
             // Инициализируем ГП
             character = Character(imageNamed: "PlayerStaysFront")
-            character.zPosition = 7
+            character.zPosition = 8
             character.position = pointFor(column: characterStart.column, row: characterStart.row)
             character.size = CGSize(width: TileWidth * 0.5, height: (character.texture?.size().height)! / ((character.texture?.size().width)! / (TileWidth * 0.5)))
             character.moves.append(characterStart)
@@ -463,22 +464,35 @@ class GameScene: SKScene {
                 if character.moves.count > 1 {
                     gameBegan = true
                     
-                    gameTimer = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true) { (_) in
-                        if self.move == 0 {
-                            self.character.run(SKAction.repeatForever(SKAction.animate(with: self.playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
-                        }
-                        self.worldMove()
+                    mainTimer(interval: 0.25)
+                    
+                    lastPathStepSprite.alpha = 0
+                    
+                    DispatchQueue.main.async {
+                        self.character.pathNode.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                            self.character.pathNode.removeFromParent()
+                        })
                     }
                     
-                    character.pathNode.removeFromParent()
                     Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
                 }
                 else {
+                    SKTAudio.sharedInstance().playSoundEffect(filename: "NoStart.mp3")
                     shakeView(self.view!)
                 }
             }
+        }
+    }
+    
+    func mainTimer(interval: TimeInterval = 0.65) {
+        gameTimer.invalidate()
+        gameTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { (Timer) in
+            if self.move == 0 {
+                self.character.run(SKAction.repeatForever(SKAction.animate(with: self.playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
+            }
+            self.worldMove()
         }
     }
 
@@ -697,6 +711,8 @@ class GameScene: SKScene {
             
             lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
         }
+//        run(SKAction.playSoundFileNamed("Lose2.wav", waitForCompletion: false))
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Lose.mp3")
         
         gameTimer.invalidate()
         self.isPaused = true
@@ -711,35 +727,40 @@ class GameScene: SKScene {
         modalWindowPresent(type: modalWindowType.win)
         
         // Убираем финишный драг. камень
-        finishSprite.run(SKAction.sequence([SKAction.fadeAlpha(to: 0, duration: 0.25), SKAction.removeFromParent()]), completion: {
-            self.gameTimer.invalidate()
-            self.isPaused = true
+        finishSprite.removeFromParent()
+        
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Win.wav")
+        
+        gameTimer.invalidate()
+        isPaused = true
+        
+        // Если уровень не был пройден, то обновляем кол-во драг. камней
+        if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+            Model.sharedInstance.setCountGems(amountGems: self.gemsForLevel)
             
-            // Если уровень не был пройден, то обновляем кол-во драг. камней
-            if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-                Model.sharedInstance.setCountGems(amountGems: self.gemsForLevel)
+            for index in 1...self.gemsForLevel {
+                let gem = UIImageView(image: UIImage(named: "Gem_blue"))
                 
-                for index in 1...self.gemsForLevel {
-                    let gem = UIImageView(image: UIImage(named: "Gem_blue"))
-                    
-                    gem.frame.origin = CGPoint(x: self.view!.frame.width + 200, y: self.view!.frame.height + 200)
-                    gem.frame.size = CGSize(width: gem.frame.width * 5, height: gem.frame.height * 5)
-                    self.view!.addSubview(gem)
-                    
-                    DispatchQueue.main.async {
-                        UIView.animate(withDuration: TimeInterval(0.5 + CGFloat(index) * 0.425), animations: {
-                            gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 100 - 55, y: self.view!.frame.height / 2 - 78)
-                            gem.frame.size = CGSize(width: gem.frame.width / 5 * 0.75, height: gem.frame.height / 5 * 0.75)
-                        }, completion: { (_) in
-                            self.countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems() - self.gemsForLevel + index)"
-                            gem.removeFromSuperview()
-                        })
-                    }
+                gem.frame.origin = CGPoint(x: self.view!.frame.width + 200, y: self.view!.frame.height + 200)
+                gem.frame.size = CGSize(width: gem.frame.width * 5, height: gem.frame.height * 5)
+                self.view!.addSubview(gem)
+                
+                DispatchQueue.main.async {
+                    UIView.animate(withDuration: TimeInterval(0.5 + CGFloat(index) * 0.425), animations: {
+                        gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 100 - 55, y: self.view!.frame.height / 2 - 78)
+                        gem.frame.size = CGSize(width: gem.frame.width / 5 * 0.75, height: gem.frame.height / 5 * 0.75)
+                    }, completion: { (_) in
+                        
+                        SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpCoin.mp3")
+                        
+                        self.countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems() - self.gemsForLevel + index)"
+                        gem.removeFromSuperview()
+                    })
                 }
-                Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
-                Model.sharedInstance.currentLevel += 1
             }
-        })
+            Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
+            Model.sharedInstance.currentLevel += 1
+        }
     }
     
     /// Очистка уровня
@@ -912,7 +933,6 @@ class GameScene: SKScene {
     }
     
     func showWinningPath() {
-        
         // Если "покупаем" уровень (показать правильный путь)
         if !Model.sharedInstance.isLevelsCompletedWithHelp(Model.sharedInstance.currentLevel) {
             // Устанавливаем в массив, что данный уровень пройден с помощью кнопки "Help"
@@ -926,8 +946,12 @@ class GameScene: SKScene {
         
         updateMoves(-winningPath.count + 1)
         character.moves = winningPath
-        character.path()
         
+        if lastPathStepSprite != nil {
+            lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
+        }
+        
+        character.path()
     }
     
     func buyLevel() {

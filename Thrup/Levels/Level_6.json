@@ -2,7 +2,9 @@
     "finish": [3,4],
     "character": [0,0],
     "boardSize": [5,5],
-    "moves": 15,
+    "moves": 13,
+    "isNecessaryUseAllMoves": true,
+    "isLevelWithTutorial": true,
     "winningPath":
     [
      [1,0],
