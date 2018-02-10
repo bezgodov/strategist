@@ -17,15 +17,15 @@ class GameViewController: UIViewController {
         view.ignoresSiblingOrder = true
         
         Model.sharedInstance.gameScene = GameScene(fileNamed: "GameScene")
-        Model.sharedInstance.gameScene.scaleMode = .aspectFill
+        Model.sharedInstance.gameScene.scaleMode = .resizeFill
         
         Model.sharedInstance.gameViewControllerConnect = self
         
         Model.sharedInstance.gameScene.anchorPoint = CGPoint(x: 0.5, y: 0.5)
 
-        view.showsFPS = true
-        view.showsPhysics = true
-        view.showsNodeCount = true
+//        view.showsFPS = true
+//        view.showsPhysics = true
+//        view.showsNodeCount = true
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
             view.presentScene(Model.sharedInstance.gameScene)
@@ -75,7 +75,7 @@ class GameViewController: UIViewController {
     @IBAction func goToLevels(sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
         
-        goToLevels(moveCharacterFlag: false)
+        Model.sharedInstance.gameScene.modalWindowPresent(type: GameScene.modalWindowType.menu)
     }
     
     @IBAction func buyLevel(sender: UIButton) {

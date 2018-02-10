@@ -44,7 +44,7 @@ extension GameScene {
                 object.removeFromParent()
             
                 let bombFragment = SKSpriteNode(imageNamed: "Bomb_explosion")
-                let size = CGSize(width: bombFragment.size.width * 1.35, height: bombFragment.size.height * 1.35)
+                let size = CGSize(width: bombFragment.size.width * 0.675, height: bombFragment.size.height * 0.675)
                 bombFragment.size = CGSize(width: 0, height: 0)
                 bombFragment.position = object.position
                 bombFragment.zPosition = 6

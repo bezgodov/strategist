@@ -4,7 +4,7 @@ import Foundation
 extension GameScene {
     /// Модальное окно
     enum modalWindowType {
-        case win, lose, nolives
+        case win, lose, nolives, menu
     }
     
     /// Моадльное окно
@@ -15,6 +15,11 @@ extension GameScene {
         modalWindowBg = UIView(frame: self.view!.bounds)
         modalWindowBg.backgroundColor = UIColor.black
         modalWindowBg.alpha = 0
+        
+        if type == modalWindowType.menu {
+            modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bgClick(_:))))
+            isPaused = true
+        }
         
         // Добавляем модальное окно
         modalWindow = UIView(frame: CGRect(x: self.view!.frame.maxX, y: self.view!.bounds.midY - 200 / 2, width: 200, height: 200))
@@ -40,21 +45,23 @@ extension GameScene {
             }
         })
         
-        let modalWindowTitleView = UIView(frame: CGRect(x: 0, y: -10 - modalWindow.frame.height / 4, width: modalWindow.frame.width, height: modalWindow.frame.height / 4))
-        modalWindowTitleView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
-        modalWindowTitleView.layer.cornerRadius = 15
-        modalWindowTitleView.layer.shadowColor = UIColor.black.cgColor
-        modalWindowTitleView.layer.shadowOffset = CGSize.zero
-        modalWindowTitleView.layer.shadowOpacity = 0.35
-        modalWindowTitleView.layer.shadowRadius = 10
-        modalWindow.addSubview(modalWindowTitleView)
-        
-        let modalWindowTitleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: modalWindowTitleView.frame.width, height: modalWindowTitleView.frame.height))
-        modalWindowTitleLabel.text = "Level \(Model.sharedInstance.currentLevel)"
-        modalWindowTitleLabel.textAlignment = NSTextAlignment.center
-        modalWindowTitleLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
-        modalWindowTitleLabel.textColor = UIColor.white
-        modalWindowTitleView.addSubview(modalWindowTitleLabel)
+        if type != modalWindowType.menu {
+            let modalWindowTitleView = UIView(frame: CGRect(x: 0, y: -10 - modalWindow.frame.height / 4, width: modalWindow.frame.width, height: modalWindow.frame.height / 4))
+            modalWindowTitleView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
+            modalWindowTitleView.layer.cornerRadius = 15
+            modalWindowTitleView.layer.shadowColor = UIColor.black.cgColor
+            modalWindowTitleView.layer.shadowOffset = CGSize.zero
+            modalWindowTitleView.layer.shadowOpacity = 0.35
+            modalWindowTitleView.layer.shadowRadius = 10
+            modalWindow.addSubview(modalWindowTitleView)
+            
+            let modalWindowTitleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: modalWindowTitleView.frame.width, height: modalWindowTitleView.frame.height))
+            modalWindowTitleLabel.text = "Level \(Model.sharedInstance.currentLevel)"
+            modalWindowTitleLabel.textAlignment = NSTextAlignment.center
+            modalWindowTitleLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
+            modalWindowTitleLabel.textColor = UIColor.white
+            modalWindowTitleView.addSubview(modalWindowTitleLabel)
+        }
         
         /// Название выбранного уровня (для выйгрышного модального окна)
         let endingSentence = ["Awesome", "Well done", "Nice", "Great job", "Cool", "Good job", "Perfect", "Amazing"]
@@ -81,13 +88,24 @@ extension GameScene {
         startBtn.titleLabel?.font = UIFont(name: "AvenirNext-Medium", size: 19)
         
         // В зависимости от модального окна выставляем нужные кнопки и действия к ним
-        if type == modalWindowType.win {
-            startBtn.setTitle("CONTINUE", for: UIControlState.normal)
-            startBtn.addTarget(self, action: #selector(nextLevel), for: .touchUpInside)
+        if type == modalWindowType.win || type == modalWindowType.menu {
+            if type == modalWindowType.menu {
+                startBtn.setTitle("LEVELS", for: UIControlState.normal)
+                startBtn.addTarget(self, action: #selector(goToLevels), for: .touchUpInside)
+            }
+            else {
+                startBtn.setTitle("CONTINUE", for: UIControlState.normal)
+                startBtn.addTarget(self, action: #selector(nextLevel), for: .touchUpInside)
+            }
             
             goToSettingsBtn.addTarget(self, action: #selector(goToSettings), for: .touchUpInside)
             
-            sentenceLabel.text = endingSentence[Int(arc4random_uniform(UInt32(endingSentence.count)))]
+            if type != modalWindowType.menu {
+                sentenceLabel.text = endingSentence[Int(arc4random_uniform(UInt32(endingSentence.count)))]
+            }
+            else {
+                sentenceLabel.text = "Level \(Model.sharedInstance.currentLevel)"
+            }
         }
         else {
             goToSettingsBtn.setTitle("LEVELS", for: UIControlState.normal)
@@ -132,6 +150,9 @@ extension GameScene {
     @objc func nextLevel(_ sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
         
+        // Так как ГП начнёт перемещаться автоматически, то в нил переменную, которая выстанавливает последнее положение
+        Model.sharedInstance.lastYpositionLevels = nil
+        
         Model.sharedInstance.gameViewControllerConnect.goToLevels(moveCharacterFlag: true)
     }
     
@@ -139,6 +160,19 @@ extension GameScene {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
         
         restartingLevel()
+    }
+    
+    @objc func bgClick(_ sender: UITapGestureRecognizer) {
+        if sender.view?.superview === self.view! {
+            UIView.animate(withDuration: 0.215, animations: {
+                self.modalWindow.frame.origin.x = self.view!.bounds.maxX
+            }, completion: { (_) in
+                
+                self.modalWindowBg.removeFromSuperview()
+                self.modalWindow.removeFromSuperview()
+                self.isPaused = false
+            })
+        }
     }
     
     func restartingLevel() {

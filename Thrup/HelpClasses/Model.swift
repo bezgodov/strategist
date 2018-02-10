@@ -38,6 +38,8 @@ class Model {
             // Инициализируем все данные для уровней
             setCountCompletedLevels(0)
             setShowTips(val: true)
+            setActivatedSounds(true)
+            setActivatedBgMusic(true)
         }
         
         // Если были добавлены новые уровни (т.е. выделенное кол-во элементов в массиве для пройденных уровней не соответствует текущему кол-ву уровней)
@@ -50,7 +52,9 @@ class Model {
         
         currentLevel = getCountCompletedLevels() + 1
         
-        SKTAudio.sharedInstance().playBackgroundMusic(filename: "BgMusic.mp3")
+        if isActivatedBgMusic() {
+            SKTAudio.sharedInstance().playBackgroundMusic(filename: "BgMusic.mp3")
+        }
     }
     
     static let sharedInstance = Model()
@@ -80,6 +84,15 @@ class Model {
     
     /// Массив, который содержит номера уровней, которые были пройдены с помощью кнопки "Help"
     private var levelsCompletedWithHelp: [Int]!
+    
+    /// Включены ли звуки
+    private var isActivatedSoundsVal = UserDefaults.standard.bool(forKey: "isActivatedSounds")
+    
+    /// Включена ли музыка на заднем фоне
+    private var isActivatedBgMusicVal = UserDefaults.standard.bool(forKey: "isActivatedBgMusic")
+    
+    /// Последняя позиция, на которой находился пользователь, когда заходил на уровень или в меню
+    var lastYpositionLevels: CGFloat?
     
     /// Функция, которая проверяет наличие сохранённых данных
     func emptySavedLevelsLives() -> Bool {
@@ -165,5 +178,35 @@ class Model {
     /// Если уровень был пройден с помощью кнопки "Help"
     func isLevelsCompletedWithHelp(_ level: Int) -> Bool {
         return levelsCompletedWithHelp.contains(level)
+    }
+    
+    func setActivatedSounds(_ val: Bool) {
+        isActivatedSoundsVal = val
+        UserDefaults.standard.set(isActivatedSoundsVal, forKey: "isActivatedSounds")
+    }
+    
+    func isActivatedSounds() -> Bool {
+        return isActivatedSoundsVal
+    }
+    
+    func setActivatedBgMusic(_ val: Bool) {
+        isActivatedBgMusicVal = val
+        UserDefaults.standard.set(isActivatedBgMusicVal, forKey: "isActivatedBgMusic")
+        
+        if !isActivatedBgMusic() {
+            SKTAudio.sharedInstance().pauseBackgroundMusic()
+        }
+        else {
+            if SKTAudio.sharedInstance().backgroundMusicPlayer != nil {
+                SKTAudio.sharedInstance().resumeBackgroundMusic()
+            }
+            else {
+                SKTAudio.sharedInstance().playBackgroundMusic(filename: "BgMusic.mp3")
+            }
+        }
+    }
+    
+    func isActivatedBgMusic() -> Bool {
+        return isActivatedBgMusicVal
     }
 }

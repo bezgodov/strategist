@@ -106,7 +106,7 @@ extension GameScene {
                                                 lastPathStepSprite.alpha = 1
                                             }
                                             
-                                            run(SKAction.playSoundFileNamed("GrassStep", waitForCompletion: false))
+                                            SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
                                             
                                             updateMoves(-1)
                                             character.path()
@@ -133,7 +133,7 @@ extension GameScene {
                                             checkChoosingPathArray.removeLast()
                                             checkChoosingPath = character.moves[character.moves.count - 1]
                                             
-                                            run(SKAction.playSoundFileNamed("GrassStep", waitForCompletion: false))
+                                            SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
                                             
                                             if character.moves.count > 1 {
                                                 lastPathStepSprite.alpha = 1
@@ -233,7 +233,7 @@ extension GameScene {
                                                 updateMoves(-1)
                                                 character.path()
                                                 
-                                                run(SKAction.playSoundFileNamed("GrassStep", waitForCompletion: false))
+                                                SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
                                                 
                                                 if character.moves.count > 1 {
                                                     lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
@@ -253,7 +253,7 @@ extension GameScene {
                                         if boardClick.point == character.moves.last! && !addedLastPointByMove {
                                             character.moves.remove(at: character.moves.count - 1)
                                             
-                                            run(SKAction.playSoundFileNamed("GrassStep", waitForCompletion: false))
+                                            SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
                                             
                                             if character.moves.count > 1 {
                                                 lastPathStepSprite.alpha = 1
@@ -384,11 +384,11 @@ extension GameScene {
         /// Переменная, которая определяет на сколько нужно уменьшить размер стен
         let downScale: CGFloat = 2.5
     
-        var defaultRightLeft = CGSize(width: 10, height: 0)
-        var defaultTopBottom = CGSize(width: 0, height: 10)
+        var defaultRightLeft = CGSize(width: 5, height: 0)
+        var defaultTopBottom = CGSize(width: 0, height: 5)
 
-        var rightLeft = CGSize(width: 10, height: 0)
-        var topBottom = CGSize(width: 0, height: 10)
+        var rightLeft = CGSize(width: 5, height: 0)
+        var topBottom = CGSize(width: 0, height: 5)
 
         if object.rotate == RotationDirection.top || object.rotate == RotationDirection.bottom {
             defaultRightLeft.height = 0

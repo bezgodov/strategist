@@ -167,6 +167,10 @@ class ChooseLevelViewController: UIViewController {
         
         scrollView.alwaysBounceVertical = true
         scrollView.showsVerticalScrollIndicator = false
+        
+        if Model.sharedInstance.lastYpositionLevels != nil {
+            scrollView.contentOffset.y = Model.sharedInstance.lastYpositionLevels!
+        }
     }
     
     @objc func buttonAction(sender: UIButton!) {
@@ -348,6 +352,8 @@ class ChooseLevelViewController: UIViewController {
     
     @objc func startLevel() {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
+        
+        Model.sharedInstance.lastYpositionLevels = scrollView.contentOffset.y
         
         self.goToLevel()
     }
@@ -659,7 +665,7 @@ class ChooseLevelViewController: UIViewController {
     @IBAction func goToMenu(sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
         
-        presentMenu()
+        presentMenu(dismiss: true)
     }
     
     func presentMenu(dismiss: Bool = false) {

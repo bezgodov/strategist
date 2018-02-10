@@ -271,12 +271,12 @@ class GameScene: SKScene {
                     movesToExplodeLabel.name = "movesToExplode"
                     movesToExplodeLabel.zPosition = 1
                     movesToExplodeLabel.fontColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1)
-                    movesToExplodeLabel.fontSize = 65
+                    movesToExplodeLabel.fontSize = 32
                     movesToExplodeLabel.fontName = "AvenirNext-Bold"
                     movesToExplodeLabel.horizontalAlignmentMode = .center
                     movesToExplodeLabel.verticalAlignmentMode = .center
-                    movesToExplodeLabel.position.y -= 5
-                    movesToExplodeLabel.position.x += 5
+                    movesToExplodeLabel.position.y -= 2
+                    movesToExplodeLabel.position.x += 1
                     
                     if lastAngleMovesToExplodeLabel == 0 {
                         movesToExplodeLabel.zRotation = CGFloat(Double(35) * Double.pi / 180)
@@ -315,16 +315,15 @@ class GameScene: SKScene {
                     let xPositions = [1, -1, -1, 1]
                     var yPositions = [-1, 1, 1, -1]
                     
-                    
                     /// Размер стен (если вертикаль стоит по умолчанию, то стены справа и слева)
-                    var defaultSize = [CGSize(width: 10, height: TileHeight / (downScale / 2)), CGSize(width: 0, height: 10)]
+                    var defaultSize = [CGSize(width: 5, height: TileHeight / (downScale / 2)), CGSize(width: 0, height: 5)]
                     
                     var defaultAnchorPoint = [CGPoint(x: 1, y: 0), CGPoint(x: 0, y: 1), CGPoint(x: 0, y: 1), CGPoint(x: 1, y: 0)]
                     
                     
                     // Если у моста установлена вертикаль по умолчанию, то подстраиваем коэффициенты
                     if object.rotate.rawValue == 0 || object.rotate.rawValue == 2 {
-                        defaultSize = [CGSize(width: 10, height: 0), CGSize(width: TileWidth / (downScale / 2), height: 10)]
+                        defaultSize = [CGSize(width: 5, height: 0), CGSize(width: TileWidth / (downScale / 2), height: 5)]
                         defaultAnchorPoint = [CGPoint(x: 1, y: 1), CGPoint(x: 0, y: 0), CGPoint(x: 0, y: 0), CGPoint(x: 1, y: 1)]
                         yPositions = [1, -1, -1, 1]
                     }
@@ -711,7 +710,7 @@ class GameScene: SKScene {
             
             lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
         }
-//        run(SKAction.playSoundFileNamed("Lose2.wav", waitForCompletion: false))
+        
         SKTAudio.sharedInstance().playSoundEffect(filename: "Lose.mp3")
         
         gameTimer.invalidate()

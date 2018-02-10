@@ -6,6 +6,11 @@ class MenuViewController: UIViewController {
     
     @IBOutlet weak var countOfGems: UILabel!
     @IBOutlet weak var showTipsSwitch: UISwitch!
+    @IBOutlet var buyBtnBgView: [UIView]!
+    @IBOutlet weak var soundsSwitch: UISwitch!
+    @IBOutlet weak var bgMusicSwitch: UISwitch!
+    @IBOutlet weak var mainScrollView: UIScrollView!
+    @IBOutlet weak var lastViewForScrollView: UIView!
     
     var isDismissed: Bool = false
     
@@ -15,8 +20,26 @@ class MenuViewController: UIViewController {
         // Выводим кол-во собранных драг. камней
         countOfGems.text = String(Model.sharedInstance.getCountGems())
         
-        // Стандартное положение для "показывать подсказки№
+        // Стандартное положение для "показывать подсказки"
         showTipsSwitch.setOn(Model.sharedInstance.getShowTips(), animated: false)
+        
+        // Стандартное положение для "воспроизводить звуки"
+        soundsSwitch.setOn(Model.sharedInstance.isActivatedSounds(), animated: false)
+        
+        // Стандартное положение для "воспроизводить музыку на заднем фоне"
+        bgMusicSwitch.setOn(Model.sharedInstance.isActivatedBgMusic(), animated: false)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        for btn in buyBtnBgView {
+            btn.layer.cornerRadius = 5
+            btn.layer.borderWidth = 1
+            btn.layer.borderColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1).cgColor
+        }
+        
+        mainScrollView.backgroundColor = UIColor.init(red: 149/255, green: 201/255, blue: 45/255, alpha: 0.1)
+        mainScrollView.contentSize = CGSize(width: self.view.bounds.width, height: lastViewForScrollView.frame.maxY)
+        mainScrollView.showsVerticalScrollIndicator = false
     }
     
     /// При нажатии на Switch, удаление сохранённых данных
@@ -30,6 +53,8 @@ class MenuViewController: UIViewController {
             UserDefaults.standard.removeObject(forKey: "countGems")
             UserDefaults.standard.removeObject(forKey: "showTips")
             UserDefaults.standard.removeObject(forKey: "levelsCompletedWithHelp")
+            UserDefaults.standard.removeObject(forKey: "isActivatedSounds")
+            UserDefaults.standard.removeObject(forKey: "isActivatedBgMusic")
             UserDefaults.standard.synchronize()
             
             exit(0)
@@ -97,6 +122,16 @@ class MenuViewController: UIViewController {
             let url = URL(string: "itms-apps:itunes.apple.com/us/app/apple-store/id\(appId)?mt=8&action=write-review")!
             UIApplication.shared.openURL(url)
         }
+    }
+    
+    /// Включаем/выключаем звуки
+    @IBAction func switchSounds(sender: UISwitch) {
+        Model.sharedInstance.setActivatedSounds(sender.isOn)
+    }
+    
+    /// Включаем/выключаем музыку на заднем фоне
+    @IBAction func switchBgMusic(sender: UISwitch) {
+        Model.sharedInstance.setActivatedBgMusic(sender.isOn)
     }
     
     override var prefersStatusBarHidden: Bool {
