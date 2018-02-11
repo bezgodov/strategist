@@ -53,6 +53,7 @@
 		2B7DFE2D202DA12100999922 /* Click_ModalWindow.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE2C202DA12100999922 /* Click_ModalWindow.wav */; };
 		2B7DFE35202DBE1F00999922 /* NoStart.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE34202DBE1E00999922 /* NoStart.mp3 */; };
 		2B7DFE37202DC03B00999922 /* GrassStep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE36202DC03B00999922 /* GrassStep.mp3 */; };
+		2B80697D202FF4DE00BCB334 /* LaunchScreenPicture.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B80697C202FF4DE00BCB334 /* LaunchScreenPicture.png */; };
 		2B8407F91FE6A46F004B44CE /* PlayerWalks.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 2B8407F81FE6A46A004B44CE /* PlayerWalks.atlas */; };
 		2B9330721FD6352E002E5933 /* Level_1.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B9330711FD6352E002E5933 /* Level_1.json */; };
 		2B9330741FD63866002E5933 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9330731FD63866002E5933 /* Extensions.swift */; };
@@ -85,7 +86,6 @@
 		2BF041831FF7196D00624C4C /* Star.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041821FF7196D00624C4C /* Star.png */; };
 		2BF041861FF71A5A00624C4C /* PlayerPinkClimbs_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */; };
 		2BF041871FF71A5A00624C4C /* PlayerPinkClimbs_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */; };
-		2BF041931FF7276000624C4C /* Finish.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041921FF7276000624C4C /* Finish.png */; };
 		2BF041951FF7295800624C4C /* Spinner.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041941FF7295800624C4C /* Spinner.png */; };
 		2BFD739D20084C8A00968FB5 /* Gem_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BFD739920084C8700968FB5 /* Gem_blue.png */; };
 		2BFD739E20084C8A00968FB5 /* Gem_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BFD739A20084C8800968FB5 /* Gem_green.png */; };
@@ -143,6 +143,7 @@
 		2B7DFE2C202DA12100999922 /* Click_ModalWindow.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Click_ModalWindow.wav; sourceTree = "<group>"; };
 		2B7DFE34202DBE1E00999922 /* NoStart.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = NoStart.mp3; sourceTree = "<group>"; };
 		2B7DFE36202DC03B00999922 /* GrassStep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = GrassStep.mp3; sourceTree = "<group>"; };
+		2B80697C202FF4DE00BCB334 /* LaunchScreenPicture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchScreenPicture.png; sourceTree = "<group>"; };
 		2B8407F81FE6A46A004B44CE /* PlayerWalks.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = PlayerWalks.atlas; sourceTree = "<group>"; };
 		2B9330711FD6352E002E5933 /* Level_1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Level_1.json; sourceTree = "<group>"; };
 		2B9330731FD63866002E5933 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -175,7 +176,6 @@
 		2BF041821FF7196D00624C4C /* Star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Star.png; sourceTree = "<group>"; };
 		2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerPinkClimbs_1.png; sourceTree = "<group>"; };
 		2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerPinkClimbs_2.png; sourceTree = "<group>"; };
-		2BF041921FF7276000624C4C /* Finish.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Finish.png; sourceTree = "<group>"; };
 		2BF041941FF7295800624C4C /* Spinner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Spinner.png; sourceTree = "<group>"; };
 		2BFD739920084C8700968FB5 /* Gem_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Gem_blue.png; sourceTree = "<group>"; };
 		2BFD739A20084C8800968FB5 /* Gem_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Gem_green.png; sourceTree = "<group>"; };
@@ -325,7 +325,6 @@
 				2BFD73A120084C8E00968FB5 /* Enemies */,
 				2B99C12D1FFE2844008485BF /* Checked.png */,
 				2B99C1331FFE42DE008485BF /* Locked.png */,
-				2BF041921FF7276000624C4C /* Finish.png */,
 				2B5DCAB520272DAC007E9A54 /* Heart_empty.png */,
 				2BA41FEA1FFFAB850023E8FD /* Heart_empty-unfilled.png */,
 				2BA41FEB1FFFAB860023E8FD /* Heart.png */,
@@ -341,6 +340,7 @@
 				2BB481D72023220D009560B2 /* Tap.png */,
 				2BEF9FD4202A841200EFFB0F /* Fireworks_particle.png */,
 				2B98BA2D202F219E0023E539 /* ErasePath.png */,
+				2B80697C202FF4DE00BCB334 /* LaunchScreenPicture.png */,
 				2B5DCAB720274166007E9A54 /* MenuIcons */,
 				2BDCC6FA1FEF2E18009F2A0E /* BackgroundImages */,
 			);
@@ -516,7 +516,7 @@
 				2B7DFE1D202D91F600999922 /* Explosion.wav in Resources */,
 				2B5DCAAC20269B15007E9A54 /* Menu_levels.png in Resources */,
 				2B70BAA82012FFC8001866D5 /* Level_11.json in Resources */,
-				2BF041931FF7276000624C4C /* Finish.png in Resources */,
+				2B80697D202FF4DE00BCB334 /* LaunchScreenPicture.png in Resources */,
 				2B7DFE1F202D937F00999922 /* PickUpStar.mp3 in Resources */,
 				2BCD9DCE1FF672B60097C4F2 /* Tile_top.png in Resources */,
 			);

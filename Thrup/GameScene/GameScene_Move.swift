@@ -18,8 +18,12 @@ extension GameScene {
     }
     
     /// Проверяем не попал ли ГП на статичный объект
-    func checkStatisObjectPos(object: StaticObject) {
+    /// - Returns: возвращает true, если ГП попал на статичный объект
+    func checkStatisObjectPos(object: StaticObject) -> Bool {
         var characterMove = move
+        
+        var isLosed = false
+        
         if move >= character.moves.count {
             characterMove = character.moves.count - 1
         }
@@ -27,6 +31,7 @@ extension GameScene {
         if object.point == self.character.moves[characterMove] {
             if object.type != ObjectType.stopper && object.type != ObjectType.alarmclock && object.type != ObjectType.bridge && object.type != ObjectType.star && object.type != ObjectType.rotator {
                 loseLevel()
+                isLosed = true
             }
         }
         
@@ -56,6 +61,8 @@ extension GameScene {
                     for point in points {
                         if point == self.character.moves[self.move - 1] {
                             self.loseLevel()
+                            
+                            isLosed = true
                         }
                     }
                 })
@@ -78,6 +85,8 @@ extension GameScene {
             // Если направления не совпадают, то проигрыш
             if !checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.right, RotationDirection.left]) && !checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.top, RotationDirection.bottom]) {
                 loseLevel()
+                
+                isLosed = true
             }
         }
         
@@ -96,6 +105,8 @@ extension GameScene {
                     // Если ГП находится хотя бы на одном из шипов, то уровень проигран
                     if newPointForSpike == character.moves[move] {
                         loseLevel()
+                        
+                        isLosed = true
                     }
                 }
             }
@@ -114,6 +125,8 @@ extension GameScene {
          setExtraPath(direction: object.rotate, from: character.moves[move], to: character.moves[move + 1])
          }
          */
+        
+        return isLosed
     }
     
     /// Функция, которая меняет направление движения ГП
@@ -291,9 +304,6 @@ extension GameScene {
                 
                 character.run(SKAction.move(to: moveToPointLose, duration: 0.25), completion: {
                     self.loseLevel()
-                    
-                    // Если прошёл один ход, то запускает следующий
-                    self.mainTimer(interval: 0.4)
                 })
             }
             else {
@@ -302,12 +312,19 @@ extension GameScene {
                     SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
                     
                     if !characterAtAlarmClock {
+                        
+                        var isLosed = false
                         for object in self.staticObjects {
-                            self.checkStatisObjectPos(object: object)
+                            if self.checkStatisObjectPos(object: object) == true {
+                                isLosed = true
+                                break
+                            }
                         }
                         
-                        // Если прошёл один ход, то запускает следующий
-                        self.mainTimer(interval: 0.15)
+                        if !isLosed {
+                            // Если прошёл один ход, то запускает следующий
+                            self.mainTimer(interval: 0.15)
+                        }
                     }
                     // Если ГП находится на будильнике, то останавливаем все движущиейся объекты на 1 ход и толкаем ГП на 1 ход вперёд
                     else {
@@ -324,18 +341,21 @@ extension GameScene {
                                                 self.checkMovingObjectPos(object: object, characterMove: self.move)
                                             }
                                             
+                                            var isLosed = false
                                             for object in self.staticObjects {
-                                                self.checkStatisObjectPos(object: object)
+                                                if self.checkStatisObjectPos(object: object) == true {
+                                                    isLosed = true
+                                                    break
+                                                }
                                             }
                                             
-                                            self.mainTimer(interval: 0.15)
+                                            if !isLosed {
+                                                self.mainTimer(interval: 0.15)
+                                            }
                                         }
                                     }
                                 })
                             })
-                            
-                            // Если прошёл один ход, то запускает следующий
-                            //self.mainTimer()
                         }
                     }
                 })
