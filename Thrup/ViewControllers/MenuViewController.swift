@@ -70,33 +70,43 @@ class MenuViewController: UIViewController {
     
     /// Функция, которая включает или выключает подсказки при клике на объекты на игровом поле
     @IBAction func showTips(sender: UISwitch) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Switch.wav")
+        
         Model.sharedInstance.setShowTips(val: sender.isOn)
     }
     
     @IBAction func buyGems(sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
         addGems(amount: sender.tag)
     }
     
-    func addGems(amount: Int) {
-        // Анимация увеличения кол-ва драг. камней
-        let previousValue = Model.sharedInstance.getCountGems()
-        let newValue = previousValue + amount
-        let duration: Double = 0.75
-        DispatchQueue.global().async {
-            for index in previousValue...newValue {
-                let sleepTime = UInt32(duration / Double(newValue - previousValue) * 1000000.0)
-                usleep(sleepTime)
-                
-                DispatchQueue.main.async {
-                    self.countOfGems.text = String(index)
+    func addGems(amount: Int, animation: Bool = true) {
+        if animation {
+            // Анимация увеличения кол-ва драг. камней
+            let previousValue = Model.sharedInstance.getCountGems()
+            let newValue = previousValue + amount
+            let duration: Double = 0.75
+            DispatchQueue.global().async {
+                for index in previousValue...newValue {
+                    let sleepTime = UInt32(duration / Double(newValue - previousValue) * 1000000.0)
+                    usleep(sleepTime)
+                    
+                    DispatchQueue.main.async {
+                        self.countOfGems.text = String(index)
+                    }
                 }
             }
+        }
+        else {
+            countOfGems.text = String(Model.sharedInstance.getCountGems() + amount)
         }
         
         Model.sharedInstance.setCountGems(amountGems: amount)
     }
     
     @IBAction func goBack(sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
         
         if isDismissed {
             navigationController?.popViewController(animated: true)
@@ -105,7 +115,6 @@ class MenuViewController: UIViewController {
         else {
             if let storyboard = storyboard {
                 let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
-                chooseLevelViewController.characterPosLevelFromScene = Model.sharedInstance.currentLevel
 
                 navigationController?.pushViewController(chooseLevelViewController, animated: true)
             }
@@ -114,6 +123,8 @@ class MenuViewController: UIViewController {
     
     /// Функция, которая предназначена для оценки игры
     @IBAction func rateApp(sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
         if #available(iOS 10.3,*) {
             SKStoreReviewController.requestReview()
         }
@@ -126,12 +137,28 @@ class MenuViewController: UIViewController {
     
     /// Включаем/выключаем звуки
     @IBAction func switchSounds(sender: UISwitch) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Switch.wav")
+        
         Model.sharedInstance.setActivatedSounds(sender.isOn)
+        
+        // Если звуки были выключены, то при клике на switch звуки включаются и воспроизводим звук (1-ый не воспроизводится, т.к. звуки были выключены)
+        if Model.sharedInstance.isActivatedSounds() {
+            SKTAudio.sharedInstance().playSoundEffect(filename: "Switch.wav")
+        }
     }
     
     /// Включаем/выключаем музыку на заднем фоне
     @IBAction func switchBgMusic(sender: UISwitch) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Switch.wav")
+        
         Model.sharedInstance.setActivatedBgMusic(sender.isOn)
+    }
+    
+    /// Просмотр рекламы
+    @IBAction func watchAdv(sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
+        addGems(amount: sender.tag, animation: false)
     }
     
     override var prefersStatusBarHidden: Bool {

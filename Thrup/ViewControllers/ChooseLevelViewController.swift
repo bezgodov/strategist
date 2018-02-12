@@ -12,12 +12,6 @@ class ChooseLevelViewController: UIViewController {
     
     /// UIView, на которую крепятся все ячейки поля
     var tilesLayer: UIView!
-
-    /// Общее кол-во уровней
-    var countLevels = Model.sharedInstance.countLevels
-    
-    /// Количество пройденных уровней (последний пройденный уровень)
-    var countCompletedLevels = Model.sharedInstance.getCountCompletedLevels()
     
     /// Расстояние по вертикали между ячейками уровней
     var distanceBetweenLevels = 3
@@ -46,8 +40,14 @@ class ChooseLevelViewController: UIViewController {
     /// Модальное окно
     var modalWindow: UIView!
     
-    /// Стартовая позиция ГП после перехода из уровня
-    var characterPosLevelFromScene = -1
+    /// Количество уровней, которое необходимо завершить для каждой секции для 1 секции -> 11, для второй -> 23
+    var sections = [11, 23, 39]
+    
+    /// Количество уровней между секциями
+    var distanceBetweenSections = 15
+    
+    /// Заблокирована ли следующая секция (если не пройдено необходимо кол-во уровней за предыдущую секцию)
+    var isNextSectionDisabled = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,23 +57,25 @@ class ChooseLevelViewController: UIViewController {
         characterInitial()
         
         // Если самое начало игры, то делаем анимацию перехода на 1-ый уровень
-        if countCompletedLevels == 0 {
+        if Model.sharedInstance.getCountCompletedLevels() == 0 {
             moveToPoint(from: Point(column: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].column, row: levelButtonsPositions[Model.sharedInstance.currentLevel - 1].row - distanceBetweenLevels), to: levelButtonsPositions[Model.sharedInstance.currentLevel - 1], delay: 0.5)
         }
         else {
-            if Model.sharedInstance.currentLevel - 1 < countLevels {
-                // Если перешли в меню после прохождения уровня, то запускаем анимацию перехода на след. уровень
-                if moveCharacterToNextLevel {
-                    // Если последний пройденный уровень больше, чем последний максимальный
-                    if Model.sharedInstance.currentLevel > countCompletedLevels {
-                        var levelFrom = countCompletedLevels - 1
-                        if Model.sharedInstance.currentLevel > 2 {
-                            if !Model.sharedInstance.isCompletedLevel(levelFrom) {
-                                levelFrom -= 1
+            if !isNextSectionDisabled {
+                if Model.sharedInstance.currentLevel - 1 < Model.sharedInstance.countLevels {
+                    // Если перешли в меню после прохождения уровня, то запускаем анимацию перехода на след. уровень
+                    if moveCharacterToNextLevel {
+                        // Если последний пройденный уровень больше, чем последний максимальный
+                        if Model.sharedInstance.currentLevel > Model.sharedInstance.getCountCompletedLevels() {
+                            var levelFrom = Model.sharedInstance.getCountCompletedLevels() - 1
+                            if Model.sharedInstance.currentLevel > 2 {
+                                if !Model.sharedInstance.isCompletedLevel(levelFrom) {
+                                    levelFrom -= 1
+                                }
                             }
+                            
+                            moveToPoint(from: levelButtonsPositions[levelFrom], to: levelButtonsPositions[Model.sharedInstance.getCountCompletedLevels()], delay: 0.5)
                         }
-                        
-                        moveToPoint(from: levelButtonsPositions[levelFrom], to: levelButtonsPositions[countCompletedLevels], delay: 0.5)
                     }
                 }
             }
@@ -99,7 +101,7 @@ class ChooseLevelViewController: UIViewController {
             walkFrames.append(UIImage(cgImage: playerAnimatedAtlas.textureNamed(playerTextureName).cgImage()))
         }
         
-        let pointCharacter = pointFor(column: characterPointStart.column, row: characterPointStart.row - (countCompletedLevels == 0 ? distanceBetweenLevels : 0))
+        let pointCharacter = pointFor(column: characterPointStart.column, row: characterPointStart.row - (Model.sharedInstance.getCountCompletedLevels() == 0 ? distanceBetweenLevels : 0))
         let textureCharacter = playerAnimatedAtlas.textureNamed("PlayerWalks_2").cgImage()
         let sizeCharacter = CGSize(width: levelTileSize.width * 0.5, height: CGFloat(textureCharacter.height) / (CGFloat(textureCharacter.width) / (levelTileSize.width * 0.5)))
         
@@ -112,11 +114,11 @@ class ChooseLevelViewController: UIViewController {
     
     func menuSettings() {
          // Если нахожимся на последних уровнях, то подфиксиваем так, чтобы последний уровень фиксировался по центру и не уходил дальше
-        if countLevels - (countCompletedLevels) < distanceBetweenLevels {
-            extraCountForExtremeLevels = countLevels - countCompletedLevels - distanceBetweenLevels + 1
+        if Model.sharedInstance.countLevels - (Model.sharedInstance.getCountCompletedLevels()) < distanceBetweenLevels {
+            extraCountForExtremeLevels = Model.sharedInstance.countLevels - Model.sharedInstance.getCountCompletedLevels() - distanceBetweenLevels + 1
         }
         
-        boardSize.row = (countCompletedLevels + distanceBetweenLevels + extraCountForExtremeLevels) * distanceBetweenLevels
+        boardSize.row = (Model.sharedInstance.getCountCompletedLevels() + distanceBetweenLevels + extraCountForExtremeLevels) * distanceBetweenLevels
         
         levelTileSize.width = self.view.bounds.width / CGFloat(boardSize.column)
         levelTileSize.height = levelTileSize.width
@@ -126,27 +128,29 @@ class ChooseLevelViewController: UIViewController {
         scrollView.addSubview(tilesLayer)
         addTiles()
 
-        if Model.sharedInstance.currentLevel <= countCompletedLevels {
-            var lastLevelKoef = 0
-            if countCompletedLevels >= levelButtonsPositions.count {
-                lastLevelKoef = 1
-            }
-            
-            characterPointStart = levelButtonsPositions[countCompletedLevels - lastLevelKoef]
-        }
-        else {
-            if Model.sharedInstance.currentLevel > countLevels {
-                characterPointStart = levelButtonsPositions.last!
+        if !isNextSectionDisabled {
+            if Model.sharedInstance.currentLevel <= Model.sharedInstance.getCountCompletedLevels() {
+                var lastLevelKoef = 0
+                if Model.sharedInstance.getCountCompletedLevels() >= levelButtonsPositions.count {
+                    lastLevelKoef = 1
+                }
+                
+                characterPointStart = levelButtonsPositions[Model.sharedInstance.getCountCompletedLevels() - lastLevelKoef]
             }
             else {
-                var levelFrom = countCompletedLevels - 1
-                if Model.sharedInstance.currentLevel > 2 {
-                    if moveCharacterToNextLevel {
-                        if !Model.sharedInstance.isCompletedLevel(levelFrom) {
-                            levelFrom -= 1
+                if Model.sharedInstance.currentLevel > Model.sharedInstance.countLevels {
+                    characterPointStart = levelButtonsPositions.last!
+                }
+                else {
+                    var levelFrom = Model.sharedInstance.getCountCompletedLevels() - 1
+                    if Model.sharedInstance.currentLevel > 2 {
+                        if moveCharacterToNextLevel {
+                            if !Model.sharedInstance.isCompletedLevel(levelFrom) {
+                                levelFrom -= 1
+                            }
+                            
+                            characterPointStart = levelButtonsPositions[levelFrom]
                         }
-                        
-                        characterPointStart = levelButtonsPositions[levelFrom]
                     }
                 }
             }
@@ -157,9 +161,11 @@ class ChooseLevelViewController: UIViewController {
         // Почему-то было сложно сделать scroll снизу вверх, то просто перевернул на 180 слой, а потом все кнопки тоже на 180
         scrollView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
         
-        scrollView.contentSize = CGSize(width: self.view.bounds.width, height: CGFloat((countCompletedLevels + distanceBetweenLevels + extraCountForExtremeLevels) * distanceBetweenLevels) * levelTileSize.height)
+        let koefisNextSectionDisabled = isNextSectionDisabled ? 1 : 0
         
-        scrollView.contentOffset.y = CGFloat((countCompletedLevels - 1) * distanceBetweenLevels) * levelTileSize.height
+        scrollView.contentSize = CGSize(width: self.view.bounds.width, height: CGFloat((Model.sharedInstance.getCountCompletedLevels() + distanceBetweenLevels + extraCountForExtremeLevels - koefisNextSectionDisabled) * distanceBetweenLevels) * levelTileSize.height)
+        
+        scrollView.contentOffset.y = CGFloat((Model.sharedInstance.getCountCompletedLevels() - 1) * distanceBetweenLevels) * levelTileSize.height
         
         scrollView.contentInset = UIEdgeInsets.zero
         scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.never
@@ -207,6 +213,9 @@ class ChooseLevelViewController: UIViewController {
                 
                 CATransaction.begin()
                 
+                // Пока ГП перемещается, то блокируем клики
+                scrollView.isUserInteractionEnabled = false
+                
                 if to.row != 1 {
                     DispatchQueue.main.async {
                         
@@ -230,6 +239,8 @@ class ChooseLevelViewController: UIViewController {
                     
                     self.modalWindowPresent()
                     self.characterPointStart = to
+                    
+                    self.scrollView.isUserInteractionEnabled = true
                 })
                 
                 movement.beginTime = CACurrentMediaTime() + delay
@@ -254,7 +265,9 @@ class ChooseLevelViewController: UIViewController {
     func modalWindowPresent() {
         // Добавляем бг, чтобы при клике на него закрыть всё модальное окно
         modalWindowBg = UIView(frame: scrollView.bounds)
-        modalWindowBg.backgroundColor = UIColor.clear
+        modalWindowBg.backgroundColor = UIColor.black
+        modalWindowBg.restorationIdentifier = "modalWindowBg"
+        modalWindowBg.alpha = 0
         
         // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
         if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
@@ -266,27 +279,27 @@ class ChooseLevelViewController: UIViewController {
         scrollView.isScrollEnabled = false
         
         // Добавляем модальное окно
-        modalWindow = UIView(frame: CGRect(x: self.view.frame.minX - 200, y: self.view.bounds.midY - 200 / 2, width: 200, height: 200))
+        modalWindow = UIView(frame: CGRect(x: scrollView.bounds.minX - 200, y: scrollView.bounds.midY - 200 / 2, width: 200, height: 200))
         modalWindow.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
         
-        UIView.animate(withDuration: 0.215, animations: {
-            self.modalWindow.frame.origin.x = self.view.bounds.midX - self.modalWindow.frame.size.width / 2
-        })
-        
         modalWindow.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
-        
         modalWindow.layer.cornerRadius = 15
         modalWindow.layer.shadowColor = UIColor.black.cgColor
         modalWindow.layer.shadowOffset = CGSize.zero
         modalWindow.layer.shadowOpacity = 0.35
         modalWindow.layer.shadowRadius = 10
         
+        scrollView.addSubview(modalWindow)
+        
+        UIView.animate(withDuration: 0.215, animations: {
+            self.modalWindowBg.alpha = 0.5
+            self.modalWindow.frame.origin.x = self.scrollView.bounds.midX - self.modalWindow.frame.width / 2
+        })
+        
         // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
         if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
             modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
         }
-        
-        modalWindowBg.addSubview(modalWindow)
         
         /// Название выбранного уровня
         let levelNumberLabel = UILabel(frame: CGRect(x: 20, y: 25, width: modalWindow.frame.size.width - 40, height: 35))
@@ -359,11 +372,13 @@ class ChooseLevelViewController: UIViewController {
     }
     
     @objc func bgClick(_ sender: UITapGestureRecognizer) {
-        if sender.view?.superview === scrollView {
+        if sender.view?.restorationIdentifier == "modalWindowBg" {
             UIView.animate(withDuration: 0.215, animations: {
                 self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
+                self.modalWindowBg.alpha = 0
             }, completion: { (_) in
                 self.modalWindowBg.removeFromSuperview()
+                self.modalWindow.removeFromSuperview()
                 self.scrollView.isScrollEnabled = true
             })
         }
@@ -547,10 +562,35 @@ class ChooseLevelViewController: UIViewController {
         levelStateImage.frame.origin = CGPoint(x: buttonToPin.frame.size.width - levelStateImage.frame.size.width - 5, y: buttonToPin.frame.size.height - levelStateImage.frame.size.height - 5)
         buttonToPin.addSubview(levelStateImage)
     }
+
+    /// Функция получает значение кол-ва уровней, которые должны быть завершены. чтобы получить доступ к следующей секции
+    func getCountCompleteLevelsForNextSection(_ level: Int) -> Int {
+        return sections[level / distanceBetweenSections - 1]
+    }
+    
+    /// Функция, считает количество пройденных уровней в интервале [0; maxLevel]
+    func countCompletedLevelsForPreviousSection(_ maxLevel: Int) -> Int {
+        var level = maxLevel
+        
+        var countOfCompletedLevels = 0
+        
+        while level > 0 {
+            if Model.sharedInstance.isCompletedLevel(level) {
+                countOfCompletedLevels += 1
+            }
+            
+            level -= 1
+        }
+        
+        return countOfCompletedLevels
+    }
     
     func addTiles() {
         /// Флаг, который запоминает последнюю строку, на которой была вставлена кнопка уровня
         var lastRowWhereBtnAdded = Int.min
+        
+        /// Нужно ли заблокировать все уровни, если текущая секция не пройдена
+        var isLevelsAfterSectionDisabled = false
         
         // -5 и 5 для того, чтобы при "bounce" были сверху и снизу ячейки
         for row in -10..<boardSize.row + 10 {
@@ -577,7 +617,7 @@ class ChooseLevelViewController: UIViewController {
                 
                 let randColumn = Int(arc4random_uniform(3)) + 1
                 
-                if (lastRowWhereBtnAdded != row) && (row >= 0 && row < boardSize.row + distanceBetweenLevels * distanceBetweenLevels) && ((row / distanceBetweenLevels + 1) <= countLevels) && (row % 3 == 0) {
+                if (lastRowWhereBtnAdded != row) && (row >= 0 && row < boardSize.row + distanceBetweenLevels * distanceBetweenLevels) && ((row / distanceBetweenLevels + 1) <= Model.sharedInstance.countLevels) && (row % 3 == 0) {
                     
                     let buttonPos = pointFor(column: randColumn, row: row + 1)
                     
@@ -594,7 +634,7 @@ class ChooseLevelViewController: UIViewController {
                     
                     var koefForLastLevel = 0
                     
-                    if countLevels == countCompletedLevels {
+                    if Model.sharedInstance.countLevels == Model.sharedInstance.getCountCompletedLevels() {
                         koefForLastLevel = 0
                     }
                     else {
@@ -604,7 +644,7 @@ class ChooseLevelViewController: UIViewController {
                     }
                     
                     // Если уровень (который отображает кнопка) равен тому уровню, который был пройден последним, то запомнить координаты этой позиции, чтобы вывести туда персонажа
-                    if row / distanceBetweenLevels + 1 == countCompletedLevels + koefForLastLevel {
+                    if row / distanceBetweenLevels + 1 == Model.sharedInstance.getCountCompletedLevels() + koefForLastLevel {
                         characterPointStart = Point(column: randColumn, row: row + 1)
                     }
                     
@@ -613,7 +653,34 @@ class ChooseLevelViewController: UIViewController {
                         addLevelImageState(spriteName: "Checked", buttonToPin: button)
                     }
                     
-                    if (row / distanceBetweenLevels) <= countCompletedLevels + 1 {
+                    if (row > 0) && ((row / distanceBetweenLevels) % distanceBetweenSections == 0) && (row > Model.sharedInstance.getCountCompletedLevels()) {
+                        /// Количество пройденных уровней [0; ближайшая граница секции]
+                        let completedLevels = countCompletedLevelsForPreviousSection(row / distanceBetweenLevels)
+                        
+                        /// Кол-во уровней, которое разблокирует новую секцию
+                        let needCompleteLevelsPreviousSection = getCountCompleteLevelsForNextSection(row / distanceBetweenLevels)
+                        
+                        if completedLevels < needCompleteLevelsPreviousSection {
+                            isLevelsAfterSectionDisabled = true
+                            
+                            if Model.sharedInstance.getCountCompletedLevels() >= needCompleteLevelsPreviousSection {
+                                isNextSectionDisabled = true
+                                characterPointStart = levelButtonsPositions.last!
+                            }
+                            
+                            let point = pointFor(column: 1, row: row - 2)
+                            let labelCountUnlock = UILabel(frame: CGRect(x: point.x - levelTileSize.width / 2, y: point.y + levelTileSize.height, width: levelTileSize.width * 3, height: levelTileSize.height))
+                            labelCountUnlock.text = "To unlock next section complete at least \(needCompleteLevelsPreviousSection - completedLevels) more levels"
+                            labelCountUnlock.textAlignment = NSTextAlignment.center
+                            labelCountUnlock.numberOfLines = 3
+                            labelCountUnlock.textColor = UIColor.white
+                            labelCountUnlock.backgroundColor = UIColor.red
+                            labelCountUnlock.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+                            scrollView.addSubview(labelCountUnlock)
+                        }
+                    }
+                    
+                    if (row / distanceBetweenLevels) <= Model.sharedInstance.getCountCompletedLevels() + 1 && !isLevelsAfterSectionDisabled {
                         if Model.sharedInstance.emptySavedLevelsLives() == false {
                             // Если на уровне не осталось жизней, то добавляем соответствующую метку
                             if Model.sharedInstance.getLevelLives(row / distanceBetweenLevels + 1) <= 0 {
@@ -626,6 +693,8 @@ class ChooseLevelViewController: UIViewController {
                         button.addTarget(self, action: #selector(shakeScreen), for: .touchUpInside)
                         addLevelImageState(spriteName: "Locked", buttonToPin: button, sizeKoef: CGSize(width: 0.3, height: 0.3))
                     }
+                    
+                    
                     
                     button.restorationIdentifier = "levelTile_\(button.tag)"
                     

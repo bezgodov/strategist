@@ -50,7 +50,6 @@
 		2B7DFE1F202D937F00999922 /* PickUpStar.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE1E202D937E00999922 /* PickUpStar.mp3 */; };
 		2B7DFE21202D9AB300999922 /* PickUpCoin.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE20202D9AB300999922 /* PickUpCoin.mp3 */; };
 		2B7DFE25202D9C4000999922 /* Click.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE24202D9C3F00999922 /* Click.wav */; };
-		2B7DFE2D202DA12100999922 /* Click_ModalWindow.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE2C202DA12100999922 /* Click_ModalWindow.wav */; };
 		2B7DFE35202DBE1F00999922 /* NoStart.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE34202DBE1E00999922 /* NoStart.mp3 */; };
 		2B7DFE37202DC03B00999922 /* GrassStep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE36202DC03B00999922 /* GrassStep.mp3 */; };
 		2B80697D202FF4DE00BCB334 /* LaunchScreenPicture.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B80697C202FF4DE00BCB334 /* LaunchScreenPicture.png */; };
@@ -80,6 +79,8 @@
 		2BCD9DCE1FF672B60097C4F2 /* Tile_top.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BCD9DCD1FF672B60097C4F2 /* Tile_top.png */; };
 		2BD002A61FDAAD2000A95001 /* StaticObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD002A51FDAAD2000A95001 /* StaticObject.swift */; };
 		2BD002AC1FDBAB2900A95001 /* Level_6.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BD002AB1FDBAB2900A95001 /* Level_6.json */; };
+		2BD139962031374A005C3C76 /* Switch.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2BD139952031374A005C3C76 /* Switch.wav */; };
+		2BD1399820313A70005C3C76 /* Click_ModalWindow.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2BD1399720313A6F005C3C76 /* Click_ModalWindow.wav */; };
 		2BDCDFDD2011B04D00DCFA6D /* Level_10.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BDCDFDC2011B04D00DCFA6D /* Level_10.json */; };
 		2BDCE0012012B9B200DCFA6D /* AlarmClock.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BDCE0002012B9B200DCFA6D /* AlarmClock.png */; };
 		2BEF9FD5202A841200EFFB0F /* Fireworks_particle.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BEF9FD4202A841200EFFB0F /* Fireworks_particle.png */; };
@@ -140,7 +141,6 @@
 		2B7DFE1E202D937E00999922 /* PickUpStar.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = PickUpStar.mp3; sourceTree = "<group>"; };
 		2B7DFE20202D9AB300999922 /* PickUpCoin.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = PickUpCoin.mp3; sourceTree = "<group>"; };
 		2B7DFE24202D9C3F00999922 /* Click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Click.wav; sourceTree = "<group>"; };
-		2B7DFE2C202DA12100999922 /* Click_ModalWindow.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Click_ModalWindow.wav; sourceTree = "<group>"; };
 		2B7DFE34202DBE1E00999922 /* NoStart.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = NoStart.mp3; sourceTree = "<group>"; };
 		2B7DFE36202DC03B00999922 /* GrassStep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = GrassStep.mp3; sourceTree = "<group>"; };
 		2B80697C202FF4DE00BCB334 /* LaunchScreenPicture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchScreenPicture.png; sourceTree = "<group>"; };
@@ -170,6 +170,8 @@
 		2BCD9DCD1FF672B60097C4F2 /* Tile_top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tile_top.png; sourceTree = "<group>"; };
 		2BD002A51FDAAD2000A95001 /* StaticObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticObject.swift; sourceTree = "<group>"; };
 		2BD002AB1FDBAB2900A95001 /* Level_6.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_6.json; sourceTree = "<group>"; };
+		2BD139952031374A005C3C76 /* Switch.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Switch.wav; sourceTree = "<group>"; };
+		2BD1399720313A6F005C3C76 /* Click_ModalWindow.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Click_ModalWindow.wav; sourceTree = "<group>"; };
 		2BDCDFDC2011B04D00DCFA6D /* Level_10.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_10.json; sourceTree = "<group>"; };
 		2BDCE0002012B9B200DCFA6D /* AlarmClock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AlarmClock.png; sourceTree = "<group>"; };
 		2BEF9FD4202A841200EFFB0F /* Fireworks_particle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Fireworks_particle.png; sourceTree = "<group>"; };
@@ -293,7 +295,8 @@
 				2B7DFE1E202D937E00999922 /* PickUpStar.mp3 */,
 				2B7DFE20202D9AB300999922 /* PickUpCoin.mp3 */,
 				2B7DFE24202D9C3F00999922 /* Click.wav */,
-				2B7DFE2C202DA12100999922 /* Click_ModalWindow.wav */,
+				2BD1399720313A6F005C3C76 /* Click_ModalWindow.wav */,
+				2BD139952031374A005C3C76 /* Switch.wav */,
 			);
 			path = Sounds;
 			sourceTree = "<group>";
@@ -475,6 +478,7 @@
 				2BC7B77D20173D1800B99AB8 /* Level_13.json in Resources */,
 				2B309A941FE39BD50095D11E /* Bee.png in Resources */,
 				2BEF9FD5202A841200EFFB0F /* Fireworks_particle.png in Resources */,
+				2BD139962031374A005C3C76 /* Switch.wav in Resources */,
 				2B7DFE35202DBE1F00999922 /* NoStart.mp3 in Resources */,
 				2BA41FEC1FFFAB860023E8FD /* Heart_empty-unfilled.png in Resources */,
 				2BFEF9AD200A3DC300A7AB79 /* PlayerStaysFront.png in Resources */,
@@ -485,6 +489,7 @@
 				2B0CF13B20287D3A0060BEF7 /* TopMenuViewBorderDown.png in Resources */,
 				2B309A961FE39BF20095D11E /* Fish.png in Resources */,
 				2B5DCAAE20269B15007E9A54 /* Menu_start.png in Resources */,
+				2BD1399820313A70005C3C76 /* Click_ModalWindow.wav in Resources */,
 				2B7DFE19202D904100999922 /* Win.wav in Resources */,
 				2BFD739D20084C8A00968FB5 /* Gem_blue.png in Resources */,
 				2BF041861FF71A5A00624C4C /* PlayerPinkClimbs_1.png in Resources */,
@@ -492,7 +497,6 @@
 				2BF041951FF7295800624C4C /* Spinner.png in Resources */,
 				2B7DFE13202D881200999922 /* Disable.wav in Resources */,
 				2BCD9DCC1FF672210097C4F2 /* Tile_center.png in Resources */,
-				2B7DFE2D202DA12100999922 /* Click_ModalWindow.wav in Resources */,
 				2BCD9DC81FF665510097C4F2 /* Tile_top_left.png in Resources */,
 				2BFD73A020084C8A00968FB5 /* Gem_red.png in Resources */,
 				2B7DFE25202D9C4000999922 /* Click.wav in Resources */,

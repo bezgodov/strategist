@@ -150,9 +150,6 @@ extension GameScene {
     @objc func nextLevel(_ sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
         
-        // Так как ГП начнёт перемещаться автоматически, то в нил переменную, которая выстанавливает последнее положение
-        Model.sharedInstance.lastYpositionLevels = nil
-        
         Model.sharedInstance.gameViewControllerConnect.goToLevels(moveCharacterFlag: true)
     }
     
@@ -166,6 +163,7 @@ extension GameScene {
         if sender.view?.superview === self.view! {
             UIView.animate(withDuration: 0.215, animations: {
                 self.modalWindow.frame.origin.x = self.view!.bounds.maxX
+                self.modalWindowBg.alpha = 0
             }, completion: { (_) in
                 
                 self.modalWindowBg.removeFromSuperview()

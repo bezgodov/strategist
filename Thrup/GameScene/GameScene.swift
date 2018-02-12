@@ -719,8 +719,11 @@ class GameScene: SKScene {
     
     /// Уровень пройден
     func winLevel() {
-        if Model.sharedInstance.currentLevel >= Model.sharedInstance.getCountCompletedLevels() {
+        if Model.sharedInstance.currentLevel > Model.sharedInstance.getCountCompletedLevels() {
             Model.sharedInstance.setCountCompletedLevels(Model.sharedInstance.currentLevel)
+            
+            // Так как ГП начнёт перемещаться автоматически, то в нил переменную, которая выстанавливает последнее положение
+            Model.sharedInstance.lastYpositionLevels = nil
         }
         
         modalWindowPresent(type: modalWindowType.win)

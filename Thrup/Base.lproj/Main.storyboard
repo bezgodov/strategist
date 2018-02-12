@@ -267,7 +267,7 @@
                                                             <color key="titleColor" red="0.0" green="0.42745098040000001" blue="0.94117647059999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         </state>
                                                         <connections>
-                                                            <action selector="buyGemsWithSender:" destination="eS8-W6-LWO" eventType="touchUpInside" id="emC-yf-ujj"/>
+                                                            <action selector="watchAdvWithSender:" destination="eS8-W6-LWO" eventType="touchUpInside" id="929-Zf-Q3G"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
