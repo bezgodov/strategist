@@ -117,7 +117,9 @@ extension GameScene {
             
             SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpStar.mp3")
             
-            object.removeFromParent()
+            object.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                object.removeFromParent()
+            })
         }
         
         /*
