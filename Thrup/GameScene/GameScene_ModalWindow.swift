@@ -161,6 +161,8 @@ extension GameScene {
     
     @objc func bgClick(_ sender: UITapGestureRecognizer) {
         if sender.view?.superview === self.view! {
+            SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
+            
             UIView.animate(withDuration: 0.215, animations: {
                 self.modalWindow.frame.origin.x = self.view!.bounds.maxX
                 self.modalWindowBg.alpha = 0

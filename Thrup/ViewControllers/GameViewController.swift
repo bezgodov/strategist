@@ -73,7 +73,7 @@ class GameViewController: UIViewController {
     
     /// При нажатии на "Уровни"
     @IBAction func goToLevels(sender: UIButton) {
-        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
         
         Model.sharedInstance.gameScene.modalWindowPresent(type: GameScene.modalWindowType.menu)
     }

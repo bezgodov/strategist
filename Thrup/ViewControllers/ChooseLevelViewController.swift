@@ -182,7 +182,7 @@ class ChooseLevelViewController: UIViewController {
     @objc func buttonAction(sender: UIButton!) {
         let buttonSenderAction: UIButton = sender
         
-        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
         
         // Если уровень не заблокирован
         if buttonSenderAction.tag != -1 {
@@ -373,6 +373,8 @@ class ChooseLevelViewController: UIViewController {
     
     @objc func bgClick(_ sender: UITapGestureRecognizer) {
         if sender.view?.restorationIdentifier == "modalWindowBg" {
+            SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
+            
             UIView.animate(withDuration: 0.215, animations: {
                 self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
                 self.modalWindowBg.alpha = 0
@@ -669,14 +671,24 @@ class ChooseLevelViewController: UIViewController {
                             }
                             
                             let point = pointFor(column: 1, row: row - 2)
-                            let labelCountUnlock = UILabel(frame: CGRect(x: point.x - levelTileSize.width / 2, y: point.y + levelTileSize.height, width: levelTileSize.width * 3, height: levelTileSize.height))
-                            labelCountUnlock.text = "To unlock next section complete at least \(needCompleteLevelsPreviousSection - completedLevels) more levels"
-                            labelCountUnlock.textAlignment = NSTextAlignment.center
-                            labelCountUnlock.numberOfLines = 3
-                            labelCountUnlock.textColor = UIColor.white
-                            labelCountUnlock.backgroundColor = UIColor.red
-                            labelCountUnlock.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-                            scrollView.addSubview(labelCountUnlock)
+                            let viewCountLevelsToUnlock = UIView(frame: CGRect(x: point.x - levelTileSize.width, y: point.y + levelTileSize.height, width: levelTileSize.width * 4, height: levelTileSize.height))
+                            viewCountLevelsToUnlock.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
+                            viewCountLevelsToUnlock.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+                            
+                            viewCountLevelsToUnlock.layer.cornerRadius = 15
+                            viewCountLevelsToUnlock.layer.shadowColor = UIColor.black.cgColor
+                            viewCountLevelsToUnlock.layer.shadowOffset = CGSize.zero
+                            viewCountLevelsToUnlock.layer.shadowOpacity = 0.35
+                            viewCountLevelsToUnlock.layer.shadowRadius = 10
+                            scrollView.addSubview(viewCountLevelsToUnlock)
+                            
+                            let labelCountLevelsToUnlock = UILabel(frame: CGRect(x: 10, y: 0, width: viewCountLevelsToUnlock.frame.width - 20, height: viewCountLevelsToUnlock.frame.height))
+                            labelCountLevelsToUnlock.text = "To unlock next section complete at least \(needCompleteLevelsPreviousSection - completedLevels) more levels"
+                            labelCountLevelsToUnlock.textAlignment = NSTextAlignment.center
+                            labelCountLevelsToUnlock.numberOfLines = 3
+                            labelCountLevelsToUnlock.font = UIFont(name: "AvenirNext-Medium", size: 18)
+                            labelCountLevelsToUnlock.textColor = UIColor.white
+                            viewCountLevelsToUnlock.addSubview(labelCountLevelsToUnlock)
                         }
                     }
                     

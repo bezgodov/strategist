@@ -339,7 +339,7 @@ extension GameScene {
     }
     
     func presentObjectInfoView(spriteName: String, description: String) {
-        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
         
         let objectInfoViewSize = CGSize(width: (Model.sharedInstance.gameScene.view?.frame.width)!, height: 65)
         
