@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  Thrup
-//
-//  Created by Максим Безгодов on 06.11.2017.
-//
-
 import UIKit
 
 @UIApplicationMain
