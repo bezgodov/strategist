@@ -47,6 +47,7 @@ class Model {
             for index in completedLevels.count + 1...countLevels {
                 setLevelLives(level: index, newValue: 5)
                 setCompletedLevel(index, value: false)
+                generateTilesPosition()
             }
         }
         
@@ -62,7 +63,7 @@ class Model {
     var gameScene: GameScene!
     
     /// Общее количество уровней
-    var countLevels: Int = 13
+    var countLevels: Int = 16
     
     /// Текущий уровень
     var currentLevel: Int = 1
@@ -208,5 +209,31 @@ class Model {
     
     func isActivatedBgMusic() -> Bool {
         return isActivatedBgMusicVal
+    }
+    
+    /// Функцию генерирует случайную позицию для иконок уровней
+    func generateTilesPosition() {
+        var buttonsPositions = [Int]()
+        
+        if let buttonsPositionsArr = UserDefaults.standard.array(forKey: "levelsTilesPositions") as? [Int] {
+            buttonsPositions = buttonsPositionsArr
+        }
+        
+        let lastRandColumn = buttonsPositions.last
+        
+        var randColumn = Int(arc4random_uniform(3) + 1)
+        
+        if randColumn == lastRandColumn {
+            if randColumn + 1 <= 3 {
+                randColumn += 1
+            }
+            else {
+                randColumn -= 1
+            }
+        }
+        
+        buttonsPositions.append(randColumn)
+        
+        UserDefaults.standard.set(buttonsPositions, forKey: "levelsTilesPositions")
     }
 }

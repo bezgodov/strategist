@@ -16,7 +16,7 @@ class GameViewController: UIViewController {
 
         view.ignoresSiblingOrder = true
         
-        Model.sharedInstance.gameScene = GameScene(fileNamed: "GameScene")
+        Model.sharedInstance.gameScene = GameScene(size: CGSize(width: 750, height: 1334))
         Model.sharedInstance.gameScene.scaleMode = .resizeFill
         
         Model.sharedInstance.gameViewControllerConnect = self

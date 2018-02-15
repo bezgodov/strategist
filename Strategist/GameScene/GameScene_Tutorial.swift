@@ -84,7 +84,11 @@ extension GameScene {
                 6:
                     [
                         0: self.view!.bounds
-                    ]
+                    ],
+                14:
+                    [
+                        0: self.view!.bounds
+                ]
             ]
         
         return tapPoints[index]!
@@ -178,6 +182,10 @@ extension GameScene {
             6:
                 [
                 "If label with maximum count of moves has red color you should use all moves"
+                ],
+            14:
+                [
+                    "To get some info about dynamic enemy just tap long at it"
                 ]
         ]
         

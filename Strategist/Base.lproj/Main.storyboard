@@ -17,7 +17,7 @@
         <!--Menu View Controller-->
         <scene sceneID="TYY-Gg-LHy">
             <objects>
-                <viewController storyboardIdentifier="MenuViewController" id="eS8-W6-LWO" customClass="MenuViewController" customModule="Thrup" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MenuViewController" id="eS8-W6-LWO" customClass="MenuViewController" customModule="Strategist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="OGz-Mw-zmq">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -592,7 +592,7 @@
         <!--Game View Controller-->
         <scene sceneID="tXr-a1-R10">
             <objects>
-                <viewController storyboardIdentifier="GameViewController" id="BV1-FR-VrT" customClass="GameViewController" customModule="Thrup" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="GameViewController" id="BV1-FR-VrT" customClass="GameViewController" customModule="Strategist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" multipleTouchEnabled="YES" contentMode="scaleToFill" id="3se-qz-xqx" customClass="SKView">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -720,7 +720,7 @@
         <!--Choose Level View Controller-->
         <scene sceneID="J3Z-hw-bUL">
             <objects>
-                <viewController storyboardIdentifier="ChooseLevelViewController" automaticallyAdjustsScrollViewInsets="NO" id="UOJ-py-922" customClass="ChooseLevelViewController" customModule="Thrup" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ChooseLevelViewController" automaticallyAdjustsScrollViewInsets="NO" id="UOJ-py-922" customClass="ChooseLevelViewController" customModule="Strategist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="a1G-66-wV8">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -759,11 +759,12 @@
                     <navigationItem key="navigationItem" id="QZp-Ov-v1l"/>
                     <connections>
                         <outlet property="scrollView" destination="oRJ-mT-qVv" id="3Ts-D0-Sdt"/>
+                        <outlet property="settingsButton" destination="cwf-1j-eDn" id="z1s-1u-VMu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RXq-E0-eHv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="944.79999999999995" y="134.48275862068965"/>
+            <point key="canvasLocation" x="944.79999999999995" y="133.5832083958021"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="q3K-Vj-WkK">

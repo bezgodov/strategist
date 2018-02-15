@@ -55,7 +55,7 @@ extension GameScene {
                 bombFragment.zPosition = 6
                 objectsLayer.addChild(bombFragment)
                 
-                bombFragment.run(SKAction.resize(toWidth: size.width, height: size.height, duration: 0.15), completion: {
+                bombFragment.run(SKAction.resize(toWidth: size.width, height: size.height, duration: 0.3), completion: {
                     let points = self.getPointsAround(object.point)
                     
                     for point in points {
@@ -67,7 +67,7 @@ extension GameScene {
                     }
                 })
                 
-                bombFragment.run(SKAction.sequence([SKAction.wait(forDuration: 0.05), SKAction.fadeAlpha(to: 0, duration: 0.25), SKAction.removeFromParent()]))
+                bombFragment.run(SKAction.sequence([SKAction.wait(forDuration: 0.125), SKAction.fadeAlpha(to: 0, duration: 0.225), SKAction.removeFromParent()]))
                 
                 staticObjects.remove(object)
             }
@@ -330,33 +330,31 @@ extension GameScene {
                     }
                     // Если ГП находится на будильнике, то останавливаем все движущиейся объекты на 1 ход и толкаем ГП на 1 ход вперёд
                     else {
-                        DispatchQueue.main.async() {
-                            self.character.run(SKAction.wait(forDuration: 0.1), completion: {
-                                self.checkCharacterDirection(characterAtAlarmClock: true)
-                                self.move += 1
-                            
-                                self.character.run(SKAction.move(to: self.pointFor(column: self.character.moves[self.move].column, row: self.character.moves[self.move].row), duration: 0.5), completion: {
-                                    if self.move < self.character.moves.count - 1 {
-                                        if self.character.moves[self.move + 1] != self.character.moves.last! {
-                                            
-                                            for object in self.movingObjects {
-                                                self.checkMovingObjectPos(object: object, characterMove: self.move)
-                                            }
-                                            
-                                            var isLosed = false
-                                            for object in self.staticObjects {
-                                                if self.checkStatisObjectPos(object: object) == true {
-                                                    isLosed = true
-                                                    break
-                                                }
-                                            }
-                                            
-                                            if !isLosed {
-                                                self.mainTimer(interval: 0.15)
+                        _ = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { (_) in
+                            self.checkCharacterDirection(characterAtAlarmClock: true)
+                            self.move += 1
+                        
+                            self.character.run(SKAction.move(to: self.pointFor(column: self.character.moves[self.move].column, row: self.character.moves[self.move].row), duration: 0.5), completion: {
+                                if self.move < self.character.moves.count - 1 {
+                                    if self.character.moves[self.move + 1] != self.character.moves.last! {
+                                        
+                                        for object in self.movingObjects {
+                                            self.checkMovingObjectPos(object: object, characterMove: self.move)
+                                        }
+                                        
+                                        var isLosed = false
+                                        for object in self.staticObjects {
+                                            if self.checkStatisObjectPos(object: object) == true {
+                                                isLosed = true
+                                                break
                                             }
                                         }
+                                        
+                                        if !isLosed {
+                                            self.mainTimer(interval: 0.15)
+                                        }
                                     }
-                                })
+                                }
                             })
                         }
                     }

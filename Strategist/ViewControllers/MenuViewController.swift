@@ -55,6 +55,7 @@ class MenuViewController: UIViewController {
             UserDefaults.standard.removeObject(forKey: "levelsCompletedWithHelp")
             UserDefaults.standard.removeObject(forKey: "isActivatedSounds")
             UserDefaults.standard.removeObject(forKey: "isActivatedBgMusic")
+            UserDefaults.standard.removeObject(forKey: "levelsTilesPositions")
             UserDefaults.standard.synchronize()
             
             exit(0)

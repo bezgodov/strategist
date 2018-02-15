@@ -3,6 +3,7 @@ import SpriteKit
 
 class ChooseLevelViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var settingsButton: UIButton!
     
     /// Размеры поля, на котором располагается меню
     var boardSize = Point(column: 5, row: 5)
@@ -28,7 +29,7 @@ class ChooseLevelViewController: UIViewController {
     /// Текстуры анимации ГП
     var walkFrames: [UIImage]!
     
-    /// Координаты всех кнопок увроней
+    /// Координаты всех кнопок уровней
     var levelButtonsPositions = [Point]()
     
     /// Флаг, который определяет автоматическое перемещение персонажа при открытии меню
@@ -197,8 +198,28 @@ class ChooseLevelViewController: UIViewController {
     func moveToPoint(from: Point, to: Point, delay: CFTimeInterval = 0) {
         // Если конечная позиция не совпадает с начальной
         if from != to {
-            // Второе -1, т.к. массив кнопок уровней начинается с 0
-            let path = pathToPoint(from: from, to: to)
+            
+            /// Конечный путь до какой-либо точки через остальные, которые попадаются на пути
+            var path = (bezier: UIBezierPath(), count: 0)
+            
+            /// текущая Y-позиция
+            var row = from.row - 1
+            
+            // Если самое начало игры, то перемещаем на 1-ую ячейку
+            if Model.sharedInstance.getCountCompletedLevels() == 0 {
+                path = pathToPoint(from: from, to: to)
+            }
+            else {
+                while row < to.row - 1 {
+                    // В общем, бесполезная проверка, ибо всегда передаётся число кратное 3, а после добавляется 3, но мало ли :3
+                    if row % 3 == 0 {
+                        let path2point = pathToPoint(from: levelButtonsPositions[row / 3], to: levelButtonsPositions[row / 3 + 1])
+                        path.bezier.append(path2point.bezier)
+                        path.count += path2point.count
+                        row += 3
+                    }
+                }
+            }
             
             // Если предыдущая анимация ещё не закончилась
             if character.layer.animation(forKey: "movement") == nil {
@@ -292,6 +313,7 @@ class ChooseLevelViewController: UIViewController {
         scrollView.addSubview(modalWindow)
         
         UIView.animate(withDuration: 0.215, animations: {
+            self.settingsButton.alpha = 0
             self.modalWindowBg.alpha = 0.5
             self.modalWindow.frame.origin.x = self.scrollView.bounds.midX - self.modalWindow.frame.width / 2
         })
@@ -376,6 +398,7 @@ class ChooseLevelViewController: UIViewController {
             SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
             
             UIView.animate(withDuration: 0.215, animations: {
+                self.settingsButton.alpha = 1
                 self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
                 self.modalWindowBg.alpha = 0
             }, completion: { (_) in
@@ -474,6 +497,9 @@ class ChooseLevelViewController: UIViewController {
         viewToShake.layer.add(animation, forKey: "position")
     }
     
+    /*
+    /// Функция не используется на данный момент
+    ///
     /// Функция, отрисовывающая количество оставшихся жизней на уровне
     func drawHearts(_ forLevel: Int) {
         if !Model.sharedInstance.isCompletedLevel(forLevel) {
@@ -508,6 +534,7 @@ class ChooseLevelViewController: UIViewController {
             modalWindow.addSubview(completedLabel)
         }
     }
+     */
     
     func goToLevel() {
         if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
@@ -594,6 +621,17 @@ class ChooseLevelViewController: UIViewController {
         /// Нужно ли заблокировать все уровни, если текущая секция не пройдена
         var isLevelsAfterSectionDisabled = false
         
+        /// Позиции ячеек уровней
+        var buttonsPositions = UserDefaults.standard.array(forKey: "levelsTilesPositions") as? [Int]
+        
+        // Если позиции для кнопок уровней не заданы
+        if buttonsPositions == nil {
+            for _ in 1...Model.sharedInstance.countLevels {
+                Model.sharedInstance.generateTilesPosition()
+            }
+            buttonsPositions = UserDefaults.standard.array(forKey: "levelsTilesPositions") as? [Int]
+        }
+        
         // -5 и 5 для того, чтобы при "bounce" были сверху и снизу ячейки
         for row in -10..<boardSize.row + 10 {
             for column in 0..<boardSize.column {
@@ -604,7 +642,7 @@ class ChooseLevelViewController: UIViewController {
                     tileSprite = "top"
                     rotation = (-90 * Double.pi / 180)
                 }
-
+                
                 if column == boardSize.column - 1 {
                     tileSprite = "top"
                     rotation = (90 * Double.pi / 180)
@@ -617,9 +655,12 @@ class ChooseLevelViewController: UIViewController {
                 tileImage.transform = CGAffineTransform(rotationAngle: CGFloat(rotation))
                 tilesLayer.addSubview(tileImage)
                 
-                let randColumn = Int(arc4random_uniform(3)) + 1
-                
                 if (lastRowWhereBtnAdded != row) && (row >= 0 && row < boardSize.row + distanceBetweenLevels * distanceBetweenLevels) && ((row / distanceBetweenLevels + 1) <= Model.sharedInstance.countLevels) && (row % 3 == 0) {
+                    
+                    var randColumn = Int(arc4random_uniform(3)) + 1
+                    if buttonsPositions != nil {
+                        randColumn = buttonsPositions![row / distanceBetweenLevels]
+                    }
                     
                     let buttonPos = pointFor(column: randColumn, row: row + 1)
                     
@@ -706,17 +747,49 @@ class ChooseLevelViewController: UIViewController {
                         addLevelImageState(spriteName: "Locked", buttonToPin: button, sizeKoef: CGSize(width: 0.3, height: 0.3))
                     }
                     
-                    
-                    
                     button.restorationIdentifier = "levelTile_\(button.tag)"
                     
                     levelButtonsPositions.append(Point(column: randColumn, row: row + 1))
-                    
                     scrollView.addSubview(button)
                     
                     lastRowWhereBtnAdded = row
                 }
             }
+        }
+        
+        /// Последняя ячейка, от которой отрисовывается путь
+        var lastPos = Point(column: buttonsPositions!.first!, row: -15)
+        
+        let koefForDisabledSection = isNextSectionDisabled ? 2 - (distanceBetweenSections % Model.sharedInstance.getCountCompletedLevels()) : 0
+        
+        /// Y-координата
+        var row = 1
+        for pos in buttonsPositions! {
+            
+            var to = Point(column: pos, row: row * 3 - 2)
+            if isNextSectionDisabled && row == Model.sharedInstance.getCountCompletedLevels() + 2 - koefForDisabledSection + 1 {
+                to = Point(column: lastPos.column, row: lastPos.row + 1)
+            }
+            else {
+                if row > Model.sharedInstance.getCountCompletedLevels() + 2 - koefForDisabledSection {
+                    break
+                }
+            }
+
+            /// Путь от последней кнопки до текущейй
+            let path2point = pathToPoint(from: lastPos, to: to)
+            lastPos = Point(column: pos, row: row * 3 - 2)
+            row += 1
+            
+            let layer = CAShapeLayer()
+            layer.path = path2point.bezier.cgPath
+            layer.strokeColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1).cgColor
+            layer.fillColor = UIColor.clear.cgColor
+            layer.lineCap = kCALineCapRound
+            layer.lineJoin = kCALineJoinRound
+            layer.lineWidth = 6
+            
+            scrollView.layer.insertSublayer(layer, at: 3)
         }
         
         if characterPointStart == nil {
