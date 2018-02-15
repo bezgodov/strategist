@@ -3,6 +3,7 @@
     "character": [3,1],
     "boardSize": [5,5],
     "moves": 18,
+    "isLevelWithTutorial": true,
     "winningPath":
     [
      [3,2],
