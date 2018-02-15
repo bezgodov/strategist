@@ -1,28 +1,24 @@
 {
-    "finish": [4,4],
+    "finish": [3,4],
     "character": [0,0],
     "boardSize": [5,5],
-    "moves": 25,
+    "moves": 13,
+    "isLevelWithTutorial": true,
     "winningPath":
     [
-     [0,1],
-     [1,1],
      [1,0],
      [2,0],
      [3,0],
      [3,1],
      [2,1],
-     [2,2],
+     [1,1],
      [1,2],
      [0,2],
      [0,3],
      [0,4],
      [1,4],
-     [1,3],
-     [2,3],
-     [3,3],
-     [4,3],
-     [4,4]
+     [2,4],
+     [3,4]
      ],
     "movingObjects": [
                       {
@@ -45,21 +41,15 @@
     "staticObjects": [
                       {
                       "type": "bomb",
-                      "point": [1,3],
-                      "movesToExplode": 5
-                      },
-                      {
-                      "type": "bomb",
-                      "point": [3,1],
+                      "point": [1,2],
                       "movesToExplode": 3
                       },
                       {
                       "type": "star",
-                      "point": [0,4]
+                      "point": [0,3]
                       },
                       {
-                      "type": "star",
-                      "point": [3,0]
+                      "type": "spinner",
+                      "point": [4,2]
                       }]
 }
-
