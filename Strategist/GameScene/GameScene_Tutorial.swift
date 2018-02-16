@@ -88,7 +88,12 @@ extension GameScene {
                 14:
                     [
                         0: self.view!.bounds
-                ]
+                    ],
+                16: [
+                        0: self.view!.bounds,
+                        1: self.view!.bounds,
+                        2: self.view!.bounds
+                    ]
             ]
         
         return tapPoints[index]!
@@ -185,7 +190,13 @@ extension GameScene {
                 ],
             14:
                 [
-                    "To get some info about dynamic enemy just tap long at it"
+                "To get some info about dynamic enemy just tap long at it"
+                ],
+            16:
+                [
+                "Now your managing is going to be different",
+                "Use 'swipes' to control a space alien, just slide finger along your screen",
+                "Collect 10 stars to win level and be careful you should avoid your enemies"
                 ]
         ]
         
@@ -290,7 +301,19 @@ extension GameScene {
                         }
                     }
                 default:
-                    break;
+                    break
+            }
+        case 16:
+            switch slide {
+                case 2:
+                    if bossLevel != nil {
+                        self.isPaused = false
+                        bossLevel?.isFinishedLevel = false
+                        bossLevel?.cleanTimers()
+                        bossLevel?.timersSettings()
+                    }
+            default:
+                break
             }
         default:
             break

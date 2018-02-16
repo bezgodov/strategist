@@ -710,6 +710,7 @@
                         <outlet property="moveRemainCircleBg" destination="k9J-6o-ij0" id="yYD-GF-ebv"/>
                         <outlet property="movesRemainLabel" destination="ocF-LN-Q0r" id="lkr-fS-pdI"/>
                         <outlet property="startLevel" destination="svt-Jk-cTc" id="qHP-Yx-bEp"/>
+                        <outlet property="startRightEdgeOutlet" destination="EHz-Nh-gDV" id="HO6-xH-jJh"/>
                         <outlet property="viewTopMenu" destination="pwW-zZ-sJV" id="lTC-bL-IWy"/>
                     </connections>
                 </viewController>
@@ -792,7 +793,7 @@
         <image name="Menu_questionMark.png" width="256" height="256"/>
         <image name="Menu_start.png" width="256" height="256"/>
         <image name="Settings_back.png" width="256" height="172"/>
-        <image name="TopMenuViewBorderDown.png" width="640" height="15"/>
-        <image name="TopMenuViewBorderUp.png" width="640" height="15"/>
+        <image name="TopMenuViewBorderDown.png" width="629" height="13"/>
+        <image name="TopMenuViewBorderUp.png" width="629" height="13"/>
     </resources>
 </document>

@@ -11,6 +11,14 @@ extension GameScene {
     ///
     /// - Parameter type: тип модального окна: выйгрыш/проигрыш
     func modalWindowPresent(type: modalWindowType) {
+        
+        // Если текущий уровень boss, то останавливаем все таймеры
+        if bossLevel != nil {
+            if type == modalWindowType.menu {
+                bossLevel?.cleanTimers()
+            }
+        }
+        
         // Добавляем бг, чтобы при клике на него закрыть всё модальное окно
         modalWindowBg = UIView(frame: self.view!.bounds)
         modalWindowBg.backgroundColor = UIColor.black
@@ -57,6 +65,12 @@ extension GameScene {
             
             let modalWindowTitleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: modalWindowTitleView.frame.width, height: modalWindowTitleView.frame.height))
             modalWindowTitleLabel.text = "Level \(Model.sharedInstance.currentLevel)"
+            
+            if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
+                let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
+                modalWindowTitleLabel.text = "BOSS #\(bossNumberTitle)"
+            }
+            
             modalWindowTitleLabel.textAlignment = NSTextAlignment.center
             modalWindowTitleLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
             modalWindowTitleLabel.textColor = UIColor.white
@@ -105,6 +119,11 @@ extension GameScene {
             }
             else {
                 sentenceLabel.text = "Level \(Model.sharedInstance.currentLevel)"
+                
+                if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
+                    let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
+                    sentenceLabel.text = "BOSS #\(bossNumberTitle)"
+                }
             }
         }
         else {
@@ -171,6 +190,11 @@ extension GameScene {
                 self.modalWindowBg.removeFromSuperview()
                 self.modalWindow.removeFromSuperview()
                 self.isPaused = false
+                
+                // Если текущий уровень "boss", то добавляем таймеры генерации объектов (так как паузу сняли)
+                if self.bossLevel != nil {
+                    self.bossLevel?.timersSettings()
+                }
             })
         }
     }
@@ -182,17 +206,22 @@ extension GameScene {
             object.run(SKAction.move(to: pointFor(column: object.moves!.first!.column, row: object.moves!.first!.row), duration: 0.215))
         }
         
+        // Если текущий уровень "boss" и начали уровень заново, то очищаем таймеры
+        if bossLevel != nil {
+            bossLevel?.cleanTimers()
+        }
+        
         character.run(SKAction.move(to: pointFor(column: characterStart.column, row: characterStart.row), duration: 0.215))
         
         UIView.animate(withDuration: 0.215, animations: {
-            self.modalWindowBg.alpha = 0
             self.modalWindow.frame.origin.x = self.view!.frame.maxX
-        }) { (_) in
-            self.modalWindow.removeFromSuperview()
-            self.modalWindowBg.removeFromSuperview()
+            self.modalWindowBg.alpha = 0
+        }, completion: { (_) in
             
+            self.modalWindowBg.removeFromSuperview()
+            self.modalWindow.removeFromSuperview()
             self.restartLevel()
-        }
+        })
     }
     
     @objc func addExtraLife(_ sender: UIButton) {

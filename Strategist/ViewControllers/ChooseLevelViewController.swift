@@ -42,10 +42,7 @@ class ChooseLevelViewController: UIViewController {
     var modalWindow: UIView!
     
     /// Количество уровней, которое необходимо завершить для каждой секции для 1 секции -> 11, для второй -> 23
-    var sections = [11, 23, 39]
-    
-    /// Количество уровней между секциями
-    var distanceBetweenSections = 15
+    var sections = [10, 23, 39]
     
     /// Заблокирована ли следующая секция (если не пройдено необходимо кол-во уровней за предыдущую секцию)
     var isNextSectionDisabled = false
@@ -326,6 +323,12 @@ class ChooseLevelViewController: UIViewController {
         /// Название выбранного уровня
         let levelNumberLabel = UILabel(frame: CGRect(x: 20, y: 25, width: modalWindow.frame.size.width - 40, height: 35))
         levelNumberLabel.text = "Level \(Model.sharedInstance.currentLevel)"
+        
+        if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
+            let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
+            levelNumberLabel.text = "BOSS #\(bossNumberTitle)"
+        }
+        
         levelNumberLabel.textAlignment = NSTextAlignment.left
         levelNumberLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
         levelNumberLabel.textColor = UIColor.white
@@ -594,7 +597,7 @@ class ChooseLevelViewController: UIViewController {
 
     /// Функция получает значение кол-ва уровней, которые должны быть завершены. чтобы получить доступ к следующей секции
     func getCountCompleteLevelsForNextSection(_ level: Int) -> Int {
-        return sections[level / distanceBetweenSections - 1]
+        return sections[level / Model.sharedInstance.distanceBetweenSections - 1]
     }
     
     /// Функция, считает количество пройденных уровней в интервале [0; maxLevel]
@@ -675,6 +678,10 @@ class ChooseLevelViewController: UIViewController {
                     // Переворачиваем кнопку, т. к. перевернул весь слой
                     button.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
                     
+                    if (row > 0) && ((row / distanceBetweenLevels + 1) % Model.sharedInstance.distanceBetweenSections == 0) {
+                        button.setTitle("BOSS", for: UIControlState.normal)
+                    }
+                    
                     var koefForLastLevel = 0
                     
                     if Model.sharedInstance.countLevels == Model.sharedInstance.getCountCompletedLevels() {
@@ -696,23 +703,24 @@ class ChooseLevelViewController: UIViewController {
                         addLevelImageState(spriteName: "Checked", buttonToPin: button)
                     }
                     
-                    if (row > 0) && ((row / distanceBetweenLevels) % distanceBetweenSections == 0) && (row > Model.sharedInstance.getCountCompletedLevels()) {
+                    if (row > 0) && ((row / distanceBetweenLevels) % Model.sharedInstance.distanceBetweenSections == 0) && (row > Model.sharedInstance.getCountCompletedLevels()) {
                         /// Количество пройденных уровней [0; ближайшая граница секции]
-                        let completedLevels = countCompletedLevelsForPreviousSection(row / distanceBetweenLevels)
+                        let completedLevels = countCompletedLevelsForPreviousSection(row / distanceBetweenLevels - 1)
                         
                         /// Кол-во уровней, которое разблокирует новую секцию
                         let needCompleteLevelsPreviousSection = getCountCompleteLevelsForNextSection(row / distanceBetweenLevels)
                         
-                        if completedLevels < needCompleteLevelsPreviousSection {
+                        // Если не пройдено достаточное кол-во уровней, чтобы разблокировать или босс не пройден
+                        if completedLevels < needCompleteLevelsPreviousSection || !Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels) {
                             isLevelsAfterSectionDisabled = true
                             
-                            if Model.sharedInstance.getCountCompletedLevels() >= needCompleteLevelsPreviousSection {
+                            if Model.sharedInstance.getCountCompletedLevels() >= (row / distanceBetweenLevels - 1) {
                                 isNextSectionDisabled = true
                                 characterPointStart = levelButtonsPositions.last!
                             }
                             
                             let point = pointFor(column: 1, row: row - 2)
-                            let viewCountLevelsToUnlock = UIView(frame: CGRect(x: point.x - levelTileSize.width, y: point.y + levelTileSize.height, width: levelTileSize.width * 4, height: levelTileSize.height))
+                            let viewCountLevelsToUnlock = UIView(frame: CGRect(x: point.x - levelTileSize.width, y: point.y + 3 * levelTileSize.height / 4, width: levelTileSize.width * 4, height: levelTileSize.height * 1.5))
                             viewCountLevelsToUnlock.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
                             viewCountLevelsToUnlock.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
                             
@@ -724,7 +732,13 @@ class ChooseLevelViewController: UIViewController {
                             scrollView.addSubview(viewCountLevelsToUnlock)
                             
                             let labelCountLevelsToUnlock = UILabel(frame: CGRect(x: 10, y: 0, width: viewCountLevelsToUnlock.frame.width - 20, height: viewCountLevelsToUnlock.frame.height))
-                            labelCountLevelsToUnlock.text = "To unlock next section complete at least \(needCompleteLevelsPreviousSection - completedLevels) more levels"
+                            
+                            let textAboutLevels = "at least \(needCompleteLevelsPreviousSection - completedLevels) more levels"
+                            let textAboutFinalLevel = "section's final level to unlock next section"
+                            let ifBothTrue = (completedLevels < needCompleteLevelsPreviousSection && !Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels)) ? " and " : ""
+                            let disabledSectionText = "Complete \(completedLevels < needCompleteLevelsPreviousSection ? textAboutLevels : "")\(ifBothTrue)\(!Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels) ? textAboutFinalLevel : "")"
+                            
+                            labelCountLevelsToUnlock.text = disabledSectionText
                             labelCountLevelsToUnlock.textAlignment = NSTextAlignment.center
                             labelCountLevelsToUnlock.numberOfLines = 3
                             labelCountLevelsToUnlock.font = UIFont(name: "AvenirNext-Medium", size: 18)
@@ -760,7 +774,7 @@ class ChooseLevelViewController: UIViewController {
         /// Последняя ячейка, от которой отрисовывается путь
         var lastPos = Point(column: buttonsPositions!.first!, row: -15)
         
-        let koefForDisabledSection = isNextSectionDisabled ? 2 - (distanceBetweenSections % Model.sharedInstance.getCountCompletedLevels()) : 0
+        let koefForDisabledSection = isNextSectionDisabled ? 2 - (Model.sharedInstance.distanceBetweenSections % Model.sharedInstance.getCountCompletedLevels()) : 0
         
         /// Y-координата
         var row = 1

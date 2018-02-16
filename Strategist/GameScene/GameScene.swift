@@ -105,6 +105,9 @@ class GameScene: SKScene {
     /// Переменная для спрайта, который отображает крестик на последней точке выбранного пути
     var lastPathStepSprite: SKSpriteNode!
     
+    /// Уровень, который находится в конце секции
+    var bossLevel: BossLevel?
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
@@ -120,6 +123,17 @@ class GameScene: SKScene {
         
         // Если началось обучение
         if isLevelWithTutorial && !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+            
+            // Если первый уровень-босс, то нужно всё остановить, до окончания обучения
+            if Model.sharedInstance.currentLevel == Model.sharedInstance.distanceBetweenSections {
+                if bossLevel != nil {
+                    // Флаг, чтобы запретить swipe
+                    bossLevel?.isFinishedLevel = true
+                    self.isPaused = true
+                    bossLevel?.cleanTimers()
+                }
+            }
+            
             alphaBlackLayerPresent(alpha: 0.35)
         }
     }
@@ -132,12 +146,6 @@ class GameScene: SKScene {
         
         self.view?.addGestureRecognizer(longPressRecognizer)
     
-        /*
-        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
-        swipeDown.direction = UISwipeGestureRecognizerDirection.down
-        self.view?.addGestureRecognizer(swipeDown)
-         */
-        
         anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
         /*
@@ -451,6 +459,11 @@ class GameScene: SKScene {
             lastPathStepSprite.alpha = 0
             lastPathStepSprite.zPosition = 4
             objectsLayer.addChild(lastPathStepSprite)
+            
+            // Если финальный уровень в секции
+            if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
+                bossLevel = BossLevel()
+            }
         }
     }
     
@@ -807,6 +820,10 @@ class GameScene: SKScene {
         
         self.removeAllChildren()
         self.removeAllActions()
+        
+        if bossLevel != nil {
+            bossLevel?.cleanTimers()
+        }
     }
     
     /// Срабатывает при нажатии на кнопку RESTART в меню после проигранного раунда
@@ -831,48 +848,50 @@ class GameScene: SKScene {
         var scale = Scale(xScale: 1.0, yScale: 1.0)
         for row in 0..<boardSize.row {
             for column in 0..<boardSize.column {
-                //if level.tileAt(column: column, row: row) != nil {
-                
                 var tileSprite: String = "center"
+                
                 var rotation: Double = 0.0
                 scale.xScale = 1.0
                 scale.yScale = 1.0
           
-                if column == 0 && (row != 0) && (row != boardSize.row - 1) {
-                    tileSprite = "top"
-                    rotation = (90 * Double.pi / 180)
-                }
+                // Если уровень финалный в секции, то оставляем только верхние и нижние
+                if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
+                    if column == 0 && (row != 0) && (row != boardSize.row - 1) {
+                        tileSprite = "top"
+                        rotation = (90 * Double.pi / 180)
+                    }
+                    
+                    if column == boardSize.column - 1 && (row != 0) && (row != boardSize.row - 1) {
+                        tileSprite = "top"
+                        rotation = (-90 * Double.pi / 180)
+                    }
                 
-                if column == boardSize.column - 1 && (row != 0) && (row != boardSize.row - 1) {
-                    tileSprite = "top"
-                    rotation = (-90 * Double.pi / 180)
-                }
+                    if row == 0 {
+                        tileSprite = "top"
+                        scale.yScale = -1
+                    }
                 
-                if row == 0 {
-                    tileSprite = "top"
-                    scale.yScale = -1
-                }
+                    if row == 0 && column == 0 {
+                        tileSprite = "top_left"
+                    }
+                    
+                    if row == 0 && column == boardSize.column - 1 {
+                        tileSprite = "top_left"
+                        scale.xScale = -1
+                    }
                 
-                if row == 0 && column == 0 {
-                    tileSprite = "top_left"
-                }
+                    if row == boardSize.row - 1 {
+                        tileSprite = "top"
+                    }
                 
-                if row == 0 && column == boardSize.column - 1 {
-                    tileSprite = "top_left"
-                    scale.xScale = -1
-                }
-                
-                if row == boardSize.row - 1 {
-                    tileSprite = "top"
-                }
-                
-                if row == boardSize.row - 1 && column == 0 {
-                    tileSprite = "top_left"
-                }
-                
-                if row == boardSize.row - 1 && column == boardSize.column - 1 {
-                    tileSprite = "top_left"
-                    scale.xScale = -1
+                    if row == boardSize.row - 1 && column == 0 {
+                        tileSprite = "top_left"
+                    }
+                    
+                    if row == boardSize.row - 1 && column == boardSize.column - 1 {
+                        tileSprite = "top_left"
+                        scale.xScale = -1
+                    }
                 }
                 
                 let tileNode = SKSpriteNode(imageNamed: "Tile_\(tileSprite)")
@@ -885,7 +904,6 @@ class GameScene: SKScene {
                 tileNode.position = pointFor(column: column, row: row)
                 tileNode.zPosition = 1
                 toNode.addChild(tileNode)
-                //}
             }
         }
     }
@@ -1007,13 +1025,4 @@ class GameScene: SKScene {
     
     override func didFinishUpdate() {
     }
-    
-//    @objc func respondToSwipeGesture(gesture: UIGestureRecognizer) {
-//        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
-//            if swipeGesture.direction == UISwipeGestureRecognizerDirection.down {
-//                character.physicsBody?.affectedByGravity = true
-//            }
-//        }
-//    }
 }
-

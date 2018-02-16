@@ -36,14 +36,18 @@ extension GameScene {
         /// Путь, с помощью которого можно пройти уровень
         let winningPathVal = dictionary["winningPath"] as? [[Int]]
         
+        /// Кол-во звёзд, которые необходимо собрать на последнем уровне в секции
+        let bossLevelStarsVal = dictionary["bossLevelStars"] as? Int
+        
         // Размер игрового поля
         boardSize = Point(column: boardSizeVal[0], row: boardSizeVal[1])
         
         // Координаты финишного блока
         finish = Point(column: finishVal[0], row: finishVal[1])
+        /*
         assert(finish.column >= 0 && finish.column < boardSize.column, "Finish is out of board")
         assert(finish.row >= 0 && finish.row < boardSize.row, "Finish is out of board")
-        
+        */
         // Первоначальные координаты ГП
         characterStart = Point(column: characterStartVal[0], row: characterStartVal[1])
         assert(characterStart.column >= 0 && characterStart.column < boardSize.column, "Character startPos is out of board")
@@ -55,6 +59,11 @@ extension GameScene {
         
         // Кол-во ходов, за которые необходимо выиграть уровень
         moves = movesVal
+        
+        // Устанавливаем кол-во звёзд в label (т.к он не используется), которые необходимо собрать на последнем уровне в секции
+        if bossLevelStarsVal != nil {
+            moves = bossLevelStarsVal ?? 10
+        }
         
         if isNecessaryUseAllMovesVal != nil {
             isNecessaryUseAllMoves = isNecessaryUseAllMovesVal!

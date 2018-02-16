@@ -63,7 +63,10 @@ class Model {
     var gameScene: GameScene!
     
     /// Общее количество уровней
-    var countLevels: Int = 16
+    let countLevels: Int = 17
+    
+    /// Количество уровней между секциями
+    let distanceBetweenSections = 16
     
     /// Текущий уровень
     var currentLevel: Int = 1

@@ -8,6 +8,7 @@ class GameViewController: UIViewController {
     @IBOutlet weak var buyLevelButton: UIButton!
     @IBOutlet weak var viewTopMenu: UIView!
     @IBOutlet weak var moveRemainCircleBg: UIImageView!
+    @IBOutlet weak var startRightEdgeOutlet: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,7 +89,6 @@ class GameViewController: UIViewController {
         if let storyboard = storyboard {
             let chooseLevelViewController = storyboard.instantiateViewController(withIdentifier: "ChooseLevelViewController") as! ChooseLevelViewController
 
-            
             chooseLevelViewController.moveCharacterToNextLevel = moveCharacterFlag
             
             navigationController?.pushViewController(chooseLevelViewController, animated: true)
