@@ -44,6 +44,12 @@
 		2B70BAC42014C9AF001866D5 /* Level_17.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B70BAC32014C9AF001866D5 /* Level_17.json */; };
 		2B70BAC7201574AD001866D5 /* Spikes.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B70BAC5201574AC001866D5 /* Spikes.png */; };
 		2B70BAD0201589B7001866D5 /* SpikesBox.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B70BACF201589B7001866D5 /* SpikesBox.png */; };
+		2B7AEBF72037AF0200E02553 /* Level_18.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B7AEBF62037AF0200E02553 /* Level_18.json */; };
+		2B7AEBF92037CF1B00E02553 /* Level_19.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B7AEBF82037CF1B00E02553 /* Level_19.json */; };
+		2B7AEBFB2037D88F00E02553 /* Level_20.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B7AEBFA2037D88F00E02553 /* Level_20.json */; };
+		2B7AEBFD2037D9C100E02553 /* Snail.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B7AEBFC2037D9C100E02553 /* Snail.png */; };
+		2B7AEBFF20384BB000E02553 /* GameScene_Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B7AEBFE20384BB000E02553 /* GameScene_Preview.swift */; };
+		2B7AEC032038612000E02553 /* Menu_stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B7AEC022038611F00E02553 /* Menu_stop.png */; };
 		2B7DFDFD202D506300999922 /* SKTAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B7DFDFC202D506300999922 /* SKTAudio.swift */; };
 		2B7DFE05202D739B00999922 /* BgMusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE04202D739A00999922 /* BgMusic.mp3 */; };
 		2B7DFE13202D881200999922 /* Disable.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2B7DFE12202D881100999922 /* Disable.wav */; };
@@ -140,6 +146,12 @@
 		2B70BAC32014C9AF001866D5 /* Level_17.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_17.json; sourceTree = "<group>"; };
 		2B70BAC5201574AC001866D5 /* Spikes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Spikes.png; sourceTree = "<group>"; };
 		2B70BACF201589B7001866D5 /* SpikesBox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SpikesBox.png; sourceTree = "<group>"; };
+		2B7AEBF62037AF0200E02553 /* Level_18.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_18.json; sourceTree = "<group>"; };
+		2B7AEBF82037CF1B00E02553 /* Level_19.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_19.json; sourceTree = "<group>"; };
+		2B7AEBFA2037D88F00E02553 /* Level_20.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_20.json; sourceTree = "<group>"; };
+		2B7AEBFC2037D9C100E02553 /* Snail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Snail.png; sourceTree = "<group>"; };
+		2B7AEBFE20384BB000E02553 /* GameScene_Preview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene_Preview.swift; sourceTree = "<group>"; };
+		2B7AEC022038611F00E02553 /* Menu_stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Menu_stop.png; sourceTree = "<group>"; };
 		2B7DFDFC202D506300999922 /* SKTAudio.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKTAudio.swift; sourceTree = "<group>"; };
 		2B7DFE04202D739A00999922 /* BgMusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = BgMusic.mp3; sourceTree = "<group>"; };
 		2B7DFE12202D881100999922 /* Disable.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Disable.wav; sourceTree = "<group>"; };
@@ -249,6 +261,7 @@
 				2B1178D91FB84928006326E4 /* GameScene_Levels.swift */,
 				2B0CF13820283BBD0060BEF7 /* GameScene_ModalWindow.swift */,
 				2BCD9DC11FF640910097C4F2 /* GameScene_Move.swift */,
+				2B7AEBFE20384BB000E02553 /* GameScene_Preview.swift */,
 				2BCD9DBF1FF634BC0097C4F2 /* GameScene_Touches.swift */,
 				2BB481D52021DD0E009560B2 /* GameScene_Tutorial.swift */,
 			);
@@ -284,6 +297,7 @@
 			children = (
 				2B5DCAA920269B13007E9A54 /* Menu_levels.png */,
 				2B5DCAAB20269B14007E9A54 /* Menu_start.png */,
+				2B7AEC022038611F00E02553 /* Menu_stop.png */,
 				2B5DCAAF20269D22007E9A54 /* Menu_circle.png */,
 				2B5DCAB82027E22F007E9A54 /* Menu_circle-red.png */,
 				2B5DCAB32026B7D3007E9A54 /* Menu_questionMark.png */,
@@ -334,6 +348,9 @@
 				2BC7B77C20173D1800B99AB8 /* Level_15.json */,
 				2BD94B6E2036503D00954393 /* Level_16.json */,
 				2B70BAC32014C9AF001866D5 /* Level_17.json */,
+				2B7AEBF62037AF0200E02553 /* Level_18.json */,
+				2B7AEBF82037CF1B00E02553 /* Level_19.json */,
+				2B7AEBFA2037D88F00E02553 /* Level_20.json */,
 			);
 			path = Levels;
 			sourceTree = "<group>";
@@ -395,6 +412,7 @@
 				2B09152020316D5B0057E3DC /* Bomb_explosion.png */,
 				2B309A951FE39BF20095D11E /* Fish.png */,
 				2BF041941FF7295800624C4C /* Spinner.png */,
+				2B7AEBFC2037D9C100E02553 /* Snail.png */,
 			);
 			path = Enemies;
 			sourceTree = "<group>";
@@ -500,6 +518,7 @@
 				2BA41FED1FFFAB860023E8FD /* Heart.png in Resources */,
 				2BFD739E20084C8A00968FB5 /* Gem_green.png in Resources */,
 				2B0B63E11FAFD1AF002C0322 /* Assets.xcassets in Resources */,
+				2B7AEBF72037AF0200E02553 /* Level_18.json in Resources */,
 				2B5DCAB020269D22007E9A54 /* Menu_circle.png in Resources */,
 				2B0CF13B20287D3A0060BEF7 /* TopMenuViewBorderDown.png in Resources */,
 				2B309A961FE39BF20095D11E /* Fish.png in Resources */,
@@ -509,6 +528,7 @@
 				2B7DFE19202D904100999922 /* Win.wav in Resources */,
 				2B09151520316CBB0057E3DC /* Locked.png in Resources */,
 				2BD94B6F2036503D00954393 /* Level_16.json in Resources */,
+				2B7AEBFB2037D88F00E02553 /* Level_20.json in Resources */,
 				2BFD739D20084C8A00968FB5 /* Gem_blue.png in Resources */,
 				2BF041861FF71A5A00624C4C /* PlayerPinkClimbs_1.png in Resources */,
 				2BF041951FF7295800624C4C /* Spinner.png in Resources */,
@@ -537,6 +557,9 @@
 				2BDCDFDD2011B04D00DCFA6D /* Level_12.json in Resources */,
 				2B7DFE1D202D91F600999922 /* Explosion.wav in Resources */,
 				2B5DCAAC20269B15007E9A54 /* Menu_levels.png in Resources */,
+				2B7AEBF92037CF1B00E02553 /* Level_19.json in Resources */,
+				2B7AEBFD2037D9C100E02553 /* Snail.png in Resources */,
+				2B7AEC032038612000E02553 /* Menu_stop.png in Resources */,
 				2B70BAA82012FFC8001866D5 /* Level_14.json in Resources */,
 				2B7DFE1F202D937F00999922 /* PickUpStar.mp3 in Resources */,
 				2BF5BE2F20343BCD0098A571 /* LaunchScreenPicture.png in Resources */,
@@ -561,6 +584,7 @@
 				2BCD9DC01FF634BC0097C4F2 /* GameScene_Touches.swift in Sources */,
 				2B9330781FD81F93002E5933 /* Character.swift in Sources */,
 				2BD94B712036514400954393 /* BossLevel.swift in Sources */,
+				2B7AEBFF20384BB000E02553 /* GameScene_Preview.swift in Sources */,
 				2B0CF13920283BBE0060BEF7 /* GameScene_ModalWindow.swift in Sources */,
 				2B1178DA1FB84928006326E4 /* GameScene_Levels.swift in Sources */,
 				2B0B63DA1FAFD1AF002C0322 /* GameScene.swift in Sources */,

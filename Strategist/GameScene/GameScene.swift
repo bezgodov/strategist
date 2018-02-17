@@ -55,7 +55,11 @@ class GameScene: SKScene {
     /// Количество звёзд на уровне, которые необходимо собрать
     var stars: Int = 0
     
+    /// Основной таймер игрового поля
     var gameTimer = Timer()
+    
+    /// Таймер для предпросмотра сцены
+    var previewTimer = Timer()
     
     /// Слой, на который добавляются все остальные Nodes
     var gameLayer = SKSpriteNode()
@@ -107,6 +111,9 @@ class GameScene: SKScene {
     
     /// Уровень, который находится в конце секции
     var bossLevel: BossLevel?
+    
+    /// Показывается ли сейчас предпросмотр
+    var isPreviewing = false
     
 //    var motionManager: CMMotionManager!
     
@@ -412,7 +419,7 @@ class GameScene: SKScene {
             }
         
             // Отображаем слой с объектами по центру экрана
-            objectsLayer.position = CGPoint(x: -TileWidth * CGFloat(boardSize.column) / 2, y: -TileHeight * CGFloat(boardSize.column) / 2)
+            objectsLayer.position = CGPoint(x: -TileWidth * CGFloat(boardSize.column) / 2, y: -TileHeight * CGFloat(boardSize.row) / 2)
             tilesLayer.position = objectsLayer.position
         
             gameLayer.addChild(objectsLayer)
@@ -470,10 +477,11 @@ class GameScene: SKScene {
     /// Функция, которая запускает основной цикл игры
     func startLevel() {
         if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
-            // Если уровень не был начат
-            if move == 0 {
-                // Если траектория ГП состоит более, чем 1 хода
-                if character.moves.count > 1 {
+            
+            // Если траектория ГП состоит более, чем 1 хода
+            if character.moves.count > 1 {
+                // Если уровень не был начат
+                if move == 0 {
                     gameBegan = true
                     
                     mainTimer(interval: 0.25)
@@ -484,23 +492,50 @@ class GameScene: SKScene {
                         self.character.pathNode.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
                             self.character.pathNode.removeFromParent()
                         })
+                        
+                        for object in self.movingObjects {
+                            object.pathLayer.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                                object.pathLayer.removeFromParent()
+                            })
+                        }
                     }
                     
                     Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
                 }
-                else {
-                    SKTAudio.sharedInstance().playSoundEffect(filename: "NoStart.mp3")
-                    shakeView(self.view!)
+            }
+            else {
+                if isPreviewing {
+                    removeObjectInfoView(toAlpha: 1)
+                    
+                    previewTimer.invalidate()
+                    cleanLevel()
+                    createLevel()
+                    
+                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
+                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true
+                    Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_start"), for: UIControlState.normal)
                 }
+                else {
+                    previewMainTimer()
+                    isPreviewing = true
+                    
+                    presentObjectInfoView(spriteName: "PlayerStaysFront", description: "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner")
+                    
+                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
+                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
+                    Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_stop"), for: UIControlState.normal)
+                }
+//                    SKTAudio.sharedInstance().playSoundEffect(filename: "NoStart.mp3")
+//                    shakeView(self.view!)
             }
         }
     }
     
     func mainTimer(interval: TimeInterval = 0.65) {
         gameTimer.invalidate()
-        gameTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { (Timer) in
+        gameTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { (gameTimer) in
             if self.move == 0 {
                 self.character.run(SKAction.repeatForever(SKAction.animate(with: self.playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
             }
@@ -569,39 +604,6 @@ class GameScene: SKScene {
     func checkForSameDirection(firstDirection: RotationDirection, secondDirection: RotationDirection, directions: [RotationDirection]) -> Bool {
         return (firstDirection == directions[0] || firstDirection == directions[1]) && (secondDirection == directions[0] || secondDirection == directions[1])
     }
-    
-    /*
-    func setExtraPath(direction: RotationDirection, from: Point, to: Point) {
-        var point = from
-        var index = move + 1
-        
-        var rowCoef: Int = (to.row > from.row) ? 1 : -1
-        var columnCoef: Int = (to.column > from.column) ? 1 : -1
-        
-        if rowCoef == 1 {
-            point = Point(column: point.column + 1, row: point.row)
-        }
-        
-        character.moves.insert(point, at: index)
-        
-        while point != to {
-            if point.row != to.row {
-                point.row += 1
-            }
-            else {
-                if point.column != to.column {
-                    point.column -= 1
-                }
-            }
-            
-            if point != to {
-                index += 1
-                character.moves.insert(point, at: index)
-            }
-        }
-    }
-     */
-    
     
     /// Функция получает индекс позиции в массиве позиций
     func getMoveIndex(move: Point, moves: [Point]) -> Int {
@@ -794,6 +796,7 @@ class GameScene: SKScene {
         removedLastPointByMove = false
         stars = 0
         gameTimer.invalidate()
+        previewTimer.invalidate()
         gameLayer.removeAllChildren()
         gameLayer.removeAllActions()
         gameLayer.removeFromParent()
@@ -811,6 +814,7 @@ class GameScene: SKScene {
         isNextCharacterMoveAtBridgeLose = false
         isNecessaryUseAllMoves = false
         lastPathStepSprite.removeFromParent()
+        isPreviewing = false
         
         Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
         Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true

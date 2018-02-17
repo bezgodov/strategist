@@ -18,9 +18,6 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     /// Если уровень проигран/выйгран, то запретить любые действия
     var isFinishedLevel = false
     
-    /// Можно ли уделать следующий ход
-//    var isAvailableNextMove = true
-    
     /// Текстуры всех объектов
     var textures = [ObjectType: SKTexture]()
     
@@ -79,7 +76,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     }
     
     func texturesSettings() {
-        let objectsTypes = [ObjectType.bee, ObjectType.spinner, ObjectType.star, ObjectType.spaceAlien]
+        let objectsTypes = [ObjectType.bee, ObjectType.spinner, ObjectType.star, ObjectType.snail, ObjectType.spaceAlien]
         for type in objectsTypes {
             let texture = SKTexture(imageNamed: type.spriteName)
             textures[type] = texture
@@ -129,13 +126,15 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
         switch type {
             case ObjectType.star:
                 return 0.5
+            case ObjectType.snail:
+                return 0.8
             default:
                 return 0.65
         }
     }
     
     func newObject() {
-        let objectsToMove = [ObjectType.bee, ObjectType.spinner]
+        let objectsToMove = [ObjectType.bee, ObjectType.spinner, ObjectType.snail]
         let randomObject = objectsToMove[Int(arc4random_uniform(UInt32(objectsToMove.count)))]
         createObject(type: randomObject)
         
@@ -243,9 +242,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
                 }
                 
                 if point.point.column >= 0 && point.point.column < gameScene.boardSize.column && point.point.row >= 0 && point.point.row < gameScene.boardSize.row {
-//                    isAvailableNextMove = false
-                    gameScene.character.run(SKAction.move(to: gameScene.pointFor(column: point.point.column, row: point.point.row), duration: 0.25), completion: {
-//                        self.isAvailableNextMove = true
+                    self.gameScene.character.run(SKAction.move(to: self.gameScene.pointFor(column: point.point.column, row: point.point.row), duration: 0.2), completion: {
                     })
                 }
                 else {

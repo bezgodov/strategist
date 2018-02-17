@@ -734,9 +734,9 @@ class ChooseLevelViewController: UIViewController {
                             let labelCountLevelsToUnlock = UILabel(frame: CGRect(x: 10, y: 0, width: viewCountLevelsToUnlock.frame.width - 20, height: viewCountLevelsToUnlock.frame.height))
                             
                             let textAboutLevels = "at least \(needCompleteLevelsPreviousSection - completedLevels) more levels"
-                            let textAboutFinalLevel = "section's final level to unlock next section"
+                            let textAboutFinalLevel = "section's final level"
                             let ifBothTrue = (completedLevels < needCompleteLevelsPreviousSection && !Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels)) ? " and " : ""
-                            let disabledSectionText = "Complete \(completedLevels < needCompleteLevelsPreviousSection ? textAboutLevels : "")\(ifBothTrue)\(!Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels) ? textAboutFinalLevel : "")"
+                            let disabledSectionText = "Complete \(completedLevels < needCompleteLevelsPreviousSection ? textAboutLevels : "")\(ifBothTrue)\(!Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels) ? textAboutFinalLevel : "") to unlock next section"
                             
                             labelCountLevelsToUnlock.text = disabledSectionText
                             labelCountLevelsToUnlock.textAlignment = NSTextAlignment.center

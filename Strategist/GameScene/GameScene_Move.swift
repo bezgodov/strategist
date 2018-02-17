@@ -3,18 +3,29 @@ import SpriteKit
 
 extension GameScene {
     /// Проверяем не попал ли ГП на движущийся объект
-    func checkMovingObjectPos(object: Object, characterMove: Int) {
+    func checkMovingObjectPos(object: Object, characterMove: Int, isLoseLevelByDefault: Bool = true) -> Bool {
+        
+        var isLosed = false
+        
         if object.moves[object.move] == character.moves[characterMove] {
-            loseLevel()
+            if isLoseLevelByDefault {
+                loseLevel()
+            }
+            isLosed = true
         }
         
         if object.type == ObjectType.electric {
             for point in getPointsAround(object.moves[object.move]) {
                 if point == character.moves[move] {
-                    loseLevel()
+                    if isLoseLevelByDefault {
+                        loseLevel()
+                    }
+                    isLosed = true
                 }
             }
         }
+        
+        return isLosed
     }
     
     /// Проверяем не попал ли ГП на статичный объект
@@ -29,7 +40,7 @@ extension GameScene {
         }
         
         if object.point == self.character.moves[characterMove] {
-            if object.type != ObjectType.stopper && object.type != ObjectType.alarmclock && object.type != ObjectType.bridge && object.type != ObjectType.star && object.type != ObjectType.rotator {
+            if object.type != ObjectType.stopper && object.type != ObjectType.alarmclock && object.type != ObjectType.bridge && object.type != ObjectType.star {
                 loseLevel()
                 isLosed = true
             }
@@ -122,12 +133,6 @@ extension GameScene {
             })
         }
         
-        /*
-         if object.type == ObjectType.rotator && character.moves[move] == object.point {
-         setExtraPath(direction: object.rotate, from: character.moves[move], to: character.moves[move + 1])
-         }
-         */
-        
         return isLosed
     }
     
@@ -163,21 +168,30 @@ extension GameScene {
     
     func worldMove() {
         move += 1
-        
+        var isLosed = false
         for object in movingObjects {
             
             let previousObjectPoint = object.getPoint()
             
-            object.setPoint()
+            if object.type != ObjectType.snail {
+                object.setPoint()
+            }
+            else {
+                if move % 2 == 0 {
+                    object.setPoint()
+                }
+            }
             
             let movingObjectDirection = getObjectDirection(from: previousObjectPoint, to: object.getPoint())
             
-            if movingObjectDirection == RotationDirection.left {
-                object.run(SKAction.scaleX(to: 1, duration: 0.25))
-            }
-            
-            if movingObjectDirection == RotationDirection.right {
-                object.run(SKAction.scaleX(to: -1, duration: 0.25))
+            if object.type != ObjectType.snail || (object.type == ObjectType.snail && move % 2 == 0) {
+                if movingObjectDirection == RotationDirection.left {
+                    object.run(SKAction.scaleX(to: 1, duration: 0.25))
+                }
+                
+                if movingObjectDirection == RotationDirection.right {
+                    object.run(SKAction.scaleX(to: -1, duration: 0.25))
+                }
             }
             
             var characterMove = move
@@ -193,13 +207,19 @@ extension GameScene {
                 moveToPointLose = correctDirectionToHalfTile(pointToLose: moveToPointLose, movingDirection: movingObjectDirection)
                 
                 object.run(SKAction.move(to: moveToPointLose, duration: 0.25), completion: {
-                    self.loseLevel()
+                    if !isLosed {
+                        isLosed = true
+                        self.loseLevel()
+                    }
                 })
             }
             else {
                 object.run(SKAction.move(to: pointFor(column: object.getPoint().column, row: object.getPoint().row), duration: 0.5), completion: {
-                    
-                    self.checkMovingObjectPos(object: object, characterMove: characterMove)
+                    if !isLosed {
+                        if self.checkMovingObjectPos(object: object, characterMove: characterMove) == true {
+                            isLosed = true
+                        }
+                    }
                 })
             }
         }
@@ -229,11 +249,6 @@ extension GameScene {
                     else {
                         isNextCharacterMoveAtBridgeLose = true
                     }
-                }
-                
-                if object.type == ObjectType.rotatorPointer {
-                    object.run(SKAction.rotate(toAngle: object.zRotation - CGFloat(90 * Double.pi / 180), duration: 0.5))
-                    object.rotate = object.rotate.nextPoint()
                 }
                 
                 if character.moves[move - 1] == object.point && object.type == ObjectType.stopper {
@@ -287,12 +302,6 @@ extension GameScene {
                         }
                     }
                 }
-                
-                if object.type == ObjectType.rotator {
-                    object.run(SKAction.rotate(toAngle: object.zRotation - CGFloat(90 * Double.pi / 180), duration: 0.5))
-                    
-                    object.rotate = RotationDirection.right
-                }
             }
             
             checkCharacterDirection(characterAtStopper: characterAtStopper)
@@ -331,31 +340,54 @@ extension GameScene {
                     // Если ГП находится на будильнике, то останавливаем все движущиейся объекты на 1 ход и толкаем ГП на 1 ход вперёд
                     else {
                         _ = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { (_) in
-                            self.checkCharacterDirection(characterAtAlarmClock: true)
-                            self.move += 1
-                        
-                            self.character.run(SKAction.move(to: self.pointFor(column: self.character.moves[self.move].column, row: self.character.moves[self.move].row), duration: 0.5), completion: {
-                                if self.move < self.character.moves.count - 1 {
-                                    if self.character.moves[self.move + 1] != self.character.moves.last! {
+                            
+                            if self.character.moves[self.move] != self.character.moves.last! {
+                                self.checkCharacterDirection(characterAtAlarmClock: true)
+                                self.move += 1
+                                
+                                self.character.run(SKAction.move(to: self.pointFor(column: self.character.moves[self.move].column, row: self.character.moves[self.move].row), duration: 0.5), completion: {
+                                    
+                                    SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
+                                    
+                                    if self.move < self.character.moves.count - 1 {
                                         
-                                        for object in self.movingObjects {
-                                            self.checkMovingObjectPos(object: object, characterMove: self.move)
-                                        }
+                                            var isLosed = false
                                         
-                                        var isLosed = false
-                                        for object in self.staticObjects {
-                                            if self.checkStatisObjectPos(object: object) == true {
-                                                isLosed = true
-                                                break
+                                            for object in self.movingObjects {
+                                                if self.checkMovingObjectPos(object: object, characterMove: self.move) == true {
+                                                    isLosed = true
+                                                    break
+                                                }
+                                                
+                                                if object.type == ObjectType.snail {
+                                                    if self.move % 2 == 0 {
+                                                        object.setPoint()
+                                                    }
+                                                }
                                             }
-                                        }
                                         
-                                        if !isLosed {
-                                            self.mainTimer(interval: 0.15)
-                                        }
+                                            if !isLosed {
+                                                for object in self.staticObjects {
+                                                    if self.checkStatisObjectPos(object: object) == true {
+                                                        isLosed = true
+                                                        break
+                                                    }
+                                                }
+                                            }
+                                        
+                                            if !isLosed {
+                                                self.mainTimer(interval: 0.15)
+                                            }
+                                        
                                     }
-                                }
-                            })
+                                    else {
+                                        self.loseLevel()
+                                    }
+                                })
+                            }
+                            else {
+                                self.loseLevel()
+                            }
                         }
                     }
                 })
@@ -375,10 +407,6 @@ extension GameScene {
                 self.loseLevel()
             }
         }
-    }
-    
-    func checkForWinningPoint() {
-        
     }
     
     func correctDirectionToHalfTile(pointToLose: CGPoint, movingDirection: RotationDirection, downScale: CGFloat = 2) -> CGPoint {

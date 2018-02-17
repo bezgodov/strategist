@@ -6,7 +6,7 @@ extension GameScene {
     @objc func longPressed(sender: UILongPressGestureRecognizer)
     {
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-            if !gameBegan && Model.sharedInstance.getShowTips() && !isLevelWithTutorial {
+            if !gameBegan && Model.sharedInstance.getShowTips() && !isLevelWithTutorial && !isPreviewing {
                 /// Был ли клик сделан по какому-либо объекту
                 var objectTypeClicked: ObjectType?
                 
@@ -63,7 +63,7 @@ extension GameScene {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-            if !gameBegan {
+            if !gameBegan && !isPreviewing {
                 if let touch = touches.first {
                     let touchLocation = touch.location(in: objectsLayer)
                     // Если не сделан ещё первый ход
@@ -86,7 +86,7 @@ extension GameScene {
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-            if !gameBegan && !isLevelWithTutorial {
+            if !gameBegan && !isLevelWithTutorial && !isPreviewing {
                 if let touch = touches.first {
                     let touchLocation = touch.location(in: objectsLayer)
                     if !isLastTapLongPress {
@@ -166,7 +166,7 @@ extension GameScene {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-            if !gameBegan && !isLevelWithTutorial {
+            if !gameBegan && !isLevelWithTutorial && !isPreviewing {
                 if let touch = touches.first {
                     if !isLastTapLongPress {
                         if move == 0 {

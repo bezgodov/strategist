@@ -16,7 +16,7 @@ import SpriteKit
 /// - rotator: поворот (неготовый блок);
 /// - rotatorPointer: поворот со стрелкой (неготовый блок);
 enum ObjectType: Int {
-    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, spikes, electric, star, rotator, rotatorPointer
+    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, spikes, electric, star, snail
     
     /// Свойство для получения имя спрайта перемещающегося блока;
     var spriteName: String {
@@ -32,8 +32,7 @@ enum ObjectType: Int {
             "SpikesBox",
             "Donut",
             "Star",
-            "Rotator",
-            "Rotator"
+            "Snail"
         ]
         
         return spriteNames[rawValue - 1]
@@ -53,7 +52,7 @@ enum ObjectType: Int {
             "Spikes appear one move and disappear next one. If you get at them you lose",
             "Eletro destroys you if you get at any position around its",
             "Star doesn't destroy you and never moves. You should collect all stars to win",
-            "Rotator"
+            "Snail moves one move per two game's moves. Snail isn't affected by alarmclock"
         ]
         
         return rawValue <= descriptions.count ? descriptions[rawValue - 1] : "No description"
@@ -99,10 +98,12 @@ class Object: SKSpriteNode {
         var size: CGFloat = 0.65
         
         switch type {
-        case ObjectType.bee:
-            size = 0.65
-        default:
-            size = 0.65
+            case ObjectType.bee:
+                size = 0.65
+            case ObjectType.snail:
+                size = 0.75
+            default:
+                size = 0.65
         }
         
         super.init(texture: texture, color: UIColor.white, size: CGSize(width: TileWidth * size, height: texture.size().height / (texture.size().width / (TileWidth * size))))
@@ -174,22 +175,4 @@ class Object: SKSpriteNode {
             Model.sharedInstance.gameScene.objectsLayer.addChild(pathLayer)
         }
     }
-    
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        if let touch = touches.first {
-//            let touchLocation = touch.location(in: Model.sharedInstance.gameScene!)
-//        }
-//    }
-//
-//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        if let touch = touches.first {
-//            let touchLocation = touch.location(in: Model.sharedInstance.gameScene!)
-//
-//        }
-//    }
-//
-//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        if let touch = touches.first {
-//        }
-//    }
 }

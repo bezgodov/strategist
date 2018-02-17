@@ -63,7 +63,7 @@ class Model {
     var gameScene: GameScene!
     
     /// Общее количество уровней
-    let countLevels: Int = 17
+    let countLevels: Int = 20
     
     /// Количество уровней между секциями
     let distanceBetweenSections = 16

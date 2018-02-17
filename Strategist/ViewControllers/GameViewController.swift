@@ -61,14 +61,41 @@ class GameViewController: UIViewController {
             
             SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
             
-            Model.sharedInstance.gameScene.startLevel()
             // Скрываем подсказку об объекте, если она открыта
             Model.sharedInstance.gameScene.removeObjectInfoView(toAlpha: 0)
+            
+            Model.sharedInstance.gameScene.startLevel()
         }
         else {
-            Model.sharedInstance.gameScene.shakeView(moveRemainCircleBg, repeatCount: 2, amplitude: 2.25)
-            Model.sharedInstance.gameScene.shakeView(movesRemainLabel, repeatCount: 2, amplitude: 4.25)
-            SKTAudio.sharedInstance().playSoundEffect(filename: "NoStart.mp3")
+            if Model.sharedInstance.gameScene.character.moves.count > 1 {
+                Model.sharedInstance.gameScene.shakeView(moveRemainCircleBg, repeatCount: 2, amplitude: 2.25)
+                Model.sharedInstance.gameScene.shakeView(movesRemainLabel, repeatCount: 2, amplitude: 4.25)
+                SKTAudio.sharedInstance().playSoundEffect(filename: "NoStart.mp3")
+            }
+            else {
+                if Model.sharedInstance.gameScene.isPreviewing {
+                    Model.sharedInstance.gameScene.removeObjectInfoView(toAlpha: 1)
+                    
+                    Model.sharedInstance.gameScene.previewTimer.invalidate()
+                    Model.sharedInstance.gameScene.cleanLevel()
+                    Model.sharedInstance.gameScene.createLevel()
+                    
+                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
+                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true
+                    Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_start"), for: UIControlState.normal)
+                }
+                else {
+                    Model.sharedInstance.gameScene.previewMainTimer()
+                    Model.sharedInstance.gameScene.isPreviewing = true
+                    
+                    Model.sharedInstance.gameScene.presentObjectInfoView(spriteName: "PlayerStaysFront", description: "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner")
+                    
+                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
+                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
+                    Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_stop"), for: UIControlState.normal)
+                }
+                
+            }
         }
     }
     
