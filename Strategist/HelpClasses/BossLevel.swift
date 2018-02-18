@@ -53,15 +53,74 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
             gameScene.view!.addGestureRecognizer(gesture)
         }
         
-        timersSettings()
+        if Model.sharedInstance.currentLevel != Model.sharedInstance.distanceBetweenSections || (Model.sharedInstance.currentLevel == Model.sharedInstance.distanceBetweenSections && (Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) || Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) < 5)) {
+            prepareBossLevel()
+        }
+        else {
+            isFinishedLevel = true
+            gameScene.isPaused = true
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func prepareBossLevel() {
+        Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
+        isFinishedLevel = true
+        let labelTimeToStart = UILabel(frame: CGRect(x: gameScene.view!.frame.midX - 75, y: gameScene.view!.frame.midY - 75, width: 150, height: 150))
+        labelTimeToStart.backgroundColor = UIColor.clear
+        labelTimeToStart.font = UIFont(name: "AvenirNext-Bold", size: 48)
+        labelTimeToStart.textAlignment = NSTextAlignment.center
+        labelTimeToStart.textColor = UIColor.white
+        labelTimeToStart.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+        gameScene.view!.addSubview(labelTimeToStart)
+        
+        var timeToStart = 3
+        _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (timerBeforeStart) in
+            var koefForScale: CGFloat = 3
+            
+            if timeToStart == 0 {
+                labelTimeToStart.text = "GO"
+                koefForScale = 2
+            }
+            else {
+                labelTimeToStart.text = String(timeToStart)
+            }
+            
+            SKTAudio.sharedInstance().playSoundEffect(filename: "Voice_\(labelTimeToStart.text!).wav")
+            
+            UIView.animate(withDuration: 0.35, animations: {
+                labelTimeToStart.transform = CGAffineTransform(scaleX: koefForScale, y: koefForScale)
+            }, completion: { (_) in
+                Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false, block: { (_) in
+                    UIView.animate(withDuration: 0.25, animations: {
+                        labelTimeToStart.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+                    }, completion: { (_) in
+                        
+                        if timeToStart == 0 {
+                            timerBeforeStart.invalidate()
+                            labelTimeToStart.removeFromSuperview()
+                            self.timersSettings()
+                        }
+                        timeToStart -= 1
+                    })
+                })
+            })
+
+        }
+    }
+    
     /// Функция, которая инициализирует таймеры для генерации объектов
     func timersSettings() {
+        Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
+        isFinishedLevel = false
+        
+        if Model.sharedInstance.isActivatedBgMusic() {
+            SKTAudio.sharedInstance().playBackgroundMusic(filename: "BossBgMusic.mp3")
+        }
+        
         let timerKoef = Double(Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections / 10)
         
         gameScene.objectsLayer.speed += CGFloat(timerKoef)
@@ -193,17 +252,13 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
         if !isFinishedLevel {
             if contact.bodyA.node?.physicsBody?.categoryBitMask == CollisionTypes.character.rawValue && contact.bodyB.node?.physicsBody?.categoryBitMask == CollisionTypes.star.rawValue {
                 if contact.bodyB.node?.parent != nil {
-                    countStars -= 1
-                    contact.bodyB.node?.removeFromParent()
-                    setCountStars(countStars)
+                    pickUpCoin(nodeToRemove: contact.bodyB.node!)
                 }
             }
             
             if contact.bodyB.node?.physicsBody?.categoryBitMask == CollisionTypes.character.rawValue && contact.bodyA.node?.physicsBody?.categoryBitMask == CollisionTypes.star.rawValue {
                 if contact.bodyA.node?.parent != nil {
-                    countStars -= 1
-                    contact.bodyA.node?.removeFromParent()
-                    setCountStars(countStars)
+                    pickUpCoin(nodeToRemove: contact.bodyA.node!)
                 }
             }
             
@@ -215,6 +270,13 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
                 loseLevelBoss()
             }
         }
+    }
+    
+    func pickUpCoin(nodeToRemove: SKNode) {
+        nodeToRemove.removeFromParent()
+        SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpStar.mp3")
+        countStars -= 1
+        setCountStars(countStars)
     }
     
     func loseLevelBoss() {
@@ -242,6 +304,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
                 }
                 
                 if point.point.column >= 0 && point.point.column < gameScene.boardSize.column && point.point.row >= 0 && point.point.row < gameScene.boardSize.row {
+                    SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
                     self.gameScene.character.run(SKAction.move(to: self.gameScene.pointFor(column: point.point.column, row: point.point.row), duration: 0.2), completion: {
                     })
                 }
@@ -269,5 +332,9 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     func cleanTimers() {
         timerEnemy.invalidate()
         timerStar.invalidate()
+        
+        if Model.sharedInstance.isActivatedBgMusic() {
+            SKTAudio.sharedInstance().playBackgroundMusic(filename: "BgMusic.mp3")
+        }
     }
 }
