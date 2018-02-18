@@ -71,7 +71,7 @@ extension GameScene {
                     ],
                 3:
                     [
-                        0: self.view!.bounds
+                        1: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
                     ],
                 4:
                     [
@@ -82,6 +82,10 @@ extension GameScene {
                         0: self.view!.bounds
                     ],
                 6:
+                    [
+                        0: self.view!.bounds
+                    ],
+                7:
                     [
                         0: self.view!.bounds
                     ],
@@ -167,26 +171,31 @@ extension GameScene {
                 ],
             2:
                 [
-                "For previous area you got 3 GEMS. You can look how many gems you have in settings...",
+                "For previous level you got 3 GEMS. You can look how many gems you have in settings...",
                 "You can buy extra lives for GEMS...",
                 "You can tap at any object to find out how it behaves itself or how it moves...",
                 "Tap at the nearest star to find out what it is like...",
                 ],
             3:
                 [
-                "You can click at last your path's point and delete it [Tap somewhere to continue]"
+                "If you did not choose path you can activate preview mode",
+                "Click at 'Start' button to activate preview mode"
                 ],
             4:
                 [
-                "Except tapping at screen you can slide along the game board"
+                "You can click at last your path's point and delete it"
                 ],
             5:
                 [
-                "If you already chose path you are still able to look at enemy's info. Just tap long at it"
+                "Except tapping at screen you can slide along the game board"
                 ],
             6:
                 [
                 "If label with maximum count of moves has red color you should use all moves"
+                ],
+            7:
+                [
+                "If you've already chosen path you can still look at enemy's info. Just tap long at it"
                 ],
             14:
                 [
@@ -303,14 +312,27 @@ extension GameScene {
                 default:
                     break
             }
+        case 3:
+            switch slide {
+                case 2:
+                    previewMainTimer()
+                    isPreviewing = true
+                    
+                    presentObjectInfoView(spriteName: "PlayerStaysFront", description: "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner")
+                
+                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
+                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
+                    Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_stop"), for: UIControlState.normal)
+                default:
+                    break
+            }
         case 16:
             switch slide {
                 case 2:
                     if bossLevel != nil {
                         self.isPaused = false
                         bossLevel?.isFinishedLevel = false
-                        bossLevel?.cleanTimers()
-                        bossLevel?.timersSettings()
+                        bossLevel?.prepareBossLevel()
                     }
             default:
                 break

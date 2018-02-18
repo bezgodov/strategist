@@ -7,6 +7,9 @@ let EXTRA_LIFE_PRICE = 10
 /// Цена в драг. камнях выйгрышного пути
 let WINNING_PATH_PRICE = 25
 
+/// Цена в драг. камнях режима предпросмотра
+let PREVIEW_MODE_PRICE = 50
+
 class Model {
     init() {
         // Получаем значения жизней на каждом уровне
@@ -63,7 +66,7 @@ class Model {
     var gameScene: GameScene!
     
     /// Общее количество уровней
-    let countLevels: Int = 20
+    let countLevels: Int = 22
     
     /// Количество уровней между секциями
     let distanceBetweenSections = 16
@@ -88,6 +91,9 @@ class Model {
     
     /// Массив, который содержит номера уровней, которые были пройдены с помощью кнопки "Help"
     private var levelsCompletedWithHelp: [Int]!
+    
+    /// Был ли куплен режим предпросмотра
+    private var isPaidPreviewModeVal = UserDefaults.standard.bool(forKey: "isPaidPreviewMode")
     
     /// Включены ли звуки
     private var isActivatedSoundsVal = UserDefaults.standard.bool(forKey: "isActivatedSounds")
@@ -238,5 +244,15 @@ class Model {
         buttonsPositions.append(randColumn)
         
         UserDefaults.standard.set(buttonsPositions, forKey: "levelsTilesPositions")
+    }
+    
+    func isPaidPreviewMode() -> Bool {
+        return isPaidPreviewModeVal
+    }
+    
+    func setValuePreviewMode(_ value: Bool) {
+        isPaidPreviewModeVal = value
+        
+        UserDefaults.standard.set(isPaidPreviewModeVal, forKey: "isPaidPreviewMode")
     }
 }

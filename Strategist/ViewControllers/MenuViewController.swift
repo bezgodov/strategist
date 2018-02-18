@@ -11,6 +11,8 @@ class MenuViewController: UIViewController {
     @IBOutlet weak var bgMusicSwitch: UISwitch!
     @IBOutlet weak var mainScrollView: UIScrollView!
     @IBOutlet weak var lastViewForScrollView: UIView!
+    @IBOutlet weak var buyPreviewModeView: UIView!
+    @IBOutlet weak var buyPreviewModeButton: UIButton!
     
     var isDismissed: Bool = false
     
@@ -28,6 +30,13 @@ class MenuViewController: UIViewController {
         
         // Стандартное положение для "воспроизводить музыку на заднем фоне"
         bgMusicSwitch.setOn(Model.sharedInstance.isActivatedBgMusic(), animated: false)
+        
+        // Если режим предпросмотра куплен
+        if Model.sharedInstance.isPaidPreviewMode() {
+            buyPreviewModeButton.setTitle("PURCHASED", for: UIControlState.normal)
+            buyPreviewModeButton.isEnabled = false
+            buyPreviewModeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -35,6 +44,11 @@ class MenuViewController: UIViewController {
             btn.layer.cornerRadius = 5
             btn.layer.borderWidth = 1
             btn.layer.borderColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1).cgColor
+        }
+        
+        // Если режим предпросмотра куплен
+        if Model.sharedInstance.isPaidPreviewMode() {
+            buyPreviewModeView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
         }
         
         mainScrollView.backgroundColor = UIColor.init(red: 149/255, green: 201/255, blue: 45/255, alpha: 0.1)
@@ -56,6 +70,8 @@ class MenuViewController: UIViewController {
             UserDefaults.standard.removeObject(forKey: "isActivatedSounds")
             UserDefaults.standard.removeObject(forKey: "isActivatedBgMusic")
             UserDefaults.standard.removeObject(forKey: "levelsTilesPositions")
+            UserDefaults.standard.removeObject(forKey: "isPaidPreviewMode")
+            
             UserDefaults.standard.synchronize()
             
             exit(0)
@@ -160,6 +176,39 @@ class MenuViewController: UIViewController {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
         
         addGems(amount: sender.tag, animation: false)
+    }
+    
+    @IBAction func buyPreviewMode(sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
+        if Model.sharedInstance.getCountGems() >= PREVIEW_MODE_PRICE {
+            let alert = UIAlertController(title: "Buying preview mode", message: "Buying preview mode for all time is worth \(PREVIEW_MODE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+            let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: {_ in
+                Model.sharedInstance.setValuePreviewMode(true)
+                self.buyPreviewModeButton.setTitle("PURCHASED", for: UIControlState.normal)
+                self.buyPreviewModeButton.isEnabled = false
+                self.buyPreviewModeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+                self.buyPreviewModeView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
+                
+                self.addGems(amount: -PREVIEW_MODE_PRICE, animation: false)
+            })
+            
+            alert.addAction(actionOk)
+            alert.addAction(actionCancel)
+            
+            self.present(alert, animated: true, completion: nil)
+        }
+        else {
+            let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy preview mode for all time. You need \(PREVIEW_MODE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: "Ok", style: UIAlertActionStyle.cancel, handler: nil)
+            
+            alert.addAction(actionCancel)
+            
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     override var prefersStatusBarHidden: Bool {

@@ -4,6 +4,7 @@ import SpriteKit
 class ChooseLevelViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var settingsButton: UIButton!
+    @IBOutlet weak var findCharacterButton: UIButton!
     
     /// Размеры поля, на котором располагается меню
     var boardSize = Point(column: 5, row: 5)
@@ -311,6 +312,7 @@ class ChooseLevelViewController: UIViewController {
         
         UIView.animate(withDuration: 0.215, animations: {
             self.settingsButton.alpha = 0
+            self.findCharacterButton.alpha = 0
             self.modalWindowBg.alpha = 0.5
             self.modalWindow.frame.origin.x = self.scrollView.bounds.midX - self.modalWindow.frame.width / 2
         })
@@ -402,6 +404,7 @@ class ChooseLevelViewController: UIViewController {
             
             UIView.animate(withDuration: 0.215, animations: {
                 self.settingsButton.alpha = 1
+                self.findCharacterButton.alpha = 1
                 self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
                 self.modalWindowBg.alpha = 0
             }, completion: { (_) in
@@ -668,8 +671,9 @@ class ChooseLevelViewController: UIViewController {
                     let buttonPos = pointFor(column: randColumn, row: row + 1)
                     
                     let button = UIButton(frame: CGRect(x: buttonPos.x - levelTileSize.width / 2, y: buttonPos.y - levelTileSize.height / 2, width: levelTileSize.width, height: levelTileSize.height))
-                    
-                    button.setBackgroundImage(UIImage(named: "Tile_center"), for: UIControlState.normal)
+                    if row / 3 == Model.sharedInstance.getCountCompletedLevels() {
+                        button.setBackgroundImage(UIImage(named: "Tile_center"), for: UIControlState.normal)
+                    }
                     button.titleLabel?.font = UIFont(name: "Avenir Next", size: 24)
                     button.setTitle("\(row / distanceBetweenLevels + 1)", for: UIControlState.normal)
                     button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
@@ -741,7 +745,7 @@ class ChooseLevelViewController: UIViewController {
                             labelCountLevelsToUnlock.text = disabledSectionText
                             labelCountLevelsToUnlock.textAlignment = NSTextAlignment.center
                             labelCountLevelsToUnlock.numberOfLines = 3
-                            labelCountLevelsToUnlock.font = UIFont(name: "AvenirNext-Medium", size: 18)
+                            labelCountLevelsToUnlock.font = UIFont(name: "AvenirNext-DemiBold", size: 18)
                             labelCountLevelsToUnlock.textColor = UIColor.white
                             viewCountLevelsToUnlock.addSubview(labelCountLevelsToUnlock)
                         }
@@ -789,6 +793,28 @@ class ChooseLevelViewController: UIViewController {
                     break
                 }
             }
+            
+            var sizeCircle = CGSize(width: levelTileSize.width / 1.75, height: levelTileSize.height / 1.75)
+            
+            if row % Model.sharedInstance.distanceBetweenSections == 0 {
+                sizeCircle = CGSize(width: levelTileSize.width, height: levelTileSize.height)
+            }
+            
+            let pinkCircleLevelTile = UIView(frame: CGRect(origin: pointFor(column: to.column, row: to.row), size: sizeCircle))
+            pinkCircleLevelTile.frame.origin.x -= sizeCircle.width / 2
+            pinkCircleLevelTile.frame.origin.y -= sizeCircle.height / 2
+            
+            pinkCircleLevelTile.layer.backgroundColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1).cgColor
+            
+            if row % Model.sharedInstance.distanceBetweenSections != 0 {
+                pinkCircleLevelTile.layer.cornerRadius = pinkCircleLevelTile.frame.size.width / 2
+            }
+            else {
+                pinkCircleLevelTile.layer.cornerRadius = pinkCircleLevelTile.frame.size.width / 7
+                pinkCircleLevelTile.layer.backgroundColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1).cgColor
+            }
+            
+            scrollView.insertSubview(pinkCircleLevelTile, at: 3)
 
             /// Путь от последней кнопки до текущейй
             let path2point = pathToPoint(from: lastPos, to: to)
@@ -796,12 +822,13 @@ class ChooseLevelViewController: UIViewController {
             row += 1
             
             let layer = CAShapeLayer()
+            
             layer.path = path2point.bezier.cgPath
             layer.strokeColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1).cgColor
             layer.fillColor = UIColor.clear.cgColor
             layer.lineCap = kCALineCapRound
             layer.lineJoin = kCALineJoinRound
-            layer.lineWidth = 6
+            layer.lineWidth = 7
             
             scrollView.layer.insertSublayer(layer, at: 3)
         }
@@ -834,6 +861,13 @@ class ChooseLevelViewController: UIViewController {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
         
         presentMenu(dismiss: true)
+    }
+    
+    /// Найти ГП
+    @IBAction func findCharacter(_ sender: UIButton) {
+        let koefIfLastLevel = Model.sharedInstance.countLevels == Model.sharedInstance.getCountCompletedLevels() ? 1 : 0
+        let point = CGPoint(x: 0, y: CGFloat((Model.sharedInstance.getCountCompletedLevels() - 1 - koefIfLastLevel) * distanceBetweenLevels) * levelTileSize.height)
+        scrollView.setContentOffset(point, animated: true)
     }
     
     func presentMenu(dismiss: Bool = false) {

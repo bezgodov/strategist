@@ -16,6 +16,9 @@ class GameScene: SKScene {
     /// Текущий ход (для всего мира)
     var move: Int = 0
     
+    /// Текущий ход, который не изменяется и только увеличивается на 1 за один ход
+    var absoluteMove: Int = 0
+    
     /// Доступное количество ходов
     var moves: Int = 0
     
@@ -115,6 +118,9 @@ class GameScene: SKScene {
     /// Показывается ли сейчас предпросмотр
     var isPreviewing = false
     
+    /// Проигран ли уровень
+    var isLosedLevel = false
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
@@ -123,24 +129,13 @@ class GameScene: SKScene {
     override func didMove(to view: SKView) {
         
         self.backgroundColor = UIColor.white
-
+        
         sceneSettings()
         
         createLevel()
         
         // Если началось обучение
         if isLevelWithTutorial && !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-            
-            // Если первый уровень-босс, то нужно всё остановить, до окончания обучения
-            if Model.sharedInstance.currentLevel == Model.sharedInstance.distanceBetweenSections {
-                if bossLevel != nil {
-                    // Флаг, чтобы запретить swipe
-                    bossLevel?.isFinishedLevel = true
-                    self.isPaused = true
-                    bossLevel?.cleanTimers()
-                }
-            }
-            
             alphaBlackLayerPresent(alpha: 0.35)
         }
     }
@@ -506,29 +501,15 @@ class GameScene: SKScene {
                 }
             }
             else {
-                if isPreviewing {
-                    removeObjectInfoView(toAlpha: 1)
-                    
-                    previewTimer.invalidate()
-                    cleanLevel()
-                    createLevel()
-                    
-                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
-                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true
-                    Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_start"), for: UIControlState.normal)
+                // Если режим предпросмотра был куплен или сейчас 3-ий уровень, так как там обучение с этим происходит
+                if Model.sharedInstance.isPaidPreviewMode() || Model.sharedInstance.currentLevel == 3 {
+                    presentPreview()
                 }
                 else {
-                    previewMainTimer()
-                    isPreviewing = true
+                    SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
                     
-                    presentObjectInfoView(spriteName: "PlayerStaysFront", description: "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner")
-                    
-                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
-                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
-                    Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_stop"), for: UIControlState.normal)
+                    buyPreviewOnGameBoard()
                 }
-//                    SKTAudio.sharedInstance().playSoundEffect(filename: "NoStart.mp3")
-//                    shakeView(self.view!)
             }
         }
     }
@@ -701,35 +682,39 @@ class GameScene: SKScene {
     
     /// Уровень не пройден
     func loseLevel() {
-        if Model.sharedInstance.currentLevel != 1 {
-            if Model.sharedInstance.emptySavedLevelsLives() == false {
-                if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-                    Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
+        if !isLosedLevel {
+            if Model.sharedInstance.currentLevel != 1 {
+                if Model.sharedInstance.emptySavedLevelsLives() == false {
+                    if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                        Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
+                    }
                 }
             }
-        }
-        
-        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
-            modalWindowPresent(type: modalWindowType.nolives)
-        }
-        else {
-            modalWindowPresent(type: modalWindowType.lose)
-        }
-        
-        if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-            let btnFadeOutAnim = CABasicAnimation(keyPath: "opacity")
-            btnFadeOutAnim.toValue = 0
-            btnFadeOutAnim.duration = 0.35
-            btnFadeOutAnim.fillMode = kCAFillModeForwards
-            btnFadeOutAnim.isRemovedOnCompletion = false
             
-            lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
+            if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
+                modalWindowPresent(type: modalWindowType.nolives)
+            }
+            else {
+                modalWindowPresent(type: modalWindowType.lose)
+            }
+            
+            if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                let btnFadeOutAnim = CABasicAnimation(keyPath: "opacity")
+                btnFadeOutAnim.toValue = 0
+                btnFadeOutAnim.duration = 0.35
+                btnFadeOutAnim.fillMode = kCAFillModeForwards
+                btnFadeOutAnim.isRemovedOnCompletion = false
+                
+                lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
+            }
+            
+            SKTAudio.sharedInstance().playSoundEffect(filename: "Lose.mp3")
+            
+            gameTimer.invalidate()
+            self.isPaused = true
+            
+            isLosedLevel = true
         }
-        
-        SKTAudio.sharedInstance().playSoundEffect(filename: "Lose.mp3")
-        
-        gameTimer.invalidate()
-        self.isPaused = true
     }
     
     /// Уровень пройден
@@ -785,6 +770,7 @@ class GameScene: SKScene {
         movingObjects.removeAll()
         staticObjects.removeAll()
         move = 0
+        absoluteMove = 0
         moves = 0
         finish = Point(column: 0, row: 0)
         characterStart = Point(column: 0, row: 0)
@@ -815,6 +801,7 @@ class GameScene: SKScene {
         isNecessaryUseAllMoves = false
         lastPathStepSprite.removeFromParent()
         isPreviewing = false
+        isLosedLevel = false
         
         Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
         Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true

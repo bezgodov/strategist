@@ -168,6 +168,8 @@ extension GameScene {
     
     func worldMove() {
         move += 1
+        absoluteMove += 1
+        
         var isLosed = false
         for object in movingObjects {
             
@@ -177,14 +179,14 @@ extension GameScene {
                 object.setPoint()
             }
             else {
-                if move % 2 == 0 {
+                if absoluteMove % 2 == 0 {
                     object.setPoint()
                 }
             }
             
             let movingObjectDirection = getObjectDirection(from: previousObjectPoint, to: object.getPoint())
             
-            if object.type != ObjectType.snail || (object.type == ObjectType.snail && move % 2 == 0) {
+            if object.type != ObjectType.snail || (object.type == ObjectType.snail && absoluteMove % 2 == 0) {
                 if movingObjectDirection == RotationDirection.left {
                     object.run(SKAction.scaleX(to: 1, duration: 0.25))
                 }
@@ -224,7 +226,7 @@ extension GameScene {
             }
         }
         
-        if move < character.moves.count {
+        if move < character.moves.count && !isLosed {
             /// Если ГП находится на стопе
             var characterAtStopper = false
             
@@ -351,42 +353,33 @@ extension GameScene {
                                     
                                     if self.move < self.character.moves.count - 1 {
                                         
-                                            var isLosed = false
-                                        
-                                            for object in self.movingObjects {
-                                                if self.checkMovingObjectPos(object: object, characterMove: self.move) == true {
+                                        var isLosed = false
+                                    
+                                        for object in self.movingObjects {
+                                            if self.checkMovingObjectPos(object: object, characterMove: self.move) == true {
+                                                isLosed = true
+                                                break
+                                            }
+                                        }
+                                    
+                                        if !isLosed {
+                                            for object in self.staticObjects {
+                                                if self.checkStatisObjectPos(object: object) == true {
                                                     isLosed = true
                                                     break
                                                 }
-                                                
-                                                if object.type == ObjectType.snail {
-                                                    if self.move % 2 == 0 {
-                                                        object.setPoint()
-                                                    }
-                                                }
                                             }
-                                        
-                                            if !isLosed {
-                                                for object in self.staticObjects {
-                                                    if self.checkStatisObjectPos(object: object) == true {
-                                                        isLosed = true
-                                                        break
-                                                    }
-                                                }
-                                            }
-                                        
-                                            if !isLosed {
-                                                self.mainTimer(interval: 0.15)
-                                            }
+                                        }
+                                    
+                                        if !isLosed {
+                                            self.mainTimer(interval: 0.15)
+                                        }
                                         
                                     }
                                     else {
                                         self.loseLevel()
                                     }
                                 })
-                            }
-                            else {
-                                self.loseLevel()
                             }
                         }
                     }

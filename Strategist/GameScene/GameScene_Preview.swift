@@ -123,4 +123,68 @@ extension GameScene {
             }
         }
     }
+    
+    func presentPreview() {
+        if isPreviewing {
+            removeObjectInfoView(toAlpha: 1)
+            
+            previewTimer.invalidate()
+            cleanLevel()
+            createLevel()
+            isLevelWithTutorial = false
+            isPreviewing = false
+            
+            Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
+            Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true
+            Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_start"), for: UIControlState.normal)
+        }
+        else {
+            previewMainTimer()
+            isPreviewing = true
+            
+            removeObjectInfoView()
+            for object in movingObjects {
+                object.path(hide: true)
+            }
+            
+            presentObjectInfoView(spriteName: "PlayerStaysFront", description: "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner")
+            
+            Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
+            Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
+            Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_stop"), for: UIControlState.normal)
+        }
+    }
+    
+    func buyPreviewOnGameBoard() {
+        if Model.sharedInstance.getCountGems() >= PREVIEW_MODE_PRICE {
+            let alert = UIAlertController(title: "Buying preview mode", message: "Buying preview mode for all time is worth \(PREVIEW_MODE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+            let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: {_ in
+                Model.sharedInstance.setValuePreviewMode(true)
+                self.presentPreview()
+                
+                // Отнимаем 50 драг. камней, ибо мы покупаем
+                Model.sharedInstance.setCountGems(amountGems: -PREVIEW_MODE_PRICE)
+            })
+            
+            alert.addAction(actionOk)
+            alert.addAction(actionCancel)
+            
+            Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
+        }
+        else {
+            let alert = UIAlertController(title: "Not enough GEMS", message: "Sorry, but is't quite expensive to use 'Preview mode' very often, help us with extra gems. You do not have enough GEMS to buy preview mode for all time. You need \(PREVIEW_MODE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
+                Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: true)
+            })
+            
+            alert.addAction(actionOk)
+            alert.addAction(actionCancel)
+            
+            Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
+        }
+    }
 }

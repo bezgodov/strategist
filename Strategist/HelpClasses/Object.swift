@@ -52,7 +52,7 @@ enum ObjectType: Int {
             "Spikes appear one move and disappear next one. If you get at them you lose",
             "Eletro destroys you if you get at any position around its",
             "Star doesn't destroy you and never moves. You should collect all stars to win",
-            "Snail moves one move per two game's moves. Snail isn't affected by alarmclock"
+            "Snail moves one move per two game's moves. Alarmclock can cause double freeze"
         ]
         
         return rawValue <= descriptions.count ? descriptions[rawValue - 1] : "No description"

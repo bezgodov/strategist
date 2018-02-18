@@ -58,7 +58,6 @@ class GameViewController: UIViewController {
     @IBAction func startLevel(sender: UIButton) {
         // Либо использовать все ходы обязательно и они использованы (тогда начало уровня), либо можно не использовать все ходы на уровне
         if (Model.sharedInstance.gameScene.isNecessaryUseAllMoves == true && Model.sharedInstance.gameScene.moves == 0) || Model.sharedInstance.gameScene.isNecessaryUseAllMoves == false {
-            
             SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
             
             // Скрываем подсказку об объекте, если она открыта
@@ -68,33 +67,21 @@ class GameViewController: UIViewController {
         }
         else {
             if Model.sharedInstance.gameScene.character.moves.count > 1 {
+                SKTAudio.sharedInstance().playSoundEffect(filename: "NoStart.mp3")
+                
                 Model.sharedInstance.gameScene.shakeView(moveRemainCircleBg, repeatCount: 2, amplitude: 2.25)
                 Model.sharedInstance.gameScene.shakeView(movesRemainLabel, repeatCount: 2, amplitude: 4.25)
-                SKTAudio.sharedInstance().playSoundEffect(filename: "NoStart.mp3")
             }
             else {
-                if Model.sharedInstance.gameScene.isPreviewing {
-                    Model.sharedInstance.gameScene.removeObjectInfoView(toAlpha: 1)
-                    
-                    Model.sharedInstance.gameScene.previewTimer.invalidate()
-                    Model.sharedInstance.gameScene.cleanLevel()
-                    Model.sharedInstance.gameScene.createLevel()
-                    
-                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
-                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true
-                    Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_start"), for: UIControlState.normal)
+                SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+                
+                // Если режим предпросмотра был куплен или сейчас 3-ий уровень, так как там обучение с этим происходит
+                if Model.sharedInstance.isPaidPreviewMode() || Model.sharedInstance.currentLevel == 3 {
+                    Model.sharedInstance.gameScene.presentPreview()
                 }
                 else {
-                    Model.sharedInstance.gameScene.previewMainTimer()
-                    Model.sharedInstance.gameScene.isPreviewing = true
-                    
-                    Model.sharedInstance.gameScene.presentObjectInfoView(spriteName: "PlayerStaysFront", description: "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner")
-                    
-                    Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
-                    Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
-                    Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_stop"), for: UIControlState.normal)
+                    Model.sharedInstance.gameScene.buyPreviewOnGameBoard()
                 }
-                
             }
         }
     }
