@@ -105,12 +105,26 @@ class MenuViewController: UIViewController {
             let newValue = previousValue + amount
             let duration: Double = 0.75
             DispatchQueue.global().async {
-                for index in previousValue...newValue {
-                    let sleepTime = UInt32(duration / Double(newValue - previousValue) * 1000000.0)
-                    usleep(sleepTime)
-                    
-                    DispatchQueue.main.async {
-                        self.countOfGems.text = String(index)
+                if previousValue <= newValue {
+                    for index in previousValue...newValue {
+                        let sleepTime = UInt32(duration / Double(newValue - previousValue) * 1000000.0)
+                        usleep(sleepTime)
+                        
+                        DispatchQueue.main.async {
+                            self.countOfGems.text = String(index)
+                        }
+                    }
+                }
+                else {
+                    var index = previousValue
+                    while index >= newValue {
+                        let sleepTime = UInt32(duration / Double(previousValue - newValue) * 1000000.0)
+                        usleep(sleepTime)
+                        
+                        DispatchQueue.main.async {
+                            self.countOfGems.text = String(index)
+                        }
+                        index -= 1
                     }
                 }
             }
@@ -192,7 +206,7 @@ class MenuViewController: UIViewController {
                 self.buyPreviewModeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
                 self.buyPreviewModeView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
                 
-                self.addGems(amount: -PREVIEW_MODE_PRICE, animation: false)
+                self.addGems(amount: -PREVIEW_MODE_PRICE, animation: true)
             })
             
             alert.addAction(actionOk)
@@ -212,6 +226,6 @@ class MenuViewController: UIViewController {
     }
     
     override var prefersStatusBarHidden: Bool {
-        return true
+        return Model.sharedInstance.isHiddenStatusBar()
     }
 }

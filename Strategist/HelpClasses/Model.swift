@@ -255,4 +255,20 @@ class Model {
         
         UserDefaults.standard.set(isPaidPreviewModeVal, forKey: "isPaidPreviewMode")
     }
+    
+    /// Показываем статус-бар (время/заряд батареи) на Iphone X или скрываем на любом другом устройстве
+    func isHiddenStatusBar() -> Bool {
+        var isHiddenstatusBarVal = true
+    
+        if UIDevice().userInterfaceIdiom == .phone {
+            switch UIScreen.main.nativeBounds.height {
+                case 2436:
+                    isHiddenstatusBarVal = false
+                default:
+                    isHiddenstatusBarVal = true
+            }
+        }
+        
+        return isHiddenstatusBarVal
+    }
 }

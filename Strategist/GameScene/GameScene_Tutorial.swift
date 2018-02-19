@@ -48,6 +48,13 @@ extension GameScene {
     }
     
     func getTapPoints(index: Int) -> [Int: CGRect] {
+        
+        var koefForIphoneX: CGFloat = 0
+        
+        if #available(iOS 11.0, *) {
+            koefForIphoneX = UIApplication.shared.keyWindow!.safeAreaInsets.top
+        }
+        
         let tapPoints =
             [
                 1:
@@ -55,7 +62,7 @@ extension GameScene {
                         2: getRectFromPoint(point: Point(column: 1, row: 1)),
                         3: getRectFromPoint(point: Point(column: 2, row: 1)),
                         4: getRectFromPoint(point: Point(column: 2, row: 2)),
-                        5: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7),
+                        5: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7),
                         6: CGRect(x: self.view!.bounds.midX - 200 / 2 + 20, y: self.view!.bounds.midY - 200 / 2 + 75, width: 160, height: 50),
                         7: getRectFromPoint(point: Point(column: 2, row: 0)),
                         9: getRectFromPoint(point: Point(column: 0, row: 0)),
@@ -63,7 +70,7 @@ extension GameScene {
                         11: getRectFromPoint(point: Point(column: 2, row: 0)),
                         12: getRectFromPoint(point: Point(column: 2, row: 1)),
                         13: getRectFromPoint(point: Point(column: 2, row: 2)),
-                        14: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
+                        14: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
                     ],
                 2:
                     [
@@ -71,7 +78,7 @@ extension GameScene {
                     ],
                 3:
                     [
-                        1: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
+                        1: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
                     ],
                 4:
                     [
@@ -111,8 +118,9 @@ extension GameScene {
             if sender.view?.superview === self.view {
                 
             let tapLocationPos = sender.location(in: sender.view!)
-                if tapPoints.index(forKey: slideIndex) != nil {
-                    if checkIfClickInsideRect(point: tapLocationPos, rect: tapPoints[slideIndex]!) {
+                
+            if tapPoints.index(forKey: slideIndex) != nil {
+                if checkIfClickInsideRect(point: tapLocationPos, rect: tapPoints[slideIndex]!) {
                     sender.view!.tag += 1
                     
                     if sender.view!.tag == 6 || sender.view!.tag == 8 {

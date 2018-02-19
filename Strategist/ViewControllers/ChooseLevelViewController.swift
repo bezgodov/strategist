@@ -671,7 +671,8 @@ class ChooseLevelViewController: UIViewController {
                     let buttonPos = pointFor(column: randColumn, row: row + 1)
                     
                     let button = UIButton(frame: CGRect(x: buttonPos.x - levelTileSize.width / 2, y: buttonPos.y - levelTileSize.height / 2, width: levelTileSize.width, height: levelTileSize.height))
-                    if row / 3 == Model.sharedInstance.getCountCompletedLevels() {
+                    
+                    if row / 3 == Model.sharedInstance.getCountCompletedLevels() || (row / 3) + 1 == Model.sharedInstance.countLevels {
                         button.setBackgroundImage(UIImage(named: "Tile_center"), for: UIControlState.normal)
                     }
                     button.titleLabel?.font = UIFont(name: "Avenir Next", size: 24)
@@ -830,7 +831,7 @@ class ChooseLevelViewController: UIViewController {
             layer.lineJoin = kCALineJoinRound
             layer.lineWidth = 7
             
-            scrollView.layer.insertSublayer(layer, at: 3)
+            scrollView.layer.insertSublayer(layer, at: 4)
         }
         
         if characterPointStart == nil {
@@ -865,7 +866,7 @@ class ChooseLevelViewController: UIViewController {
     
     /// Найти ГП
     @IBAction func findCharacter(_ sender: UIButton) {
-        let koefIfLastLevel = Model.sharedInstance.countLevels == Model.sharedInstance.getCountCompletedLevels() ? 1 : 0
+        let koefIfLastLevel = Model.sharedInstance.countLevels == Model.sharedInstance.getCountCompletedLevels() || isNextSectionDisabled ? 1 : 0
         let point = CGPoint(x: 0, y: CGFloat((Model.sharedInstance.getCountCompletedLevels() - 1 - koefIfLastLevel) * distanceBetweenLevels) * levelTileSize.height)
         scrollView.setContentOffset(point, animated: true)
     }
@@ -879,6 +880,6 @@ class ChooseLevelViewController: UIViewController {
     }
     
     override var prefersStatusBarHidden: Bool {
-        return true
+        return Model.sharedInstance.isHiddenStatusBar()
     }
 }

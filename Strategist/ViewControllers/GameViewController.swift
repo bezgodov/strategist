@@ -51,7 +51,7 @@ class GameViewController: UIViewController {
     }
 
     override var prefersStatusBarHidden: Bool {
-        return true
+        return Model.sharedInstance.isHiddenStatusBar()
     }
     
     // При нажатии "Start" в верхней части экрана (запуск уровня)
