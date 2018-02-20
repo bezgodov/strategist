@@ -137,8 +137,8 @@ extension GameScene {
                         newObj.movesToExplode = movesToExplode
                     }
                     
-                    // Если объект "мост", то считываем направление его или ставим по умолчанию (top)
-                    if type == ObjectType.bridge {
+                    // Если объект "мост" или "стрелка", то считываем направление его или ставим по умолчанию (top)
+                    if type == ObjectType.bridge || type == ObjectType.arrow {
                         let rotate = object["rotate"] as? Int
                         
                         if rotate != nil && rotate! < 4 {
@@ -160,6 +160,20 @@ extension GameScene {
                     // Если объект "звезда", то увеличиваем кол-во звёзд, которые необходимо собрать на уровне
                     if type == ObjectType.star {
                         stars += 1
+                    }
+                    
+                    if type == ObjectType.lock || type == ObjectType.key {
+                        let lockKeyColor = object["color"] as? Int
+                        newObj.lockKeyColor = LockKeyColor(rawValue: lockKeyColor!)
+                        
+                        let color = newObj.lockKeyColor!
+                        
+                        if type == ObjectType.lock {
+                            newObj.setTexture(spriteName: "Lock_\(color)", size: CGSize(width: TileWidth * 0.7, height: TileHeight * 0.7))
+                        }
+                        else {
+                            newObj.setTexture(spriteName: "Key_\(color)", size: nil)
+                        }
                     }
                     
                     self.staticObjects.insert(newObj)

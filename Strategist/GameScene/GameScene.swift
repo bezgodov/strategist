@@ -121,6 +121,9 @@ class GameScene: SKScene {
     /// Проигран ли уровень
     var isLosedLevel = false
     
+    /// Ключи, которые были собраны на сцене
+    var keysInBag = [LockKeyColor]()
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
@@ -354,6 +357,27 @@ class GameScene: SKScene {
                         // Имя c hash, т.к. на сцене может быть больше одного моста, прикрепить к самому мосту не получается, ибо он каждый ход крутится и, соответственно, всё вокруг
                         bridgeWall.name = "BridgeWall_\(index)-Object_\(object.hash)"
                         objectsLayer.addChild(bridgeWall)
+                    }
+                }
+                
+                if object.type == ObjectType.arrow {
+                    // Поворачиваем стрелку в сторону, которая задана в json
+                    object.zRotation += CGFloat(Double(object.rotate.rawValue - 1) * 90 * Double.pi / 180)
+                    
+                    if object.rotate == RotationDirection.right {
+                        object.position.x = object.position.x - TileWidth / 2 + object.size.width / 2
+                    }
+                    
+                    if object.rotate == RotationDirection.top {
+                        object.position.y = object.position.y - TileHeight / 2 + object.size.height / 2
+                    }
+                    
+                    if object.rotate == RotationDirection.left {
+                        object.position.x += TileWidth / 2 - object.size.width / 2
+                    }
+                    
+                    if object.rotate == RotationDirection.bottom {
+                        object.position.y += TileHeight / 2 - object.size.height / 2
                     }
                 }
                 
@@ -802,6 +826,7 @@ class GameScene: SKScene {
         lastPathStepSprite.removeFromParent()
         isPreviewing = false
         isLosedLevel = false
+        keysInBag.removeAll()
         
         Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
         Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true

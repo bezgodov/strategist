@@ -16,7 +16,7 @@ import SpriteKit
 /// - rotator: поворот (неготовый блок);
 /// - rotatorPointer: поворот со стрелкой (неготовый блок);
 enum ObjectType: Int {
-    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, spikes, electric, star, snail
+    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, spikes, electric, star, snail, arrow, tulip, cabbage, lock, key
     
     /// Свойство для получения имя спрайта перемещающегося блока;
     var spriteName: String {
@@ -32,7 +32,12 @@ enum ObjectType: Int {
             "SpikesBox",
             "Donut",
             "Star",
-            "Snail"
+            "Snail",
+            "Arrow",
+            "Tulip",
+            "Cabbage",
+            "Lock_red",
+            "Key_red"
         ]
         
         return spriteNames[rawValue - 1]
@@ -52,7 +57,12 @@ enum ObjectType: Int {
             "Spikes appear one move and disappear next one. If you get at them you lose",
             "Eletro destroys you if you get at any position around its",
             "Star doesn't destroy you and never moves. You should collect all stars to win",
-            "Snail moves one move per two game's moves. Alarmclock can cause double freeze"
+            "Snail moves one move per two game's moves. Alarmclock can cause double freeze",
+            "If yours directions are different you lose. Checking directions is only occured when an alien comes in",
+            "If bee gets at tulip bee stops for one move and then tulip will disappear",
+            "If snail gets at cabbage then snail moves without stopping for two moves and then cabbage will disappear",
+            "To open the door pick up a key with same color. If you do not have a key you lose",
+            "Key opens the door with same color"
         ]
         
         return rawValue <= descriptions.count ? descriptions[rawValue - 1] : "No description"

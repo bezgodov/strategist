@@ -50,7 +50,7 @@ class ChooseLevelViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+         
         menuSettings()
         
         characterInitial()
@@ -672,7 +672,7 @@ class ChooseLevelViewController: UIViewController {
                     
                     let button = UIButton(frame: CGRect(x: buttonPos.x - levelTileSize.width / 2, y: buttonPos.y - levelTileSize.height / 2, width: levelTileSize.width, height: levelTileSize.height))
                     
-                    if row / 3 == Model.sharedInstance.getCountCompletedLevels() || (row / 3) + 1 == Model.sharedInstance.countLevels {
+                    if row / 3 == Model.sharedInstance.getCountCompletedLevels() || ((row / 3) + 1 == Model.sharedInstance.countLevels && (Model.sharedInstance.countLevels == Model.sharedInstance.getCountCompletedLevels())) {
                         button.setBackgroundImage(UIImage(named: "Tile_center"), for: UIControlState.normal)
                     }
                     button.titleLabel?.font = UIFont(name: "Avenir Next", size: 24)

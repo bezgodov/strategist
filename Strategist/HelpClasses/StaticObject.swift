@@ -6,7 +6,7 @@ import SpriteKit
 enum RotationDirection: Int {
     case right = 0, top, left, bottom
     
-    /// Свойство, которое содержит количество элементов в данном Enum
+    /// Свойство, которое вычисляет количество элементов в данном Enum
     static let count: Int = {
         var max: Int = 0
         
@@ -19,7 +19,10 @@ enum RotationDirection: Int {
     func nextPoint() -> RotationDirection {
         return RotationDirection(rawValue: (rawValue + 1) % RotationDirection.count)!
     }
-    
+}
+
+enum LockKeyColor: Int {
+    case red = 0, blue, green, yellow
 }
 
 /// Класс, который описывает основную механику перемещения статичного объекта
@@ -42,12 +45,15 @@ class StaticObject: SKSpriteNode {
     /// Выдвинуты ли шипы или нет (флаг, который необходим для объекта "шип")
     var spikesActive = false
     
+    /// Цвет ключа или замка
+    var lockKeyColor: LockKeyColor!
+    
     init(type: ObjectType, point: Point, size: CGSize) {
         let texture = SKTexture(imageNamed: type.spriteName)
         var size: CGFloat = 0.65
         
         switch type {
-        case ObjectType.star:
+        case ObjectType.star, ObjectType.arrow, ObjectType.tulip:
             size = 0.5
         case ObjectType.bomb:
             size = 0.625
@@ -59,6 +65,8 @@ class StaticObject: SKSpriteNode {
             size = 0.715
         case ObjectType.stopper:
             size = 0.75
+        case ObjectType.cabbage:
+            size = 0.35
         default:
             size = 0.65
         }
@@ -73,6 +81,14 @@ class StaticObject: SKSpriteNode {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setTexture(spriteName: String, size: CGSize?) {
+        self.texture = SKTexture(imageNamed: spriteName)
+        
+        if size != nil {
+            self.size = size!
+        }
     }
     
 }

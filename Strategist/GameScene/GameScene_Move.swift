@@ -40,7 +40,7 @@ extension GameScene {
         }
         
         if object.point == self.character.moves[characterMove] {
-            if object.type != ObjectType.stopper && object.type != ObjectType.alarmclock && object.type != ObjectType.bridge && object.type != ObjectType.star {
+            if object.type != ObjectType.stopper && object.type != ObjectType.alarmclock && object.type != ObjectType.bridge && object.type != ObjectType.star && object.type != ObjectType.arrow && object.type != ObjectType.tulip && object.type != ObjectType.cabbage && object.type != ObjectType.lock && object.type != ObjectType.key {
                 loseLevel()
                 isLosed = true
             }
@@ -133,6 +133,40 @@ extension GameScene {
             })
         }
         
+        
+        // Если попадаем на замок, то проверяем есть ли ключ подходящего цвета
+        if object.type == ObjectType.lock && self.character.moves[self.move] == object.point {
+            var isLosedOnLock = true
+            
+            for key in keysInBag {
+                if key == object.lockKeyColor {
+                    isLosedOnLock = false
+                    
+                    keysInBag.remove(at: keysInBag.index(of: object.lockKeyColor)!)
+                    
+                    object.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                        object.removeFromParent()
+                    })
+                    
+                    break
+                }
+            }
+            
+            if isLosedOnLock {
+                loseLevel()
+                
+                isLosed = true
+            }
+        }
+        
+        if object.type == ObjectType.key && self.character.moves[self.move] == object.point {
+            keysInBag.append(object.lockKeyColor)
+            
+            object.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                object.removeFromParent()
+            })
+        }
+        
         return isLosed
     }
     
@@ -175,24 +209,58 @@ extension GameScene {
             
             let previousObjectPoint = object.getPoint()
             
+            /// Если пчела попадает на тюльпан, то пчела останавливается на 1 ход
+            var isBeeStopped = false
+            if object.type == ObjectType.bee {
+                for tulip in staticObjects {
+                    if tulip.type == ObjectType.tulip && tulip.point == object.moves[object.move] {
+                        isBeeStopped = true
+                        
+                        tulip.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                            tulip.removeFromParent()
+                            self.staticObjects.remove(tulip)
+                        })
+                    }
+                }
+            }
+            
+            /// Если улитка попадает на капусту, то улитка останавливается на 1 ход (то есть на 2)
+            var isSnailStopped = true
+            if object.type == ObjectType.snail {
+                for cabbage in staticObjects {
+                    if cabbage.type == ObjectType.cabbage && cabbage.point == object.moves[object.move] {
+                        isSnailStopped = false
+                        
+                        cabbage.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                            cabbage.removeFromParent()
+                            self.staticObjects.remove(cabbage)
+                        })
+                    }
+                }
+            }
+            
             if object.type != ObjectType.snail {
-                object.setPoint()
+                if !isBeeStopped {
+                    object.setPoint()
+                }
             }
             else {
-                if absoluteMove % 2 == 0 {
+                if !isSnailStopped || (absoluteMove % 2 == 0) {
                     object.setPoint()
                 }
             }
             
             let movingObjectDirection = getObjectDirection(from: previousObjectPoint, to: object.getPoint())
             
-            if object.type != ObjectType.snail || (object.type == ObjectType.snail && absoluteMove % 2 == 0) {
-                if movingObjectDirection == RotationDirection.left {
-                    object.run(SKAction.scaleX(to: 1, duration: 0.25))
-                }
-                
-                if movingObjectDirection == RotationDirection.right {
-                    object.run(SKAction.scaleX(to: -1, duration: 0.25))
+            if !isBeeStopped && isSnailStopped {
+                if object.type != ObjectType.snail || (object.type == ObjectType.snail && absoluteMove % 2 == 0) {
+                    if movingObjectDirection == RotationDirection.left {
+                        object.run(SKAction.scaleX(to: 1, duration: 0.25))
+                    }
+                    
+                    if movingObjectDirection == RotationDirection.right {
+                        object.run(SKAction.scaleX(to: -1, duration: 0.25))
+                    }
                 }
             }
             
@@ -246,6 +314,17 @@ extension GameScene {
                     let characterDirection = self.getObjectDirection(from: self.character.moves[self.move - 1], to: self.character.moves[self.move])
                     
                     if self.checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.right, RotationDirection.left]) || self.checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.top, RotationDirection.bottom]) {
+                        isNextCharacterMoveAtBridgeLose = false
+                    }
+                    else {
+                        isNextCharacterMoveAtBridgeLose = true
+                    }
+                }
+                
+                if object.type == ObjectType.arrow && self.character.moves[self.move] == object.point {
+                    let characterDirection = self.getObjectDirection(from: self.character.moves[self.move - 1], to: self.character.moves[self.move])
+                    
+                    if characterDirection == object.rotate {
                         isNextCharacterMoveAtBridgeLose = false
                     }
                     else {

@@ -322,7 +322,21 @@ extension GameScene {
             removeObjectInfoView(toAlpha: toAlpha)
             
             if objectTypeClicked != nil {
-                presentObjectInfoView(spriteName: objectTypeClicked!.spriteName, description: objectTypeClicked!.description)
+                
+                var sprite = objectTypeClicked!.spriteName
+                
+                if objectTypeClicked == ObjectType.lock || objectTypeClicked == ObjectType.key {
+                    for object in staticObjects {
+                        if object.point == boardClick {
+                            let prefix = objectTypeClicked == ObjectType.lock ? "Lock" : "Key"
+                            sprite = "\(prefix)_\(object.lockKeyColor!)"
+                            
+                            break
+                        }
+                    }
+                }
+                
+                presentObjectInfoView(spriteName: sprite, description: objectTypeClicked!.description)
             }
             
             objectTypeClickedLast = objectTypeClicked

@@ -16,12 +16,43 @@ extension GameScene {
             
             let previousObjectPoint = object.getPoint()
             
+            /// Если пчела попадает на тюльпан, то пчела останавливается на 1 ход
+            var isBeeStopped = false
+            if object.type == ObjectType.bee {
+                for tulip in staticObjects {
+                    if tulip.type == ObjectType.tulip && tulip.point == object.moves[object.move] {
+                        isBeeStopped = true
+                        
+                        tulip.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                            tulip.removeFromParent()
+                            self.staticObjects.remove(tulip)
+                        })
+                    }
+                }
+            }
+            
+            /// Если улитка попадает на капусту, то улитка останавливается на 1 ход (то есть на 2)
+            var isSnailStopped = true
+            if object.type == ObjectType.snail {
+                for cabbage in staticObjects {
+                    if cabbage.type == ObjectType.cabbage && cabbage.point == object.moves[object.move] {
+                        isSnailStopped = false
+                        
+                        cabbage.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                            cabbage.removeFromParent()
+                            self.staticObjects.remove(cabbage)
+                        })
+                    }
+                }
+            }
+            
             if object.type != ObjectType.snail {
-                object.setPoint()
+                if !isBeeStopped {
+                    object.setPoint()
+                }
             }
             else {
-                if move % 2 == 0 {
-                    
+                if !isSnailStopped || (move % 2 == 0) {
                     object.setPoint()
                 }
             }

@@ -104,7 +104,12 @@ extension GameScene {
                         0: self.view!.bounds,
                         1: self.view!.bounds,
                         2: self.view!.bounds
-                    ]
+                    ],
+                24:
+                    [
+                        0: self.view!.bounds,
+                        1: self.view!.bounds
+                ],
             ]
         
         return tapPoints[index]!
@@ -186,7 +191,7 @@ extension GameScene {
                 ],
             3:
                 [
-                "If you did not choose path you can activate preview mode",
+                "If you did not choose path you can activate preview mode...",
                 "Click at 'Start' button to activate preview mode"
                 ],
             4:
@@ -211,10 +216,15 @@ extension GameScene {
                 ],
             16:
                 [
-                "Now your managing is going to be different",
-                "Use 'swipes' to control a space alien, just slide finger along your screen",
+                "Now your managing is going to be different...",
+                "Use 'swipes' to control a space alien, just slide finger along your screen...",
                 "Collect 10 stars to win level and be careful you should avoid your enemies"
-                ]
+                ],
+            24:
+                [
+                "Sometimes levels can contain lots of enemies but resolution can be very easy...",
+                "Solve this level only for 7 moves"
+                ],
         ]
         
         if slide != infoBlockTutorial[Model.sharedInstance.currentLevel]!.count {
