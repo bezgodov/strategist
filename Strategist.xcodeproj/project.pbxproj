@@ -144,8 +144,6 @@
 		2BE07C15203D9BBF005E6BEE /* Bee.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BE07C14203D9BBF005E6BEE /* Bee.png */; };
 		2BEF9FD5202A841200EFFB0F /* Fireworks_particle.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BEF9FD4202A841200EFFB0F /* Fireworks_particle.png */; };
 		2BF041831FF7196D00624C4C /* Star.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041821FF7196D00624C4C /* Star.png */; };
-		2BF041861FF71A5A00624C4C /* PlayerPinkClimbs_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */; };
-		2BF041871FF71A5A00624C4C /* PlayerPinkClimbs_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */; };
 		2BF041951FF7295800624C4C /* Spinner.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041941FF7295800624C4C /* Spinner.png */; };
 		2BF5BE2F20343BCD0098A571 /* LaunchScreenPicture.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF5BE2E20343BCD0098A571 /* LaunchScreenPicture.png */; };
 		2BFD739D20084C8A00968FB5 /* Gem_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BFD739920084C8700968FB5 /* Gem_blue.png */; };
@@ -290,13 +288,11 @@
 		2BD94B6E2036503D00954393 /* Level_16.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_16.json; sourceTree = "<group>"; };
 		2BD94B702036514400954393 /* BossLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BossLevel.swift; sourceTree = "<group>"; };
 		2BDCDFDC2011B04D00DCFA6D /* Level_12.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_12.json; sourceTree = "<group>"; };
-		2BE07C08203D8A1D005E6BEE /* PlayerWalksTop.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = PlayerWalksTop.atlas; path = Strategist/PlayerWalksTop.atlas; sourceTree = SOURCE_ROOT; };
-		2BE07C0A203D95BC005E6BEE /* BeeFlies.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = BeeFlies.atlas; path = Strategist/BeeFlies.atlas; sourceTree = SOURCE_ROOT; };
+		2BE07C08203D8A1D005E6BEE /* PlayerWalksTop.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = PlayerWalksTop.atlas; path = Strategist/AnimationAtlases/PlayerWalksTop.atlas; sourceTree = SOURCE_ROOT; };
+		2BE07C0A203D95BC005E6BEE /* BeeFlies.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = BeeFlies.atlas; path = Strategist/AnimationAtlases/BeeFlies.atlas; sourceTree = SOURCE_ROOT; };
 		2BE07C14203D9BBF005E6BEE /* Bee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Bee.png; sourceTree = "<group>"; };
 		2BEF9FD4202A841200EFFB0F /* Fireworks_particle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Fireworks_particle.png; sourceTree = "<group>"; };
 		2BF041821FF7196D00624C4C /* Star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Star.png; sourceTree = "<group>"; };
-		2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerPinkClimbs_1.png; sourceTree = "<group>"; };
-		2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerPinkClimbs_2.png; sourceTree = "<group>"; };
 		2BF041941FF7295800624C4C /* Spinner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Spinner.png; sourceTree = "<group>"; };
 		2BF5BE2E20343BCD0098A571 /* LaunchScreenPicture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchScreenPicture.png; sourceTree = "<group>"; };
 		2BFD739920084C8700968FB5 /* Gem_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Gem_blue.png; sourceTree = "<group>"; };
@@ -337,9 +333,7 @@
 			isa = PBXGroup;
 			children = (
 				2BCD9DC31FF65A9F0097C4F2 /* Sprites */,
-				2B8407F81FE6A46A004B44CE /* PlayerWalks.atlas */,
-				2BE07C08203D8A1D005E6BEE /* PlayerWalksTop.atlas */,
-				2BE07C0A203D95BC005E6BEE /* BeeFlies.atlas */,
+				2BE07C16203DA191005E6BEE /* AnimationAtlases */,
 				2B1178DD1FB84B7C006326E4 /* HelpClasses */,
 				2B1178DB1FB84B44006326E4 /* GameScene */,
 				2B1178DC1FB84B55006326E4 /* ViewControllers */,
@@ -530,8 +524,6 @@
 				2B70BACF201589B7001866D5 /* SpikesBox.png */,
 				2B09151A20316D0C0057E3DC /* Tap.png */,
 				2BFEF9AC200A3DC200A7AB79 /* PlayerStaysFront.png */,
-				2BF041841FF71A5A00624C4C /* PlayerPinkClimbs_1.png */,
-				2BF041851FF71A5A00624C4C /* PlayerPinkClimbs_2.png */,
 				2BEF9FD4202A841200EFFB0F /* Fireworks_particle.png */,
 				2B98BA2D202F219E0023E539 /* ErasePath.png */,
 				2BF5BE2E20343BCD0098A571 /* LaunchScreenPicture.png */,
@@ -565,6 +557,16 @@
 				2B0CF13C20287F600060BEF7 /* TopMenuViewBorderUp.png */,
 			);
 			path = BackgroundImages;
+			sourceTree = "<group>";
+		};
+		2BE07C16203DA191005E6BEE /* AnimationAtlases */ = {
+			isa = PBXGroup;
+			children = (
+				2B8407F81FE6A46A004B44CE /* PlayerWalks.atlas */,
+				2BE07C08203D8A1D005E6BEE /* PlayerWalksTop.atlas */,
+				2BE07C0A203D95BC005E6BEE /* BeeFlies.atlas */,
+			);
+			path = AnimationAtlases;
 			sourceTree = "<group>";
 		};
 		2BFD73A120084C8E00968FB5 /* Enemies */ = {
@@ -666,7 +668,6 @@
 				2B98BA2E202F219E0023E539 /* ErasePath.png in Resources */,
 				2B70BAC7201574AD001866D5 /* Spikes.png in Resources */,
 				2B5DCAB620272DAD007E9A54 /* Heart_empty.png in Resources */,
-				2BF041871FF71A5A00624C4C /* PlayerPinkClimbs_2.png in Resources */,
 				2B5DCAB42026B7D3007E9A54 /* Menu_questionMark.png in Resources */,
 				2B9330721FD6352E002E5933 /* Level_1.json in Resources */,
 				2B30C845203BAF88009EE444 /* Level_29.json in Resources */,
@@ -719,7 +720,6 @@
 				2B24E11C203945A800B1E826 /* BossBgMusic.mp3 in Resources */,
 				2B7AEBFB2037D88F00E02553 /* Level_20.json in Resources */,
 				2BFD739D20084C8A00968FB5 /* Gem_blue.png in Resources */,
-				2BF041861FF71A5A00624C4C /* PlayerPinkClimbs_1.png in Resources */,
 				2BF041951FF7295800624C4C /* Spinner.png in Resources */,
 				2B7DFE13202D881200999922 /* Disable.wav in Resources */,
 				2B7AEC05203863D400E02553 /* Level_21.json in Resources */,
