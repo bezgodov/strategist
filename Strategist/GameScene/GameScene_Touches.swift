@@ -208,9 +208,12 @@ extension GameScene {
                                                     
                                                     object.run(SKAction.rotate(toAngle: object.zRotation - CGFloat(90 * Double.pi / 180), duration: 0.35), completion: {
                                                         object.active = true
-                                                        
                                                     })
                                                 }
+                                            }
+                                            
+                                            if object.type == ObjectType.button {
+                                                changeButtonsState(object)
                                             }
                                             objectTypeClicked = object.type
                                         }
@@ -286,11 +289,11 @@ extension GameScene {
                                     objectTypeClicked = ObjectType.gem
                                 }
                                 
-                                if !removedLastPointByMove && objectTypeClicked != ObjectType.bridge && Model.sharedInstance.getShowTips() {
+                                if !removedLastPointByMove && objectTypeClicked != ObjectType.bridge && objectTypeClicked != ObjectType.button && Model.sharedInstance.getShowTips() {
                                     prepareObjectInfoView(objectTypeClicked, boardClick: boardClick.point)
                                 }
 
-                                if objectTypeClicked == ObjectType.bridge {
+                                if objectTypeClicked == ObjectType.bridge || objectTypeClicked == ObjectType.button {
                                     removeObjectInfoView(toAlpha: 0)
                                 }
                                 
@@ -325,10 +328,15 @@ extension GameScene {
                 
                 var sprite = objectTypeClicked!.spriteName
                 
-                if objectTypeClicked == ObjectType.lock || objectTypeClicked == ObjectType.key {
+                if objectTypeClicked == ObjectType.lock || objectTypeClicked == ObjectType.key || objectTypeClicked == ObjectType.button {
                     for object in staticObjects {
                         if object.point == boardClick {
-                            let prefix = objectTypeClicked == ObjectType.lock ? "Lock" : "Key"
+                            var prefix = "Button"
+                            
+                            if objectTypeClicked != ObjectType.button {
+                                prefix = objectTypeClicked == ObjectType.lock ? "Lock" : "Key"
+                            }
+                            
                             sprite = "\(prefix)_\(object.lockKeyColor!)"
                             
                             break
@@ -360,7 +368,7 @@ extension GameScene {
         }
     }
     
-    func presentObjectInfoView(spriteName: String, description: String) {
+    func presentObjectInfoView(spriteName: String?, description: String) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
         
         let objectInfoViewSize = CGSize(width: (Model.sharedInstance.gameScene.view?.frame.width)!, height: 65)
@@ -373,27 +381,34 @@ extension GameScene {
         objectInfoView.backgroundColor = UIColor.darkGray
         Model.sharedInstance.gameScene.view?.addSubview(objectInfoView)
         
-        let objectIcon = UIImageView(image: UIImage(named: spriteName))
-        objectIcon.alpha = 0.0
-        objectIcon.frame.size = CGSize(width: 45, height: objectIcon.frame.size.height / (objectIcon.frame.size.width / 45))
-        objectIcon.frame.origin = CGPoint(x: 10, y: (objectInfoViewSize.height / 2) - (objectIcon.frame.size.height / 2))
-        objectInfoView.addSubview(objectIcon)
+        if spriteName != nil {
+            let objectIcon = UIImageView(image: UIImage(named: spriteName!))
+            objectIcon.alpha = 0.0
+            objectIcon.frame.size = CGSize(width: 45, height: objectIcon.frame.size.height / (objectIcon.frame.size.width / 45))
+            objectIcon.frame.origin = CGPoint(x: 10, y: (objectInfoViewSize.height / 2) - (objectIcon.frame.size.height / 2))
         
-        let objectDescription = UILabel(frame: CGRect(x: objectIcon.frame.size.width + 10 + 10, y: 0, width: objectInfoView.frame.size.width - objectIcon.frame.size.width - 20 - 10 - 10, height: objectInfoView.frame.size.height))
-        objectDescription.alpha = 0.0
-        objectDescription.lineBreakMode = NSLineBreakMode.byWordWrapping
-        objectDescription.numberOfLines = 3
-        objectDescription.font = UIFont(name: "Avenir Next", size: 14)
-        objectDescription.text = description
-        objectDescription.textColor = UIColor.white
-        objectInfoView.addSubview(objectDescription)
+            objectInfoView.addSubview(objectIcon)
+        
+            let objectDescription = UILabel(frame: CGRect(x: objectIcon.frame.size.width + 10 + 10, y: 0, width: objectInfoView.frame.size.width - objectIcon.frame.size.width - 20 - 10 - 10, height: objectInfoView.frame.size.height))
+            objectDescription.alpha = 0.0
+            objectDescription.lineBreakMode = NSLineBreakMode.byWordWrapping
+            objectDescription.numberOfLines = 3
+            objectDescription.font = UIFont(name: "Avenir Next", size: 14)
+            objectDescription.text = description
+            objectDescription.textColor = UIColor.white
+            objectInfoView.addSubview(objectDescription)
+            
+            DispatchQueue.main.async {
+                UIView.animate(withDuration: 0.5, animations: {
+                    if spriteName != nil {
+                        objectIcon.alpha = 1.0
+                        objectDescription.alpha = 1.0
+                    }
+                })
+            }
+        }
         
         DispatchQueue.main.async {
-            UIView.animate(withDuration: 0.5, animations: {
-                objectIcon.alpha = 1.0
-                objectDescription.alpha = 1.0
-            })
-            
             UIView.animate(withDuration: 0.25, animations: {
                 self.objectInfoView.frame.origin.x = 0
             })

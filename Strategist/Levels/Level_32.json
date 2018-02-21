@@ -1,8 +1,7 @@
 {
     "finish": [15,15],
     "character": [0,2],
-    "boardSize": [5,5],
+    "boardSize": [5,6],
     "moves": 10,
-    "isLevelWithTutorial": true,
-    "bossLevelStars" : 10
+    "bossLevelStars" : 12
 }

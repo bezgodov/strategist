@@ -26,11 +26,16 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     /// Количество звёзд, которые должны быть собраны на уровне (задаются в json)
     var countStars = 1
     
+    /// Массив, содержащий анимацию движеничя пчелы
+    var beeFliesAtlas = [SKTexture]()
+    
     override init() {
         super.init()
         
         gameScene = Model.sharedInstance.gameScene
         gameScene.physicsWorld.contactDelegate = self
+        
+        gameScene.addChild(gameScene.bossEnemies)
         
         countStars = gameScene.moves
         setCountStars(countStars)
@@ -114,6 +119,9 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     
     /// Функция, которая инициализирует таймеры для генерации объектов
     func timersSettings() {
+        gameScene.bossEnemies.position = gameScene.objectsLayer.position
+        gameScene.bossEnemies.zPosition = gameScene.bossEnemies.zPosition
+        
         Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
         isFinishedLevel = false
         
@@ -121,15 +129,15 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
             SKTAudio.sharedInstance().playBackgroundMusic(filename: "BossBgMusic.mp3")
         }
         
-        let timerKoef = Double(Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections / 10)
+        let timerKoef = Double(Double(Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections) / 10)
         
-        gameScene.objectsLayer.speed += CGFloat(timerKoef)
+        gameScene.bossEnemies.speed = CGFloat(timerKoef) + 1
         
-        timerEnemy = Timer.scheduledTimer(withTimeInterval: 0.745 - timerKoef, repeats: true) { (timerEnemy) in
+        timerEnemy = Timer.scheduledTimer(withTimeInterval: 0.745 - (timerKoef * 1.5), repeats: true) { (_) in
             self.newObject()
         }
         
-        timerStar = Timer.scheduledTimer(withTimeInterval: 4.183 - timerKoef, repeats: true) { (timerStar) in
+        timerStar = Timer.scheduledTimer(withTimeInterval: 4.183 - (timerKoef * 1.5), repeats: true) { (_) in
             self.newStar()
         }
     }
@@ -139,6 +147,16 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
         for type in objectsTypes {
             let texture = SKTexture(imageNamed: type.spriteName)
             textures[type] = texture
+        }
+        
+        beeFliesAtlas = [SKTexture]()
+        
+        let beeFliespAnimatedAtlas = SKTextureAtlas(named: "BeeFlies")
+        if beeFliesAtlas.isEmpty {
+            for i in 1...beeFliespAnimatedAtlas.textureNames.count {
+                let beeFliesTextureName = "BeeFlies_\(i)"
+                beeFliesAtlas.append(beeFliespAnimatedAtlas.textureNamed(beeFliesTextureName))
+            }
         }
     }
     
@@ -204,7 +222,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     }
     
     func createObject(type: ObjectType) {
-        let randomPos = Point(column: gameScene.boardSize.column + 3, row: Int(arc4random_uniform(5)))
+        let randomPos = Point(column: gameScene.boardSize.column + 3, row: Int(arc4random_uniform(UInt32(gameScene.boardSize.row))))
         
         let sizeKoef: CGFloat = getSizeKoef(type)
         
@@ -218,7 +236,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
         object.physicsBody?.collisionBitMask = 0
         object.physicsBody?.contactTestBitMask = CollisionTypes.character.rawValue
         
-        gameScene.objectsLayer.addChild(object)
+        gameScene.bossEnemies.addChild(object)
         
         objectExtraParams(type: type, object: object)
         
@@ -245,6 +263,10 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
             let pulse = SKAction.sequence([pulseUp, pulseDown])
             let repeatPulse = SKAction.repeatForever(pulse)
             object.run(repeatPulse)
+        }
+        
+        if type == ObjectType.bee {
+            object.run(SKAction.repeatForever(SKAction.animate(with: beeFliesAtlas, timePerFrame: 0.05, resize: false, restore: true)), withKey: "beeFlies")
         }
     }
     
@@ -305,8 +327,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
                 
                 if point.point.column >= 0 && point.point.column < gameScene.boardSize.column && point.point.row >= 0 && point.point.row < gameScene.boardSize.row {
                     SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
-                    self.gameScene.character.run(SKAction.move(to: self.gameScene.pointFor(column: point.point.column, row: point.point.row), duration: 0.2), completion: {
-                    })
+                    self.gameScene.character.run(SKAction.move(to: self.gameScene.pointFor(column: point.point.column, row: point.point.row), duration: 0.2))
                 }
                 else {
                     gameScene.shakeView(gameScene.view!, repeatCount: 2, amplitude: 3)
@@ -332,6 +353,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     func cleanTimers() {
         timerEnemy.invalidate()
         timerStar.invalidate()
+        gameScene.bossEnemies.speed = 0
         
         if Model.sharedInstance.isActivatedBgMusic() {
             SKTAudio.sharedInstance().playBackgroundMusic(filename: "BgMusic.mp3")

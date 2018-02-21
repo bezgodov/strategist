@@ -53,7 +53,7 @@ class StaticObject: SKSpriteNode {
         var size: CGFloat = 0.65
         
         switch type {
-        case ObjectType.star, ObjectType.arrow, ObjectType.tulip:
+        case ObjectType.star, ObjectType.arrow, ObjectType.tulip, ObjectType.magnet:
             size = 0.5
         case ObjectType.bomb:
             size = 0.625

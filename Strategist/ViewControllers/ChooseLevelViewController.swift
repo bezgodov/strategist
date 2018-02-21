@@ -42,15 +42,15 @@ class ChooseLevelViewController: UIViewController {
     /// Модальное окно
     var modalWindow: UIView!
     
-    /// Количество уровней, которое необходимо завершить для каждой секции для 1 секции -> 11, для второй -> 23
-    var sections = [10, 23, 39]
+    /// Количество уровней, которое необходимо завершить для каждой секции для 1 секции -> 10, для второй -> 24
+    var sections = [10, 24, 40]
     
     /// Заблокирована ли следующая секция (если не пройдено необходимо кол-во уровней за предыдущую секцию)
     var isNextSectionDisabled = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-         
+        
         menuSettings()
         
         characterInitial()
@@ -92,21 +92,21 @@ class ChooseLevelViewController: UIViewController {
     
     func characterInitial() {
         /// Задаём анимацию для ГП
-        let playerAnimatedAtlas = SKTextureAtlas(named: "PlayerWalks")
+        let playerAnimatedAtlas = SKTextureAtlas(named: "PlayerWalksTop")
         walkFrames = [UIImage]()
         let numImages = playerAnimatedAtlas.textureNames.count
         for i in 1...numImages {
-            let playerTextureName = "PlayerWalks_\(i)"
+            let playerTextureName = "PlayerWalksTop_\(i)"
             walkFrames.append(UIImage(cgImage: playerAnimatedAtlas.textureNamed(playerTextureName).cgImage()))
         }
         
         let pointCharacter = pointFor(column: characterPointStart.column, row: characterPointStart.row - (Model.sharedInstance.getCountCompletedLevels() == 0 ? distanceBetweenLevels : 0))
-        let textureCharacter = playerAnimatedAtlas.textureNamed("PlayerWalks_2").cgImage()
-        let sizeCharacter = CGSize(width: levelTileSize.width * 0.5, height: CGFloat(textureCharacter.height) / (CGFloat(textureCharacter.width) / (levelTileSize.width * 0.5)))
+        let textureCharacter = UIImage(named: "PlayerStaysFront")?.cgImage
+        let sizeCharacter = CGSize(width: levelTileSize.width * 0.5, height: CGFloat(textureCharacter!.height) / (CGFloat(textureCharacter!.width) / (levelTileSize.width * 0.5)))
         
         character = UIImageView(frame: CGRect(x: pointCharacter.x - sizeCharacter.width / 2, y: pointCharacter.y - sizeCharacter.height / 2, width: sizeCharacter.width, height: sizeCharacter.height))
         character.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-        character.image = UIImage(cgImage: playerAnimatedAtlas.textureNamed("PlayerWalks_2").cgImage())
+        character.image = UIImage(named: "PlayerStaysFront")
         
         scrollView.addSubview(character)
     }
@@ -638,6 +638,8 @@ class ChooseLevelViewController: UIViewController {
             buttonsPositions = UserDefaults.standard.array(forKey: "levelsTilesPositions") as? [Int]
         }
         
+        var nearestBossPos = 0
+        
         // -5 и 5 для того, чтобы при "bounce" были сверху и снизу ячейки
         for row in -10..<boardSize.row + 10 {
             for column in 0..<boardSize.column {
@@ -721,35 +723,22 @@ class ChooseLevelViewController: UIViewController {
                             
                             if Model.sharedInstance.getCountCompletedLevels() >= (row / distanceBetweenLevels - 1) {
                                 isNextSectionDisabled = true
+                                nearestBossPos = row / distanceBetweenLevels
                                 characterPointStart = levelButtonsPositions.last!
                             }
-                            
-                            let point = pointFor(column: 1, row: row - 2)
-                            let viewCountLevelsToUnlock = UIView(frame: CGRect(x: point.x - levelTileSize.width, y: point.y + 3 * levelTileSize.height / 4, width: levelTileSize.width * 4, height: levelTileSize.height * 1.5))
-                            viewCountLevelsToUnlock.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
-                            viewCountLevelsToUnlock.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-                            
-                            viewCountLevelsToUnlock.layer.cornerRadius = 15
-                            viewCountLevelsToUnlock.layer.shadowColor = UIColor.black.cgColor
-                            viewCountLevelsToUnlock.layer.shadowOffset = CGSize.zero
-                            viewCountLevelsToUnlock.layer.shadowOpacity = 0.35
-                            viewCountLevelsToUnlock.layer.shadowRadius = 10
-                            scrollView.addSubview(viewCountLevelsToUnlock)
-                            
-                            let labelCountLevelsToUnlock = UILabel(frame: CGRect(x: 10, y: 0, width: viewCountLevelsToUnlock.frame.width - 20, height: viewCountLevelsToUnlock.frame.height))
                             
                             let textAboutLevels = "at least \(needCompleteLevelsPreviousSection - completedLevels) more levels"
                             let textAboutFinalLevel = "section's final level"
                             let ifBothTrue = (completedLevels < needCompleteLevelsPreviousSection && !Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels)) ? " and " : ""
                             let disabledSectionText = "Complete \(completedLevels < needCompleteLevelsPreviousSection ? textAboutLevels : "")\(ifBothTrue)\(!Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels) ? textAboutFinalLevel : "") to unlock next section"
                             
-                            labelCountLevelsToUnlock.text = disabledSectionText
-                            labelCountLevelsToUnlock.textAlignment = NSTextAlignment.center
-                            labelCountLevelsToUnlock.numberOfLines = 3
-                            labelCountLevelsToUnlock.font = UIFont(name: "AvenirNext-DemiBold", size: 18)
-                            labelCountLevelsToUnlock.textColor = UIColor.white
-                            viewCountLevelsToUnlock.addSubview(labelCountLevelsToUnlock)
+                            presentInfoBlock(point: Point(column: 1, row: row - 2), message: disabledSectionText)
                         }
+                    }
+                    
+                    // Если последний уровень пройден, то выводим надпись о том, что новые уровни разрабатываются
+                    if ((row / distanceBetweenLevels + 1) == Model.sharedInstance.getCountCompletedLevels()) && (Model.sharedInstance.getCountCompletedLevels() == Model.sharedInstance.countLevels) {
+                        presentInfoBlock(point: Point(column: 1, row: row + 1), message: "New levels are coming. We are already designing new levels. Wait for updates")
                     }
                     
                     if (row / distanceBetweenLevels) <= Model.sharedInstance.getCountCompletedLevels() + 1 && !isLevelsAfterSectionDisabled {
@@ -779,7 +768,7 @@ class ChooseLevelViewController: UIViewController {
         /// Последняя ячейка, от которой отрисовывается путь
         var lastPos = Point(column: buttonsPositions!.first!, row: -15)
         
-        let koefForDisabledSection = isNextSectionDisabled ? 2 - (Model.sharedInstance.distanceBetweenSections % Model.sharedInstance.getCountCompletedLevels()) : 0
+        let koefForDisabledSection = isNextSectionDisabled ? (2 - (nearestBossPos % Model.sharedInstance.getCountCompletedLevels())) : 0
         
         /// Y-координата
         var row = 1
@@ -795,7 +784,7 @@ class ChooseLevelViewController: UIViewController {
                 }
             }
             
-            var sizeCircle = CGSize(width: levelTileSize.width / 1.75, height: levelTileSize.height / 1.75)
+            var sizeCircle = CGSize(width: levelTileSize.width / 1.625, height: levelTileSize.height / 1.625)
             
             if row % Model.sharedInstance.distanceBetweenSections == 0 {
                 sizeCircle = CGSize(width: levelTileSize.width, height: levelTileSize.height)
@@ -812,12 +801,13 @@ class ChooseLevelViewController: UIViewController {
             }
             else {
                 pinkCircleLevelTile.layer.cornerRadius = pinkCircleLevelTile.frame.size.width / 7
-                pinkCircleLevelTile.layer.backgroundColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1).cgColor
             }
             
-            scrollView.insertSubview(pinkCircleLevelTile, at: 3)
+            if !isNextSectionDisabled {
+                scrollView.insertSubview(pinkCircleLevelTile, at: 3)
+            }
 
-            /// Путь от последней кнопки до текущейй
+            /// Путь от последней кнопки до текущей
             let path2point = pathToPoint(from: lastPos, to: to)
             lastPos = Point(column: pos, row: row * 3 - 2)
             row += 1
@@ -877,6 +867,32 @@ class ChooseLevelViewController: UIViewController {
             menuViewController.isDismissed = dismiss
             navigationController?.pushViewController(menuViewController, animated: true)
         }
+    }
+    
+    /// Окно на scrollView, которое выводит какое-либо сообщение
+    func presentInfoBlock(point: Point, message: String) {
+        let pointOnScrollView = pointFor(column: point.column, row: point.row)
+        let infoBlockBgView = UIView(frame: CGRect(x: pointOnScrollView.x - levelTileSize.width, y: pointOnScrollView.y + 3 * levelTileSize.height / 4, width: levelTileSize.width * 4, height: levelTileSize.height * 1.5))
+        infoBlockBgView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
+        infoBlockBgView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+        
+        infoBlockBgView.layer.cornerRadius = 15
+        infoBlockBgView.layer.shadowColor = UIColor.black.cgColor
+        infoBlockBgView.layer.shadowOffset = CGSize.zero
+        infoBlockBgView.layer.shadowOpacity = 0.35
+        infoBlockBgView.layer.shadowRadius = 10
+        scrollView.addSubview(infoBlockBgView)
+        
+        let infoBlockLabel = UILabel(frame: CGRect(x: 10, y: 0, width: infoBlockBgView.frame.width - 20, height: infoBlockBgView.frame.height))
+        
+        let textAboutFinishedLastLevel = message
+        
+        infoBlockLabel.text = textAboutFinishedLastLevel
+        infoBlockLabel.textAlignment = NSTextAlignment.center
+        infoBlockLabel.numberOfLines = 3
+        infoBlockLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 18)
+        infoBlockLabel.textColor = UIColor.white
+        infoBlockBgView.addSubview(infoBlockLabel)
     }
     
     override var prefersStatusBarHidden: Bool {

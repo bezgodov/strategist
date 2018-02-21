@@ -5,7 +5,27 @@ extension GameScene {
     func previewMainTimer() {
         previewTimer.invalidate()
         var move = 0
-        previewTimer = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true) { (previewTimer) in
+        previewTimer = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true) { (_) in
+            if move == 0 {
+                var beeFliesAtlas = [SKTexture]()
+                for object in self.movingObjects {
+                    // Анимация для пчелы
+                    if object.type == ObjectType.bee {
+                        
+                        let beeFliespAnimatedAtlas = SKTextureAtlas(named: "BeeFlies")
+                        
+                        if beeFliesAtlas.isEmpty {
+                            for i in 1...beeFliespAnimatedAtlas.textureNames.count {
+                                let beeFliesTextureName = "BeeFlies_\(i)"
+                                beeFliesAtlas.append(beeFliespAnimatedAtlas.textureNamed(beeFliesTextureName))
+                            }
+                        }
+                        
+                        object.run(SKAction.repeatForever(SKAction.animate(with: beeFliesAtlas, timePerFrame: 0.05, resize: false, restore: true)), withKey: "beeFlies")
+                    }
+                }
+            }
+            
             move += 1
             self.worldPreview(move: move)
         }

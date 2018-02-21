@@ -70,6 +70,9 @@ class GameScene: SKScene {
     /// Слой, на который добавляются все объекты
     let objectsLayer = SKNode()
     
+    /// Нод, на который добавляются все враги на босс-уровне
+    let bossEnemies = SKNode()
+    
     /// Слой, на который добавляются спрайты ячеек
     let tilesLayer = SKNode()
     
@@ -124,10 +127,19 @@ class GameScene: SKScene {
     /// Ключи, которые были собраны на сцене
     var keysInBag = [LockKeyColor]()
     
+    /// Объекты, которые были собраны на сцене
+    var collectedObjects = [StaticObject]()
+    
+    /// Количество кнопок на уровне
+    var buttonsOnLevel = 0
+    
 //    var motionManager: CMMotionManager!
     
     /// Переменная, которая содержит все текстуры для анимации ГП
-    var playerWalkingFrames: [SKTexture] = []
+    var playerWalkingFrames = [SKTexture]()
+    
+    /// Переменная, которая содержит все текстуры для анимации ГП, перемещающегося наверх
+    var playerWalkingTopFrames = [SKTexture]()
     
     override func didMove(to view: SKView) {
         
@@ -187,57 +199,60 @@ class GameScene: SKScene {
         
         bgNode.zRotation = CGFloat(-25 * Double.pi / 180)
         
-        _ = Timer.scheduledTimer(withTimeInterval: 15, repeats: true, block: { (_) in
-            let characterBg = SKSpriteNode(texture: self.playerWalkingFrames[1])
-            characterBg.zPosition = 4
-            characterBg.alpha = 0.125
-            characterBg.position = self.pointFor(column: -1, row: 0)
-            characterBg.size = CGSize(width: TileWidth * 0.5, height: (characterBg.texture?.size().height)! / ((characterBg.texture?.size().width)! / (TileWidth * 0.5)))
-            characterBg.run(SKAction.repeatForever(SKAction.animate(with: self.playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
-            bgNode.addChild(characterBg)
-            
-            var moves = [Point]()
-            for row in -2...self.boardSize.row + 5 {
+        // На босс-уровне убираем ГП на заднем фоне
+        if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
+            _ = Timer.scheduledTimer(withTimeInterval: 15, repeats: true, block: { (_) in
+                let characterBg = SKSpriteNode(texture: self.playerWalkingFrames[1])
+                characterBg.zPosition = 4
+                characterBg.alpha = 0.125
+                characterBg.position = self.pointFor(column: -1, row: 0)
+                characterBg.size = CGSize(width: TileWidth * 0.5, height: (characterBg.texture?.size().height)! / ((characterBg.texture?.size().width)! / (TileWidth * 0.5)))
+                characterBg.run(SKAction.repeatForever(SKAction.animate(with: self.playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
+                bgNode.addChild(characterBg)
                 
-                let randLimit = self.boardSize.row + 1
-                let rand = arc4random_uniform(UInt32(randLimit))
-                
-                if moves.count > 0 {
-                    while moves.last?.column != Int(rand) {
-                        let newRowValue = moves.last!.column + ((moves.last!.column < Int(rand)) ? 1 : -1)
-                        moves.append(Point(column: newRowValue, row: moves.last!.row))
-                    }
-                }
-                moves.append(Point(column: Int(rand), row: row))
-            }
-            
-            var move = 0
-            _ = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true, block: { (timer) in
-                if move < moves.count {
+                var moves = [Point]()
+                for row in -2...self.boardSize.row + 5 {
                     
-                    if move > 0 {
-                        let characterDirectionWalks = self.getObjectDirection(from: moves[move - 1], to: moves[move])
-                        
-                        if characterDirectionWalks == RotationDirection.right {
-                            characterBg.run(SKAction.scaleX(to: 1, duration: 0.25))
-                        }
-                        
-                        if characterDirectionWalks == RotationDirection.left {
-                            characterBg.run(SKAction.scaleX(to: -1, duration: 0.25))
+                    let randLimit = self.boardSize.row + 1
+                    let rand = arc4random_uniform(UInt32(randLimit))
+                    
+                    if moves.count > 0 {
+                        while moves.last?.column != Int(rand) {
+                            let newRowValue = moves.last!.column + ((moves.last!.column < Int(rand)) ? 1 : -1)
+                            moves.append(Point(column: newRowValue, row: moves.last!.row))
                         }
                     }
-                    
-                    characterBg.run(SKAction.move(to: self.pointFor(column: moves[move].column, row: moves[move].row), duration: 0.5), completion: {
-                        move += 1
-                        
-                        if move == moves.count {
-                            characterBg.removeFromParent()
-                            timer.invalidate()
-                        }
-                    })
+                    moves.append(Point(column: Int(rand), row: row))
                 }
+                
+                var move = 0
+                _ = Timer.scheduledTimer(withTimeInterval: 0.65, repeats: true, block: { (timer) in
+                    if move < moves.count {
+                        
+                        if move > 0 {
+                            let characterDirectionWalks = self.getObjectDirection(from: moves[move - 1], to: moves[move])
+                            
+                            if characterDirectionWalks == RotationDirection.right {
+                                characterBg.run(SKAction.scaleX(to: 1, duration: 0.25))
+                            }
+                            
+                            if characterDirectionWalks == RotationDirection.left {
+                                characterBg.run(SKAction.scaleX(to: -1, duration: 0.25))
+                            }
+                        }
+                        
+                        characterBg.run(SKAction.move(to: self.pointFor(column: moves[move].column, row: moves[move].row), duration: 0.5), completion: {
+                            move += 1
+                            
+                            if move == moves.count {
+                                characterBg.removeFromParent()
+                                timer.invalidate()
+                            }
+                        })
+                    }
+                })
             })
-        })
+        }
         
         bgNode.zPosition = -5
         gameLayer.addChild(bgNode)
@@ -261,7 +276,16 @@ class GameScene: SKScene {
             }
             
             playerWalkingFrames = walkFrames
-        
+            
+            var walkTopFrames = [SKTexture]()
+            let playerWalksTopAnimatedAtlas = SKTextureAtlas(named: "PlayerWalksTop")
+            for i in 1...playerWalksTopAnimatedAtlas.textureNames.count {
+                let playerWalksTopTextureName = "PlayerWalksTop_\(i)"
+                walkTopFrames.append(playerWalksTopAnimatedAtlas.textureNamed(playerWalksTopTextureName))
+            }
+            
+            playerWalkingTopFrames = walkTopFrames
+            
             // Инициализируем ГП
             character = Character(imageNamed: "PlayerStaysFront")
             character.zPosition = 8
@@ -490,6 +514,8 @@ class GameScene: SKScene {
             if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
                 bossLevel = BossLevel()
             }
+            
+            buttonsOnLevel = countButtonsOnLevel()
         }
     }
     
@@ -504,6 +530,11 @@ class GameScene: SKScene {
                     gameBegan = true
                     
                     mainTimer(interval: 0.25)
+                    
+                    // Если уровень больше, чем 26, то показываем рюкзак (так как до 26 нет объектов, которые можно положить в рюкзак)
+                    if Model.sharedInstance.currentLevel > 26 && checkForCollectibleObjects() {
+                        presentObjectInfoView(spriteName: "Bag", description: "")
+                    }
                     
                     lastPathStepSprite.alpha = 0
                     
@@ -540,9 +571,27 @@ class GameScene: SKScene {
     
     func mainTimer(interval: TimeInterval = 0.65) {
         gameTimer.invalidate()
-        gameTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { (gameTimer) in
+        gameTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { (_) in
             if self.move == 0 {
                 self.character.run(SKAction.repeatForever(SKAction.animate(with: self.playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
+                
+                var beeFliesAtlas = [SKTexture]()
+                for object in self.movingObjects {
+                    // Анимация для пчелы
+                    if object.type == ObjectType.bee {
+                        
+                        let beeFliespAnimatedAtlas = SKTextureAtlas(named: "BeeFlies")
+                        
+                        if beeFliesAtlas.isEmpty {
+                            for i in 1...beeFliespAnimatedAtlas.textureNames.count {
+                                let beeFliesTextureName = "BeeFlies_\(i)"
+                                beeFliesAtlas.append(beeFliespAnimatedAtlas.textureNamed(beeFliesTextureName))
+                            }
+                        }
+                        
+                        object.run(SKAction.repeatForever(SKAction.animate(with: beeFliesAtlas, timePerFrame: 0.05, resize: false, restore: true)), withKey: "beeFlies")
+                    }
+                }
             }
             self.worldMove()
         }
@@ -813,6 +862,9 @@ class GameScene: SKScene {
         objectsLayer.removeAllChildren()
         objectsLayer.removeAllActions()
         objectsLayer.removeFromParent()
+        bossEnemies.removeAllChildren()
+        bossEnemies.removeAllActions()
+        bossEnemies.removeFromParent()
         tilesLayer.removeAllChildren()
         tilesLayer.removeAllActions()
         tilesLayer.removeFromParent()
@@ -827,6 +879,9 @@ class GameScene: SKScene {
         isPreviewing = false
         isLosedLevel = false
         keysInBag.removeAll()
+        collectedObjects.removeAll()
+        removeObjectInfoView()
+        buttonsOnLevel = 0
         
         Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
         Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true
@@ -1033,6 +1088,17 @@ class GameScene: SKScene {
         animation.toValue = NSValue(cgPoint: CGPoint(x: viewToShake.center.x + amplitude, y: viewToShake.center.y))
         
         viewToShake.layer.add(animation, forKey: "position")
+    }
+    
+    /// Функция проверяет есть ли объекты, для которых необходимо "открыть рюкзак"
+    func checkForCollectibleObjects() -> Bool {
+        for object in staticObjects {
+            if object.type == ObjectType.key || object.type == ObjectType.magnet {
+                return true
+            }
+        }
+        
+        return false
     }
     
     override func update(_ currentTime: TimeInterval) {

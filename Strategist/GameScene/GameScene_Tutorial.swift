@@ -109,7 +109,14 @@ extension GameScene {
                     [
                         0: self.view!.bounds,
                         1: self.view!.bounds
-                ],
+                    ],
+                33:
+                    [
+                        0: self.view!.bounds,
+                        1: getRectFromPoint(point: Point(column: 0, row: 1)),
+                        2: self.view!.bounds,
+                        3: self.view!.bounds
+                    ]
             ]
         
         return tapPoints[index]!
@@ -225,6 +232,13 @@ extension GameScene {
                 "Sometimes levels can contain lots of enemies but resolution can be very easy...",
                 "Solve this level only for 7 moves"
                 ],
+            33:
+                [
+                "Press down all buttons to win the level and do not forget about stars...",
+                "Tap at button to switch all other button...",
+                "If an alien gets at button and that button was pressed down then nothing happens, but...",
+                "If an alien gets at active button (button was not pressed down). All buttons are switched"
+            ],
         ]
         
         if slide != infoBlockTutorial[Model.sharedInstance.currentLevel]!.count {
@@ -243,16 +257,23 @@ extension GameScene {
 
                     for tapIconView in sender!.view!.subviews {
                         if tapIconView.restorationIdentifier == "tapIcon" {
-                            UIView.animate(withDuration: 0.25, animations: {
+                            if nextMovePointForTapIcon != self.view!.bounds {
+                                tapIconView.alpha = 1
                                 
-                                var pointConvertedForBoard = nextMovePointForTapIcon
-                                pointConvertedForBoard!.origin.x += nextMovePointForTapIcon!.size.width / 2 - 10
-                                pointConvertedForBoard!.origin.y += nextMovePointForTapIcon!.size.height / 2 - 10
+                                UIView.animate(withDuration: 0.25, animations: {
+                                    
+                                    var pointConvertedForBoard = nextMovePointForTapIcon
+                                    pointConvertedForBoard!.origin.x += nextMovePointForTapIcon!.size.width / 2 - 10
+                                    pointConvertedForBoard!.origin.y += nextMovePointForTapIcon!.size.height / 2 - 10
 
-                                tapIconView.frame.origin = pointConvertedForBoard!.origin
-                            }, completion: { (_) in
-                                
-                            })
+                                    tapIconView.frame.origin = pointConvertedForBoard!.origin
+                                }, completion: { (_) in
+                                    
+                                })
+                            }
+                            else {
+                                tapIconView.alpha = 0
+                            }
                         }
                     }
                 }
@@ -352,6 +373,19 @@ extension GameScene {
                         bossLevel?.isFinishedLevel = false
                         bossLevel?.prepareBossLevel()
                     }
+            default:
+                break
+            }
+        case 33:
+            switch slide {
+            case 1:
+                for object in staticObjects {
+                    if object.type == ObjectType.button {
+                        if object.point == Point(column: 0, row: 1) {
+                            changeButtonsState(object)
+                        }
+                    }
+                }
             default:
                 break
             }

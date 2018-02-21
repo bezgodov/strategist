@@ -6,71 +6,82 @@
     "gems": 2,
     "winningPath":
     [
-     
+     [4,1],
+     [3,1],
+     [3,2],
+     [2,2],
+     [2,1],
+     [1,1],
+     [1,2],
+     [0,2],
+     [0,3],
+     [0,4],
+     [1,4],
+     [2,4],
+     [3,4],
+     [3,5]
     ],
     "movingObjects": [
                 {
                 "type": "bee",
                 "move": [
-                       [3,4],
-                       [2,4],
-                       [2,5],
-                       [1,5],
-                       [1,4]]
+                       [1,4],
+                       [1,3],
+                       [1,2],
+                       [1,1]]
+                },
+                {
+                "type": "snail",
+                "move": [
+                       [4,3],
+                       [3,3],
+                       [2,3]]
                 },
                 {
                 "type": "bee",
                 "move": [
-                       [0,1],
-                       [1,1],
-                       [1,0],
-                       [2,0]]
+                       [2,3],
+                       [2,4],
+                       [3,4],
+                       [4,4]]
                 }],
     "staticObjects": [
+                
                 {
-                "type": "lock",
-                "point": [1,3],
-                "color": 0
-                },
-                {
-                "type": "lock",
-                "point": [2,3],
-                "color": 1
-                },
-                {
-                "type": "lock",
-                "point": [3,3],
-                "color": 3
-                },
-                {
-                "type": "key",
-                "point": [0,0],
-                "color": 0
-                },
-                {
-                "type": "key",
-                "point": [3,1],
-                "color": 1
-                },
-                {
-                "type": "key",
-                "point": [0,2],
-                "color": 3
-                },
-                {
-                "type": "spinner",
-                "point": [4,3]
+                "type": "star",
+                "point": [4,5]
                 },
                 {
                 "type": "star",
-                "point": [0,4]
+                "point": [4,5]
                 },
                 {
-                "type": "alarmclock",
+                "type": "magnet",
+                "point": [2,2]
+                },
+                {
+                "type": "star",
                 "point": [2,1]
                 },
                 {
+                "type": "star",
+                "point": [1,5]
+                },
+                {
                 "type": "spinner",
-                "point": [0,3]
+                "point": [2,5]
+                },
+                {
+                "type": "spinner",
+                "point": [0,1]
+                },
+                {
+                "type": "arrow",
+                "point": [2,0],
+                "rotate": 3
+                },
+                {
+                "type": "star",
+                "point": [0,0]
                 }]
 }

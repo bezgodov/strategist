@@ -23,6 +23,7 @@ extension GameScene {
         modalWindowBg = UIView(frame: self.view!.bounds)
         modalWindowBg.backgroundColor = UIColor.black
         modalWindowBg.alpha = 0
+        modalWindowBg.restorationIdentifier = "modalWindowBg"
         
         if type == modalWindowType.menu {
             modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bgClick(_:))))
@@ -31,7 +32,11 @@ extension GameScene {
         
         // Добавляем модальное окно
         modalWindow = UIView(frame: CGRect(x: self.view!.frame.maxX, y: self.view!.bounds.midY - 200 / 2, width: 200, height: 200))
-
+        
+        if type == modalWindowType.menu {
+            modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bgClick(_:))))
+        }
+        
         // Если обучение на 1-ом уровне, то модальное окно должно быть ниже бг для обучения
         if Model.sharedInstance.currentLevel == 1 && !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
             self.view!.insertSubview(modalWindowBg, belowSubview: mainBgTutorial)
@@ -179,7 +184,7 @@ extension GameScene {
     }
     
     @objc func bgClick(_ sender: UITapGestureRecognizer) {
-        if sender.view?.superview === self.view! {
+        if sender.view?.restorationIdentifier == "modalWindowBg" {
             SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
             
             UIView.animate(withDuration: 0.215, animations: {

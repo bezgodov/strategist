@@ -1,33 +1,30 @@
 {
-    "finish": [2,5],
-    "character": [1,1],
+    "finish": [4,0],
+    "character": [0,5],
     "boardSize": [5,6],
-    "moves": 23,
+    "moves": 21,
+    "gems": 3,
     "winningPath":
     [
-     [2,1],
-     [3,1],
-     [4,1],
-     [4,0],
-     [3,0],
-     [2,0],
-     [1,0],
-     [0,0],
-     [0,1],
-     [0,2],
-     [0,3],
      [0,4],
      [1,4],
      [1,3],
-     [2,3],
-     [3,3],
+     [0,3],
+     [0,2],
+     [0,1],
+     [0,0],
+     [1,0],
+     [2,0],
+     [2,1],
+     [3,1],
      [3,2],
-     [4,2],
-     [4,3],
+     [3,3],
+     [3,4],
      [4,4],
-     [4,5],
-     [3,5],
-     [2,5]
+     [4,3],
+     [4,2],
+     [4,1],
+     [4,0]
     ],
     "movingObjects": [
                       {
@@ -44,12 +41,12 @@
                                [2,3],
                                [2,4],
                                [3,4],
-                               [3,5]]
+                               [3,5],
+                               [2,5]]
                       },
                       {
                       "type": "snail",
                       "move": [
-                               [1,5],
                                [1,4],
                                [2,4],
                                [3,4]]
@@ -64,47 +61,86 @@
                 },
                 {
                 "type": "button",
-                "point": [4,4],
+                "point": [0,3],
                 "color": 0,
-                "isPressed": true
+                "isPressed": false
                 },
                 {
                 "type": "button",
-                "point": [0,5],
+                "point": [4,1],
                 "color": 3,
                 "isPressed": false
                 },
                 {
-                "type": "button",
+                "type": "lock",
+                "point": [2,2],
+                "color": 0
+                },
+                {
+                "type": "lock",
+                "point": [3,3],
+                "color": 1
+                },
+                {
+                "type": "key",
+                "point": [4,3],
+                "color": 0
+                },
+                {
+                "type": "key",
                 "point": [2,0],
-                "color": 2,
-                "isPressed": false
+                "color": 1
                 },
                 {
                 "type": "spinner",
-                "point": [2,2]
+                "point": [1,2]
                 },
                 {
                 "type": "star",
-                "point": [4,0]
+                "point": [3,0]
                 },
                 {
                 "type": "star",
                 "point": [4,5]
                 },
                 {
+                "type": "star",
+                "point": [1,3]
+                },
+                {
                 "type": "bomb",
-                "point": [4,2],
+                "point": [0,1],
+                "movesToExplode": 4
+                },
+                {
+                "type": "bridge",
+                "point": [1,0],
+                "rotate": 1
+                },
+                {
+                "type": "alarmclock",
+                "point": [0,0],
                 "movesToExplode": 5
+                },
+                {
+                "type": "stopper",
+                "point": [4,4]
+                },
+                {
+                "type": "tulip",
+                "point": [1,1]
+                },
+                {
+                "type": "cabbage",
+                "point": [2,4]
+                },
+                {
+                "type": "magnet",
+                "point": [2,1]
                 },
                 {
                 "type": "arrow",
                 "point": [3,1],
                 "rotate": 0
-                },
-                {
-                "type": "arrow",
-                "point": [1,3],
-                "rotate": 3
                 }]
 }

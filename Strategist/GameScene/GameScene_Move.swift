@@ -40,7 +40,7 @@ extension GameScene {
         }
         
         if object.point == self.character.moves[characterMove] {
-            if object.type != ObjectType.stopper && object.type != ObjectType.alarmclock && object.type != ObjectType.bridge && object.type != ObjectType.star && object.type != ObjectType.arrow && object.type != ObjectType.tulip && object.type != ObjectType.cabbage && object.type != ObjectType.lock && object.type != ObjectType.key {
+            if object.type != ObjectType.stopper && object.type != ObjectType.alarmclock && object.type != ObjectType.bridge && object.type != ObjectType.star && object.type != ObjectType.arrow && object.type != ObjectType.tulip && object.type != ObjectType.cabbage && object.type != ObjectType.lock && object.type != ObjectType.key && object.type != ObjectType.magnet && object.type != ObjectType.button {
                 loseLevel()
                 isLosed = true
             }
@@ -124,15 +124,8 @@ extension GameScene {
         }
         
         if object.type == ObjectType.star && character.moves[move] == object.point {
-            stars -= 1
-            
-            SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpStar.mp3")
-            
-            object.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
-                object.removeFromParent()
-            })
+            collectStar(object)
         }
-        
         
         // Если попадаем на замок, то проверяем есть ли ключ подходящего цвета
         if object.type == ObjectType.lock && self.character.moves[self.move] == object.point {
@@ -142,8 +135,13 @@ extension GameScene {
                 if key == object.lockKeyColor {
                     isLosedOnLock = false
                     
+                    SKTAudio.sharedInstance().playSoundEffect(filename: "Unlocked.wav")
+                    
                     keysInBag.remove(at: keysInBag.index(of: object.lockKeyColor)!)
                     
+                    removeCollectedObject(object.lockKeyColor)
+                    
+                    staticObjects.remove(object)
                     object.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
                         object.removeFromParent()
                     })
@@ -162,9 +160,25 @@ extension GameScene {
         if object.type == ObjectType.key && self.character.moves[self.move] == object.point {
             keysInBag.append(object.lockKeyColor)
             
+            staticObjects.remove(object)
             object.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
                 object.removeFromParent()
             })
+            
+            getCollectedObject(object)
+        }
+        
+        if object.type == ObjectType.magnet && self.character.moves[self.move] == object.point {
+            getCollectedObject(object)
+            
+            staticObjects.remove(object)
+            object.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                object.removeFromParent()
+            })
+        }
+        
+        if object.type == ObjectType.button && self.character.moves[self.move] == object.point {
+            changeButtonsState(object, isTap: false)
         }
         
         return isLosed
@@ -180,15 +194,15 @@ extension GameScene {
         
         if characterDirectionWalks == RotationDirection.top {
             character.removeAction(forKey: "playerWalking")
-            character.run(SKAction.repeatForever(SKAction.animate(with: [SKTexture(imageNamed: "PlayerPinkClimbs_1"), SKTexture(imageNamed: "PlayerPinkClimbs_2")], timePerFrame: 0.1, resize: false, restore: true)), withKey: "playerClimbing")
+            character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingTopFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerClimbing")
         }
         else {
-            if character.action(forKey: "playerWalking") == nil {
-                character.removeAction(forKey: "playerClimbing")
-                character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
-            }
-            
-            if !characterAtStopper {
+            if character.moves[move - 1] != character.moves[move] {
+                if character.action(forKey: "playerWalking") == nil {
+                    character.removeAction(forKey: "playerClimbing")
+                    character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
+                }
+                
                 if characterDirectionWalks == RotationDirection.right {
                     character.run(SKAction.scaleX(to: 1, duration: 0.25))
                 }
@@ -405,6 +419,12 @@ extension GameScene {
                     
                     if !characterAtAlarmClock {
                         
+                        if self.isCollectedMagnet() {
+                            for object in self.staticObjects {
+                                self.collectStarAroundMagnet(object)
+                            }
+                        }
+                        
                         var isLosed = false
                         for object in self.staticObjects {
                             if self.checkStatisObjectPos(object: object) == true {
@@ -424,6 +444,14 @@ extension GameScene {
                             
                             if self.character.moves[self.move] != self.character.moves.last! {
                                 self.checkCharacterDirection(characterAtAlarmClock: true)
+                                
+                                // Если ГП находится на будильнике, то проверяем есть ли магнит (если есть, то проверяем есть ли звезды вокруг)
+                                if self.isCollectedMagnet() {
+                                    for object in self.staticObjects {
+                                        self.collectStarAroundMagnet(object)
+                                    }
+                                }
+                                
                                 self.move += 1
                                 
                                 self.character.run(SKAction.move(to: self.pointFor(column: self.character.moves[self.move].column, row: self.character.moves[self.move].row), duration: 0.5), completion: {
@@ -442,6 +470,12 @@ extension GameScene {
                                         }
                                     
                                         if !isLosed {
+                                            if self.isCollectedMagnet() {
+                                                for object in self.staticObjects {
+                                                    self.collectStarAroundMagnet(object)
+                                                }
+                                            }
+                                            
                                             for object in self.staticObjects {
                                                 if self.checkStatisObjectPos(object: object) == true {
                                                     isLosed = true
@@ -456,9 +490,12 @@ extension GameScene {
                                         
                                     }
                                     else {
-                                        self.loseLevel()
+                                        self.checkFinish()
                                     }
                                 })
+                            }
+                            else {
+                                self.checkFinish()
                             }
                         }
                     }
@@ -470,14 +507,8 @@ extension GameScene {
                 self.loseLevel()
             }
         }
-        
-        if self.move == self.character.moves.count {
-            if self.character.moves.last! == self.finish && self.stars == 0 {
-                self.winLevel()
-            }
-            else {
-                self.loseLevel()
-            }
+        if move == character.moves.count {
+            checkFinish()
         }
     }
     
@@ -501,5 +532,186 @@ extension GameScene {
         }
         
         return moveToPointLose
+    }
+    
+    /// Подбираем объект, который необходимо положить в "рюкзак"
+    func getCollectedObject(_ object: StaticObject, animation: Bool = true) {
+        if objectInfoView != nil {
+            collectedObjects.append(object)
+            
+            var sprite = object.type.spriteName
+            
+            if object.type == ObjectType.key {
+                sprite = "Key_\(object.lockKeyColor!)"
+            }
+            
+            let objectInBagWidth: CGFloat = 35
+            let objectInBagView = UIImageView(image: UIImage(named: sprite))
+            objectInBagView.restorationIdentifier = "itemInBag"
+            objectInBagView.frame.size = CGSize(width: objectInBagWidth, height: objectInBagView.frame.height / (objectInBagView.frame.width / objectInBagWidth))
+            
+            objectInBagView.alpha = 0
+            
+            var pointConvertedForBoard = self.pointFor(column: object.point.column, row: object.point.row)
+            pointConvertedForBoard.x += self.objectsLayer.position.x
+            pointConvertedForBoard.y += self.objectsLayer.position.y
+            
+            var pointForBoard = Model.sharedInstance.gameScene.convertPoint(toView: pointConvertedForBoard)
+            
+            pointForBoard.y -= objectInfoView.frame.midY
+            pointForBoard.y += objectInBagView.frame.height / 2
+            pointForBoard.x -= objectInBagView.frame.width / 2
+            
+            if animation {
+                objectInBagView.frame.origin = pointForBoard
+            }
+            else {
+                objectInBagView.frame.origin = CGPoint(x: CGFloat(self.collectedObjects.count - 1) * (objectInBagWidth + 3) + 10 + 60, y: self.objectInfoView.frame.height / 2 - objectInBagView.frame.height / 2)
+                objectInBagView.alpha = 1
+            }
+            
+            objectInfoView.insertSubview(objectInBagView, at: 0)
+            
+            if animation {
+                let moveToBag = CGPoint(x: 32 - objectInBagView.frame.width / 2, y: objectInfoView.frame.height / 2 - objectInBagView.frame.height / 2)
+                let moveInsideBag = CGPoint(x: CGFloat(collectedObjects.count - 1) * (objectInBagWidth + 3) + 10 + 60, y: objectInfoView.frame.height / 2 - objectInBagView.frame.height / 2)
+                
+                UIView.animate(withDuration: 0.105 * Double(boardSize.row + 1), animations: {
+                    objectInBagView.frame.origin = moveToBag
+                    objectInBagView.alpha = 1
+                }, completion: { (_) in
+                    SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpItem.wav")
+                    
+                    UIView.animate(withDuration: TimeInterval(0.105 * CGFloat(self.collectedObjects.count)), animations: {
+                        objectInBagView.frame.origin = moveInsideBag
+                    })
+                })
+            }
+        }
+    }
+    
+    /// Функция убирает ключ из "рюкзака"
+    func removeCollectedObject(_ keyColor: LockKeyColor) {
+        for object in collectedObjects {
+            if object.lockKeyColor == keyColor {
+                collectedObjects.remove(at: collectedObjects.index(of: object)!)
+                
+                refreshCollectedObjects()
+                
+                break
+            }
+        }
+    }
+    
+    /// Функция перерисовывает объекты в "рюкзаке"
+    func refreshCollectedObjects() {
+        for subview in objectInfoView.subviews {
+            if subview.restorationIdentifier == "itemInBag" {
+                subview.removeFromSuperview()
+            }
+        }
+        
+        let collectedObjectsVal = collectedObjects
+        collectedObjects.removeAll()
+        for object in collectedObjectsVal {
+            getCollectedObject(object, animation: false)
+        }
+    }
+    
+    /// Подобрал ли ГП магнит
+    func isCollectedMagnet() -> Bool {
+        for object in collectedObjects {
+            if object.type == ObjectType.magnet {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    func collectStar(_ object: StaticObject, fadeAnimation: Bool = true) {
+        stars -= 1
+        staticObjects.remove(object)
+        
+        SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpStar.mp3")
+        
+        if fadeAnimation {
+            object.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
+                object.removeFromParent()
+            })
+        }
+        else {
+            object.removeFromParent()
+        }
+    }
+    
+    /// Если подобрали магнит, то проверяем нет ли в радиусе одной клетки звёзд, чтобы их подобрать
+    func collectStarAroundMagnet(_ object: StaticObject) {
+        if isCollectedMagnet() {
+            if object.type == ObjectType.star {
+                let pointsAround = getPointsAround(character.moves[move])
+            
+                for point in pointsAround {
+                    if object.point == point {
+                        
+                        let moveTo = pointFor(column: character.moves[move].column, row: character.moves[move].row)
+                        
+                        let actionMove = SKAction.move(to: moveTo, duration: 0.25)
+                        let actionAlpha = SKAction.fadeAlpha(to: 0, duration: 0.25)
+                        
+                        object.run(SKAction.group([actionMove, actionAlpha]), completion: {
+                            self.collectStar(object, fadeAnimation: false)
+                        })
+                        
+                        break
+                    }
+                }
+            }
+        }
+    }
+    
+    func checkFinish() {
+        if character.moves.last! == finish && stars == 0 && countButtonsOnLevel(isPressed: true) == buttonsOnLevel {
+            winLevel()
+        }
+        else {
+            loseLevel()
+        }
+    }
+    
+    /// Функция изменяет состояние всех кнопок
+    func changeButtonsState(_ object: StaticObject, isTap: Bool = true) {
+        if !object.active {
+            SKTAudio.sharedInstance().playSoundEffect(filename: "ClickButton.wav")
+            
+            for button in staticObjects {
+                if button.type == ObjectType.button {
+                    if isTap || (object == button && !isTap) {
+                        button.active = !button.active
+                    }
+                    
+                    let isPressed = button.active ? "_pressed" : ""
+                    
+                    let color = button.lockKeyColor!
+                    button.setTexture(spriteName: "Button_\(color)\(isPressed)", size: nil)
+                }
+            }
+        }
+    }
+    
+    /// Функция подсчитывает кол-во кнопок на уровне
+    ///
+    /// - Parameter isPressed: если true, то будет считать только кнопки, которые были нажаты (pressed [object.active = true])
+    func countButtonsOnLevel(isPressed: Bool = false) -> Int {
+        var count = 0
+        for object in staticObjects {
+            if object.type == ObjectType.button {
+                if (object.active && isPressed) || !isPressed {
+                    count += 1
+                }
+            }
+        }
+        
+        return count
     }
 }

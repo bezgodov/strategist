@@ -16,7 +16,7 @@ import SpriteKit
 /// - rotator: поворот (неготовый блок);
 /// - rotatorPointer: поворот со стрелкой (неготовый блок);
 enum ObjectType: Int {
-    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, spikes, electric, star, snail, arrow, tulip, cabbage, lock, key
+    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, spikes, electric, star, snail, arrow, tulip, cabbage, lock, key, magnet, button
     
     /// Свойство для получения имя спрайта перемещающегося блока;
     var spriteName: String {
@@ -37,7 +37,9 @@ enum ObjectType: Int {
             "Tulip",
             "Cabbage",
             "Lock_red",
-            "Key_red"
+            "Key_red",
+            "Magnet",
+            "Button_red"
         ]
         
         return spriteNames[rawValue - 1]
@@ -61,8 +63,10 @@ enum ObjectType: Int {
             "If yours directions are different you lose. Checking directions is only occured when an alien comes in",
             "If bee gets at tulip bee stops for one move and then tulip will disappear",
             "If snail gets at cabbage then snail moves without stopping for two moves and then cabbage will disappear",
-            "To open the door pick up a key with same color. If you do not have a key you lose",
-            "Key opens the door with same color"
+            "To open the lock pick up a key with same color. If you do not have a key you lose",
+            "Key opens the door with same color",
+            "Pick up a magnet to collect stars within one point radius around an alien. Magnet will be activated in 1 move",
+            "Tap at button to switch all other buttons. If an alien gets at button only that button is switched down"
         ]
         
         return rawValue <= descriptions.count ? descriptions[rawValue - 1] : "No description"

@@ -176,6 +176,23 @@ extension GameScene {
                         }
                     }
                     
+                    if type == ObjectType.button {
+                        let isPressed = object["isPressed"] as? Bool
+                        newObj.active = isPressed!
+                        
+                        let buttonColor = object["color"] as? Int
+                        newObj.lockKeyColor = LockKeyColor(rawValue: buttonColor!)
+                        
+                        let color = newObj.lockKeyColor!
+                        
+                        if isPressed! {
+                            newObj.setTexture(spriteName: "Button_\(color)_pressed", size: nil)
+                        }
+                        else {
+                            newObj.setTexture(spriteName: "Button_\(color)", size: nil)
+                        }
+                    }
+                    
                     self.staticObjects.insert(newObj)
                 }
             }
