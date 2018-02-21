@@ -1,0 +1,38 @@
+{
+    "finish": [4,0],
+    "character": [0,2],
+    "boardSize": [5,6],
+    "moves": 25,
+    "gems": 2,
+    "winningPath":
+    [
+    
+    ],
+    "movingObjects": [
+                ],
+    "staticObjects": [
+                {
+                "type": "button",
+                "point": [3,2],
+                "color": 0,
+                "isPressed": true
+                },
+                      {
+                      "type": "button",
+                      "point": [2,2],
+                      "color": 1,
+                      "isPressed": false
+                      },
+                      {
+                      "type": "button",
+                      "point": [1,2],
+                      "color": 2,
+                      "isPressed": true
+                      },
+                      {
+                      "type": "button",
+                      "point": [0,2],
+                      "color": 3,
+                      "isPressed": false
+                      }]
+}
