@@ -3,6 +3,7 @@
     "character": [0,0],
     "boardSize": [5,5],
     "moves": 13,
+    "gems": 1,
     "isLevelWithTutorial": true,
     "winningPath":
     [

@@ -74,6 +74,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     func prepareBossLevel() {
         Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
         isFinishedLevel = true
+        
         let labelTimeToStart = UILabel(frame: CGRect(x: gameScene.view!.frame.midX - 75, y: gameScene.view!.frame.midY - 75, width: 150, height: 150))
         labelTimeToStart.backgroundColor = UIColor.clear
         labelTimeToStart.font = UIFont(name: "AvenirNext-Bold", size: 48)
@@ -82,43 +83,52 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
         labelTimeToStart.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
         gameScene.view!.addSubview(labelTimeToStart)
         
-        var timeToStart = 3
-        _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (timerBeforeStart) in
-            var koefForScale: CGFloat = 3
-            
-            if timeToStart == 0 {
-                labelTimeToStart.text = "GO"
-                koefForScale = 2
-            }
-            else {
-                labelTimeToStart.text = String(timeToStart)
-            }
-            
-            SKTAudio.sharedInstance().playSoundEffect(filename: "Voice_\(labelTimeToStart.text!).wav")
-            
-            UIView.animate(withDuration: 0.35, animations: {
-                labelTimeToStart.transform = CGAffineTransform(scaleX: koefForScale, y: koefForScale)
-            }, completion: { (_) in
-                Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false, block: { (_) in
-                    UIView.animate(withDuration: 0.25, animations: {
-                        labelTimeToStart.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
-                    }, completion: { (_) in
-                        
-                        if timeToStart == 0 {
-                            timerBeforeStart.invalidate()
-                            labelTimeToStart.removeFromSuperview()
-                            self.timersSettings()
-                        }
-                        timeToStart -= 1
-                    })
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (_) in
+            self.showCountdown(timeToStart: 3, labelTimeToStart: labelTimeToStart)
+        }
+    }
+    
+    func showCountdown(timeToStart: Int, labelTimeToStart: UILabel) {
+        
+        var koefForScale: CGFloat = 3
+        
+        if timeToStart == 0 {
+            labelTimeToStart.text = "GO"
+            koefForScale = 2
+        }
+        else {
+            labelTimeToStart.text = String(timeToStart)
+        }
+        
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Voice_\(labelTimeToStart.text!).wav")
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            labelTimeToStart.transform = CGAffineTransform(scaleX: koefForScale, y: koefForScale)
+        }, completion: { (_) in
+            Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { (_) in
+                UIView.animate(withDuration: 0.3, animations: {
+                    labelTimeToStart.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+                }, completion: { (_) in
+                    
+                    if timeToStart == 0 {
+                        labelTimeToStart.removeFromSuperview()
+                        self.timersSettings()
+                    }
+                    else {
+                        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false, block: { (_) in
+                            self.showCountdown(timeToStart: timeToStart - 1, labelTimeToStart: labelTimeToStart)
+                        })
+                    }
                 })
             })
-
-        }
+        })
     }
     
     /// Функция, которая инициализирует таймеры для генерации объектов
     func timersSettings() {
+        gameScene.isPaused = false
+        gameScene.objectsLayer.speed = 1
+        
         gameScene.bossEnemies.position = gameScene.objectsLayer.position
         gameScene.bossEnemies.zPosition = gameScene.bossEnemies.zPosition
         

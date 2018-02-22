@@ -36,6 +36,10 @@ class Character: SKSpriteNode {
                 pathNode.lineJoin = CGLineJoin.round
                 pathNode.lineWidth = 9
                 
+                if Model.sharedInstance.isDeviceIpad() {
+                    pathNode.lineWidth *= 2
+                }
+                
                 Model.sharedInstance.gameScene.objectsLayer.addChild(pathNode)
             }
         }

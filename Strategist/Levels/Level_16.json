@@ -3,6 +3,7 @@
     "character": [0,2],
     "boardSize": [5,5],
     "moves": 10,
+    "gems": 3,
     "isLevelWithTutorial": true,
     "bossLevelStars" : 10
 }

@@ -3,6 +3,7 @@
     "character": [0,5],
     "boardSize": [5,6],
     "moves": 25,
+    "gems": 2,
     "winningPath":
     [
      [1,5],

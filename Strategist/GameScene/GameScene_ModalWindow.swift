@@ -14,7 +14,8 @@ extension GameScene {
         
         // Если текущий уровень boss, то останавливаем все таймеры
         if bossLevel != nil {
-            if type == modalWindowType.menu {
+            if type == modalWindowType.menu || type == modalWindowType.lose {
+                objectsLayer.speed = 0
                 bossLevel?.cleanTimers()
             }
         }
@@ -27,7 +28,7 @@ extension GameScene {
         
         if type == modalWindowType.menu {
             modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bgClick(_:))))
-            isPaused = true
+            self.isPaused = true
         }
         
         // Добавляем модальное окно
@@ -194,11 +195,13 @@ extension GameScene {
                 
                 self.modalWindowBg.removeFromSuperview()
                 self.modalWindow.removeFromSuperview()
-                self.isPaused = false
                 
                 // Если текущий уровень "boss", то добавляем таймеры генерации объектов (так как паузу сняли)
                 if self.bossLevel != nil {
-                    self.bossLevel?.timersSettings()
+                    self.bossLevel?.prepareBossLevel()
+                }
+                else {
+                    self.isPaused = false
                 }
             })
         }
@@ -206,6 +209,8 @@ extension GameScene {
     
     func restartingLevel() {
         self.isPaused = false
+        objectsLayer.speed = 1
+
         
         for object in movingObjects {
             object.run(SKAction.move(to: pointFor(column: object.moves!.first!.column, row: object.moves!.first!.row), duration: 0.215))
@@ -282,7 +287,12 @@ extension GameScene {
         let rootLayer:CALayer = CALayer()
         let emitterLayer:CAEmitterLayer = CAEmitterLayer()
         
-        rootLayer.bounds = CGRect(x: 0 + self.view!.bounds.width / 4 / 2, y: 0 + self.view!.bounds.height / 2, width: self.view!.bounds.width - self.view!.bounds.width / 4, height: self.view!.bounds.height / 2)
+        var yPos = 0 + self.view!.bounds.height / 2
+        if Model.sharedInstance.isDeviceIpad() {
+            yPos -= self.view!.bounds.height / 4
+        }
+        
+        rootLayer.bounds = CGRect(x: 0 + self.view!.bounds.width / 4 / 2, y: yPos, width: self.view!.bounds.width - self.view!.bounds.width / 4, height: self.view!.bounds.height / 2)
         
         rootLayer.anchorPoint = CGPoint(x: 1, y: 1)
         

@@ -180,6 +180,11 @@ class Object: SKSpriteNode {
             pathLayer = SKShapeNode(path: path.cgPath)
             pathLayer.strokeColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1)
             pathLayer.lineWidth = 9
+            
+            if Model.sharedInstance.isDeviceIpad() {
+                pathLayer.lineWidth *= 2
+            }
+            
             pathLayer.lineCap = CGLineCap.round
             pathLayer.lineJoin = CGLineJoin.round
             pathLayer.fillColor = UIColor.clear

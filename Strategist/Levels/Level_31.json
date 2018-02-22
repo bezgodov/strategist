@@ -84,7 +84,7 @@
                 },
                 {
                 "type": "star",
-                "point": [2,1]
+                "point": [3,1]
                 },
                 {
                 "type": "star",
@@ -105,6 +105,6 @@
                 },
                 {
                 "type": "star",
-                "point": [1,2]
+                "point": [1,1]
                 }]
 }

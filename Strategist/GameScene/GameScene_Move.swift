@@ -58,9 +58,15 @@ extension GameScene {
                 SKTAudio.sharedInstance().playSoundEffect(filename: "Explosion.wav")
                 
                 object.removeFromParent()
+                
+                var scaleFactorIpad: CGFloat = 1
+                
+                if Model.sharedInstance.isDeviceIpad() {
+                    scaleFactorIpad = 2.5
+                }
             
                 let bombFragment = SKSpriteNode(imageNamed: "Bomb_explosion")
-                let size = CGSize(width: bombFragment.size.width * 0.675, height: bombFragment.size.height * 0.675)
+                let size = CGSize(width: bombFragment.size.width * 0.675 * scaleFactorIpad, height: bombFragment.size.height * 0.675 * scaleFactorIpad)
                 bombFragment.size = CGSize(width: 0, height: 0)
                 bombFragment.position = object.position
                 bombFragment.zPosition = 6
@@ -192,17 +198,8 @@ extension GameScene {
             characterDirectionWalks = getObjectDirection(from: character.moves[move], to: character.moves[move + 1])
         }
         
-        if characterDirectionWalks == RotationDirection.top {
-            character.removeAction(forKey: "playerWalking")
-            character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingTopFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerClimbing")
-        }
-        else {
+        if characterDirectionWalks != RotationDirection.top {
             if character.moves[move - 1] != character.moves[move] {
-                if character.action(forKey: "playerWalking") == nil {
-                    character.removeAction(forKey: "playerClimbing")
-                    character.run(SKAction.repeatForever(SKAction.animate(with: playerWalkingFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "playerWalking")
-                }
-                
                 if characterDirectionWalks == RotationDirection.right {
                     character.run(SKAction.scaleX(to: 1, duration: 0.25))
                 }
@@ -552,13 +549,13 @@ extension GameScene {
             
             objectInBagView.alpha = 0
             
-            var pointConvertedForBoard = self.pointFor(column: object.point.column, row: object.point.row)
-            pointConvertedForBoard.x += self.objectsLayer.position.x
-            pointConvertedForBoard.y += self.objectsLayer.position.y
+            var pointConvertedForBoard = pointFor(column: object.point.column, row: object.point.row)
+            pointConvertedForBoard.x += objectsLayer.position.x
+            pointConvertedForBoard.y += objectsLayer.position.y
             
             var pointForBoard = Model.sharedInstance.gameScene.convertPoint(toView: pointConvertedForBoard)
             
-            pointForBoard.y -= objectInfoView.frame.midY
+            pointForBoard.y -= objectInfoView!.frame.midY
             pointForBoard.y += objectInBagView.frame.height / 2
             pointForBoard.x -= objectInBagView.frame.width / 2
             
@@ -566,15 +563,18 @@ extension GameScene {
                 objectInBagView.frame.origin = pointForBoard
             }
             else {
-                objectInBagView.frame.origin = CGPoint(x: CGFloat(self.collectedObjects.count - 1) * (objectInBagWidth + 3) + 10 + 60, y: self.objectInfoView.frame.height / 2 - objectInBagView.frame.height / 2)
+                let xPos = CGFloat(collectedObjects.count - 1) * (objectInBagWidth + 3) + 10 + 60
+                objectInBagView.frame.origin = CGPoint(x: xPos, y: objectInfoView!.frame.height / 2 - objectInBagView.frame.height / 2)
                 objectInBagView.alpha = 1
             }
             
-            objectInfoView.insertSubview(objectInBagView, at: 0)
+            objectInfoView!.insertSubview(objectInBagView, at: 0)
             
             if animation {
-                let moveToBag = CGPoint(x: 32 - objectInBagView.frame.width / 2, y: objectInfoView.frame.height / 2 - objectInBagView.frame.height / 2)
-                let moveInsideBag = CGPoint(x: CGFloat(collectedObjects.count - 1) * (objectInBagWidth + 3) + 10 + 60, y: objectInfoView.frame.height / 2 - objectInBagView.frame.height / 2)
+                let moveToBag = CGPoint(x: 32 - objectInBagView.frame.width / 2, y: objectInfoView!.frame.height / 2 - objectInBagView.frame.height / 2)
+                
+                let xPosInBag = CGFloat(collectedObjects.count - 1) * (objectInBagWidth + 3) + 10 + 60
+                let moveInsideBag = CGPoint(x: xPosInBag, y: objectInfoView!.frame.height / 2 - objectInBagView.frame.height / 2)
                 
                 UIView.animate(withDuration: 0.105 * Double(boardSize.row + 1), animations: {
                     objectInBagView.frame.origin = moveToBag
@@ -605,7 +605,7 @@ extension GameScene {
     
     /// Функция перерисовывает объекты в "рюкзаке"
     func refreshCollectedObjects() {
-        for subview in objectInfoView.subviews {
+        for subview in objectInfoView!.subviews {
             if subview.restorationIdentifier == "itemInBag" {
                 subview.removeFromSuperview()
             }

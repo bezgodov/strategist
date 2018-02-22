@@ -130,7 +130,6 @@ extension GameScene {
             if sender.view?.superview === self.view {
                 
             let tapLocationPos = sender.location(in: sender.view!)
-                
             if tapPoints.index(forKey: slideIndex) != nil {
                 if checkIfClickInsideRect(point: tapLocationPos, rect: tapPoints[slideIndex]!) {
                     sender.view!.tag += 1
@@ -174,7 +173,7 @@ extension GameScene {
             1:
                 [
                 "Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]",
-                "Your main role is managing ordinary space alients and help them collecting gems. Let's begin!",
+                "Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!",
                 "First click at the middle cell to choose alien's path...",
                 "Now choose next point at column#2 and row#1 (right from the middle cell)...",
                 "Then choose cell where GEM is...",
@@ -191,8 +190,8 @@ extension GameScene {
                 ],
             2:
                 [
-                "For previous level you got 3 GEMS. You can look how many gems you have in settings...",
-                "You can buy extra lives for GEMS...",
+                "For previous level you got 3 GEMS. You can look how many gems you have in menu or settings...",
+                "You can buy extra lives for GEMS or winning paths...",
                 "You can tap at any object to find out how it behaves itself or how it moves...",
                 "Tap at the nearest star to find out what it is like...",
                 ],
@@ -237,7 +236,7 @@ extension GameScene {
                 "Press down all buttons to win the level and do not forget about stars...",
                 "Tap at button to switch all other button...",
                 "If an alien gets at button and that button was pressed down then nothing happens, but...",
-                "If an alien gets at active button (button was not pressed down). All buttons are switched"
+                "If an alien gets at active button (button was not pressed down). Only that button is switched"
             ],
         ]
         
@@ -282,6 +281,7 @@ extension GameScene {
         else {
             removeObjectInfoView(toAlpha: 1)
             
+            sender!.view!.isUserInteractionEnabled = false
             UIView.animate(withDuration: 0.25, animations: {
                 sender!.view!.alpha = 1
             }, completion: { (_) in

@@ -378,8 +378,8 @@ extension GameScene {
         let objectInfoViewPosConverted = Model.sharedInstance.gameScene.convertPoint(toView: CGPoint(x: 0, y: ypos))
         
         objectInfoView = UIView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.frame.size.width)!, y: objectInfoViewPosConverted.y, width: objectInfoViewSize.width, height: objectInfoViewSize.height))
-        objectInfoView.backgroundColor = UIColor.darkGray
-        Model.sharedInstance.gameScene.view?.addSubview(objectInfoView)
+        objectInfoView!.backgroundColor = UIColor.darkGray
+        Model.sharedInstance.gameScene.view?.addSubview(objectInfoView!)
         
         if spriteName != nil {
             let objectIcon = UIImageView(image: UIImage(named: spriteName!))
@@ -387,16 +387,21 @@ extension GameScene {
             objectIcon.frame.size = CGSize(width: 45, height: objectIcon.frame.size.height / (objectIcon.frame.size.width / 45))
             objectIcon.frame.origin = CGPoint(x: 10, y: (objectInfoViewSize.height / 2) - (objectIcon.frame.size.height / 2))
         
-            objectInfoView.addSubview(objectIcon)
+            objectInfoView!.addSubview(objectIcon)
         
-            let objectDescription = UILabel(frame: CGRect(x: objectIcon.frame.size.width + 10 + 10, y: 0, width: objectInfoView.frame.size.width - objectIcon.frame.size.width - 20 - 10 - 10, height: objectInfoView.frame.size.height))
+            let objectDescription = UILabel(frame: CGRect(x: objectIcon.frame.size.width + 10 + 10, y: 0, width: objectInfoView!.frame.size.width - objectIcon.frame.size.width - 20 - 10 - 10, height: objectInfoView!.frame.size.height))
             objectDescription.alpha = 0.0
             objectDescription.lineBreakMode = NSLineBreakMode.byWordWrapping
             objectDescription.numberOfLines = 3
             objectDescription.font = UIFont(name: "Avenir Next", size: 14)
+            
+            if Model.sharedInstance.isDeviceIpad() {
+                objectDescription.font = UIFont(name: "Avenir Next", size: 20)
+            }
+            
             objectDescription.text = description
             objectDescription.textColor = UIColor.white
-            objectInfoView.addSubview(objectDescription)
+            objectInfoView!.addSubview(objectDescription)
             
             DispatchQueue.main.async {
                 UIView.animate(withDuration: 0.5, animations: {
@@ -410,7 +415,7 @@ extension GameScene {
         
         DispatchQueue.main.async {
             UIView.animate(withDuration: 0.25, animations: {
-                self.objectInfoView.frame.origin.x = 0
+                self.objectInfoView!.frame.origin.x = 0
             })
         }
     }
@@ -420,12 +425,18 @@ extension GameScene {
         
         /// Переменная, которая определяет на сколько нужно уменьшить размер стен
         let downScale: CGFloat = 2.5
+        
+        var scaleFactorForIpad: CGFloat = 1
+        
+        if Model.sharedInstance.isDeviceIpad() {
+            scaleFactorForIpad = 2.5
+        }
     
-        var defaultRightLeft = CGSize(width: 5, height: 0)
-        var defaultTopBottom = CGSize(width: 0, height: 5)
+        var defaultRightLeft = CGSize(width: 5 * scaleFactorForIpad, height: 0)
+        var defaultTopBottom = CGSize(width: 0, height: 5 * scaleFactorForIpad)
 
-        var rightLeft = CGSize(width: 5, height: 0)
-        var topBottom = CGSize(width: 0, height: 5)
+        var rightLeft = CGSize(width: 5 * scaleFactorForIpad, height: 0)
+        var topBottom = CGSize(width: 0, height: 5 * scaleFactorForIpad)
 
         if object.rotate == RotationDirection.top || object.rotate == RotationDirection.bottom {
             defaultRightLeft.height = 0

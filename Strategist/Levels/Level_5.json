@@ -1,9 +1,9 @@
 {
-    "finish": [4, 0],
+    "finish": [4,0],
     "character": [0,4],
     "boardSize": [5,5],
     "moves": 14,
-    "gems": 1,
+    "gems": 3,
     "isLevelWithTutorial": true,
     "winningPath":
     [

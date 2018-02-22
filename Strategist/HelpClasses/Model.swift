@@ -271,4 +271,8 @@ class Model {
         
         return isHiddenstatusBarVal
     }
+    
+    func isDeviceIpad() -> Bool {
+        return UIDevice().userInterfaceIdiom == .pad
+    }
 }

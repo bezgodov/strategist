@@ -5,7 +5,7 @@ class ChooseLevelViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var settingsButton: UIButton!
     @IBOutlet weak var findCharacterButton: UIButton!
-    
+    @IBOutlet var controlsSizeConstraint: [NSLayoutConstraint]!
     /// Размеры поля, на котором располагается меню
     var boardSize = Point(column: 5, row: 5)
     
@@ -42,15 +42,15 @@ class ChooseLevelViewController: UIViewController {
     /// Модальное окно
     var modalWindow: UIView!
     
-    /// Количество уровней, которое необходимо завершить для каждой секции для 1 секции -> 10, для второй -> 24
-    var sections = [10, 24, 40]
+    /// Количество уровней, которое необходимо завершить для каждой секции для 1 секции -> 11, для второй -> 25
+    var sections = [11, 25, 40]
     
     /// Заблокирована ли следующая секция (если не пройдено необходимо кол-во уровней за предыдущую секцию)
     var isNextSectionDisabled = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         menuSettings()
         
         characterInitial()
@@ -92,11 +92,11 @@ class ChooseLevelViewController: UIViewController {
     
     func characterInitial() {
         /// Задаём анимацию для ГП
-        let playerAnimatedAtlas = SKTextureAtlas(named: "PlayerWalksTop")
+        let playerAnimatedAtlas = SKTextureAtlas(named: "PlayerWalks")
         walkFrames = [UIImage]()
         let numImages = playerAnimatedAtlas.textureNames.count
         for i in 1...numImages {
-            let playerTextureName = "PlayerWalksTop_\(i)"
+            let playerTextureName = "PlayerWalks_\(i)"
             walkFrames.append(UIImage(cgImage: playerAnimatedAtlas.textureNamed(playerTextureName).cgImage()))
         }
         
@@ -112,6 +112,17 @@ class ChooseLevelViewController: UIViewController {
     }
     
     func menuSettings() {
+        
+        /// коэф. для планшетов (настройки, найти ГП)
+        var sizeForControls: CGFloat = 1
+        if Model.sharedInstance.isDeviceIpad() {
+            sizeForControls = 2
+        }
+        
+        for constraint in controlsSizeConstraint {
+            constraint.constant *= sizeForControls
+        }
+        
          // Если нахожимся на последних уровнях, то подфиксиваем так, чтобы последний уровень фиксировался по центру и не уходил дальше
         if Model.sharedInstance.countLevels - (Model.sharedInstance.getCountCompletedLevels()) < distanceBetweenLevels {
             extraCountForExtremeLevels = Model.sharedInstance.countLevels - Model.sharedInstance.getCountCompletedLevels() - distanceBetweenLevels + 1
@@ -223,6 +234,13 @@ class ChooseLevelViewController: UIViewController {
             if character.layer.animation(forKey: "movement") == nil {
                 let movement = CAKeyframeAnimation(keyPath: "position")
                 scrollView.isScrollEnabled = false
+                
+                if from.column < to.column {
+                    character.transform = CGAffineTransform(scaleX: 1, y: -1)
+                }
+                else {
+                    character.transform = CGAffineTransform(scaleX: -1, y: -1)
+                }
                 
                 // Анимации ходьбы ГП
                 character.animationImages = walkFrames
@@ -677,7 +695,13 @@ class ChooseLevelViewController: UIViewController {
                     if row / 3 == Model.sharedInstance.getCountCompletedLevels() || ((row / 3) + 1 == Model.sharedInstance.countLevels && (Model.sharedInstance.countLevels == Model.sharedInstance.getCountCompletedLevels())) {
                         button.setBackgroundImage(UIImage(named: "Tile_center"), for: UIControlState.normal)
                     }
-                    button.titleLabel?.font = UIFont(name: "Avenir Next", size: 24)
+                    
+                    var sizeLabel: CGFloat = 24
+                    if Model.sharedInstance.isDeviceIpad() {
+                        sizeLabel *= 2.5
+                    }
+                    
+                    button.titleLabel?.font = UIFont(name: "Avenir Next", size: sizeLabel)
                     button.setTitle("\(row / distanceBetweenLevels + 1)", for: UIControlState.normal)
                     button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
                     button.tag = row / distanceBetweenLevels + 1
@@ -803,7 +827,7 @@ class ChooseLevelViewController: UIViewController {
                 pinkCircleLevelTile.layer.cornerRadius = pinkCircleLevelTile.frame.size.width / 7
             }
             
-            if !isNextSectionDisabled {
+            if !isNextSectionDisabled || row < nearestBossPos {
                 scrollView.insertSubview(pinkCircleLevelTile, at: 3)
             }
 
@@ -820,6 +844,10 @@ class ChooseLevelViewController: UIViewController {
             layer.lineCap = kCALineCapRound
             layer.lineJoin = kCALineJoinRound
             layer.lineWidth = 7
+            
+            if Model.sharedInstance.isDeviceIpad() {
+                layer.lineWidth *= 2
+            }
             
             scrollView.layer.insertSublayer(layer, at: 4)
         }
@@ -890,7 +918,14 @@ class ChooseLevelViewController: UIViewController {
         infoBlockLabel.text = textAboutFinishedLastLevel
         infoBlockLabel.textAlignment = NSTextAlignment.center
         infoBlockLabel.numberOfLines = 3
-        infoBlockLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 18)
+        
+        var scaleFactorForIpad: CGFloat = 1
+        
+        if Model.sharedInstance.isDeviceIpad() {
+            scaleFactorForIpad = 2
+        }
+        
+        infoBlockLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 18 * scaleFactorForIpad)
         infoBlockLabel.textColor = UIColor.white
         infoBlockBgView.addSubview(infoBlockLabel)
     }

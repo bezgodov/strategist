@@ -3,7 +3,7 @@
     "character": [0,4],
     "boardSize": [5,5],
     "moves": 14,
-    "gems": 1,
+    "gems": 2,
     "isNecessaryUseAllMoves": true,
     "isLevelWithTutorial": true,
     "winningPath":

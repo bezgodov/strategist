@@ -83,7 +83,7 @@ class GameScene: SKScene {
     var lastHeartButton: UIButton!
     
     /// View, который выводит информацию об объекте
-    var objectInfoView: UIView!
+    var objectInfoView: UIView?
     
     /// Последний выбранный объект
     var objectTypeClickedLast: ObjectType?
@@ -137,9 +137,6 @@ class GameScene: SKScene {
     
     /// Переменная, которая содержит все текстуры для анимации ГП
     var playerWalkingFrames = [SKTexture]()
-    
-    /// Переменная, которая содержит все текстуры для анимации ГП, перемещающегося наверх
-    var playerWalkingTopFrames = [SKTexture]()
     
     override func didMove(to view: SKView) {
         
@@ -277,15 +274,6 @@ class GameScene: SKScene {
             
             playerWalkingFrames = walkFrames
             
-            var walkTopFrames = [SKTexture]()
-            let playerWalksTopAnimatedAtlas = SKTextureAtlas(named: "PlayerWalksTop")
-            for i in 1...playerWalksTopAnimatedAtlas.textureNames.count {
-                let playerWalksTopTextureName = "PlayerWalksTop_\(i)"
-                walkTopFrames.append(playerWalksTopAnimatedAtlas.textureNamed(playerWalksTopTextureName))
-            }
-            
-            playerWalkingTopFrames = walkTopFrames
-            
             // Инициализируем ГП
             character = Character(imageNamed: "PlayerStaysFront")
             character.zPosition = 8
@@ -309,6 +297,11 @@ class GameScene: SKScene {
                     movesToExplodeLabel.zPosition = 1
                     movesToExplodeLabel.fontColor = UIColor.init(red: 250 / 255, green: 153 / 255, blue: 137 / 255, alpha: 1)
                     movesToExplodeLabel.fontSize = 32
+                    
+                    if Model.sharedInstance.isDeviceIpad() {
+                            movesToExplodeLabel.fontSize *= 2.5
+                    }
+                    
                     movesToExplodeLabel.fontName = "AvenirNext-Bold"
                     movesToExplodeLabel.horizontalAlignmentMode = .center
                     movesToExplodeLabel.verticalAlignmentMode = .center
@@ -352,6 +345,12 @@ class GameScene: SKScene {
                     let xPositions = [1, -1, -1, 1]
                     var yPositions = [-1, 1, 1, -1]
                     
+                    var scaleFactorForIpad: CGFloat = 1
+                    
+                    if Model.sharedInstance.isDeviceIpad() {
+                        scaleFactorForIpad = 2.5
+                    }
+                    
                     /// Размер стен (если вертикаль стоит по умолчанию, то стены справа и слева)
                     var defaultSize = [CGSize(width: 5, height: TileHeight / (downScale / 2)), CGSize(width: 0, height: 5)]
                     
@@ -360,7 +359,7 @@ class GameScene: SKScene {
                     
                     // Если у моста установлена вертикаль по умолчанию, то подстраиваем коэффициенты
                     if object.rotate.rawValue == 0 || object.rotate.rawValue == 2 {
-                        defaultSize = [CGSize(width: 5, height: 0), CGSize(width: TileWidth / (downScale / 2), height: 5)]
+                        defaultSize = [CGSize(width: 5 * scaleFactorForIpad, height: 0), CGSize(width: TileWidth / (downScale / 2), height: 5 * scaleFactorForIpad)]
                         defaultAnchorPoint = [CGPoint(x: 1, y: 1), CGPoint(x: 0, y: 0), CGPoint(x: 0, y: 0), CGPoint(x: 1, y: 1)]
                         yPositions = [1, -1, -1, 1]
                     }
@@ -880,7 +879,11 @@ class GameScene: SKScene {
         isLosedLevel = false
         keysInBag.removeAll()
         collectedObjects.removeAll()
-        removeObjectInfoView()
+        
+        if Model.sharedInstance.currentLevel > 1 {
+            removeObjectInfoView()
+        }
+        
         buttonsOnLevel = 0
         
         Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
