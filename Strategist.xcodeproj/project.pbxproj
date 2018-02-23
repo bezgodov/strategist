@@ -112,6 +112,7 @@
 		2B9330741FD63866002E5933 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9330731FD63866002E5933 /* Extensions.swift */; };
 		2B9330781FD81F93002E5933 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9330771FD81F93002E5933 /* Character.swift */; };
 		2B98BA2E202F219E0023E539 /* ErasePath.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B98BA2D202F219E0023E539 /* ErasePath.png */; };
+		2B9EFF56203FFCFE00B7603C /* IAPHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9EFF55203FFCFD00B7603C /* IAPHandler.swift */; };
 		2BA41FEC1FFFAB860023E8FD /* Heart_empty-unfilled.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BA41FEA1FFFAB850023E8FD /* Heart_empty-unfilled.png */; };
 		2BA41FED1FFFAB860023E8FD /* Heart.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BA41FEB1FFFAB860023E8FD /* Heart.png */; };
 		2BA7D9F92016C09C0053BAA3 /* Bridge.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BA7D9F82016C09C0053BAA3 /* Bridge.png */; };
@@ -261,6 +262,7 @@
 		2B9330731FD63866002E5933 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		2B9330771FD81F93002E5933 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
 		2B98BA2D202F219E0023E539 /* ErasePath.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ErasePath.png; sourceTree = "<group>"; };
+		2B9EFF55203FFCFD00B7603C /* IAPHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPHandler.swift; sourceTree = "<group>"; };
 		2BA41FEA1FFFAB850023E8FD /* Heart_empty-unfilled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Heart_empty-unfilled.png"; sourceTree = "<group>"; };
 		2BA41FEB1FFFAB860023E8FD /* Heart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Heart.png; sourceTree = "<group>"; };
 		2BA7D9F82016C09C0053BAA3 /* Bridge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Bridge.png; sourceTree = "<group>"; };
@@ -380,6 +382,7 @@
 				2BD94B702036514400954393 /* BossLevel.swift */,
 				2B9330771FD81F93002E5933 /* Character.swift */,
 				2B9330731FD63866002E5933 /* Extensions.swift */,
+				2B9EFF55203FFCFD00B7603C /* IAPHandler.swift */,
 				2BC4F2F21FB5913D002B28BB /* Model.swift */,
 				2B22D12F1FC78BFA00464F20 /* Object.swift */,
 				2B7DFDFC202D506300999922 /* SKTAudio.swift */,
@@ -811,6 +814,7 @@
 				2B9330781FD81F93002E5933 /* Character.swift in Sources */,
 				2BD94B712036514400954393 /* BossLevel.swift in Sources */,
 				2B7AEBFF20384BB000E02553 /* GameScene_Preview.swift in Sources */,
+				2B9EFF56203FFCFE00B7603C /* IAPHandler.swift in Sources */,
 				2B0CF13920283BBE0060BEF7 /* GameScene_ModalWindow.swift in Sources */,
 				2B1178DA1FB84928006326E4 /* GameScene_Levels.swift in Sources */,
 				2B0B63DA1FAFD1AF002C0322 /* GameScene.swift in Sources */,

@@ -19,6 +19,8 @@ class MenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        IAPSettings()
+        
         // Выводим кол-во собранных драг. камней
         countOfGems.text = String(Model.sharedInstance.getCountGems())
         
@@ -36,6 +38,37 @@ class MenuViewController: UIViewController {
             buyPreviewModeButton.setTitle("PURCHASED", for: UIControlState.normal)
             buyPreviewModeButton.isEnabled = false
             buyPreviewModeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+        }
+    }
+    
+    func IAPSettings() {
+        IAPHandler.shared.fetchAvailableProducts()
+        
+        IAPHandler.shared.purchaseStatusBlock = {[weak self] (type) in
+            guard let strongSelf = self else { return }
+            
+            if type != .error && type != .disabled {
+                if type == .purchased_35GEMS {
+                    strongSelf.addGems(amount: 35)
+                }
+                else {
+                    if type == .purchased_85GEMS {
+                        strongSelf.addGems(amount: 85)
+                    }
+                    else {
+                        if type == .purchased_125GEMS {
+                            strongSelf.addGems(amount: 125)
+                        }
+                    }
+                }
+            }
+            else {
+                let alert = UIAlertController(title: "FAIL", message: type.message(), preferredStyle: .alert)
+                let actionOk = UIAlertAction(title: "OK", style: .default, handler: nil)
+                
+                alert.addAction(actionOk)
+                strongSelf.present(alert, animated: true, completion: nil)
+            }
         }
     }
     
@@ -95,7 +128,11 @@ class MenuViewController: UIViewController {
     @IBAction func buyGems(sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
         
-        addGems(amount: sender.tag)
+        let amount = sender.tag
+        
+        if amount == 35 || amount == 85 || amount == 125 {
+            IAPHandler.shared.purchaseProduct(id: "Bezgodov.Strategist.\(amount)GEMS")
+        }
     }
     
     func addGems(amount: Int, animation: Bool = true) {
@@ -160,7 +197,7 @@ class MenuViewController: UIViewController {
             SKStoreReviewController.requestReview()
         }
         else {
-            let appId = 123
+            let appId = 1351841309
             let url = URL(string: "itms-apps:itunes.apple.com/us/app/apple-store/id\(appId)?mt=8&action=write-review")!
             UIApplication.shared.openURL(url)
         }

@@ -133,7 +133,8 @@ class GameScene: SKScene {
     /// Количество кнопок на уровне
     var buttonsOnLevel = 0
     
-//    var motionManager: CMMotionManager!
+    /// true, если модальное окно открыто
+    var isModalWindowOpen = false
     
     /// Переменная, которая содержит все текстуры для анимации ГП
     var playerWalkingFrames = [SKTexture]()
@@ -161,30 +162,6 @@ class GameScene: SKScene {
         self.view?.addGestureRecognizer(longPressRecognizer)
     
         anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        
-        /*
-        // При наклоне девайса наклонять персонажа
-         
-        motionManager = CMMotionManager()
-         
-        if motionManager?.isDeviceMotionAvailable == true {
-            
-            motionManager?.deviceMotionUpdateInterval = 0.1;
-            
-            let queue = OperationQueue()
-            motionManager?.startAccelerometerUpdates(to: queue, withHandler: { (motion, error) -> Void in
-                DispatchQueue.main.async() {
-                    if let accelerometerData = self.motionManager.accelerometerData {
-                        self.physicsWorld.gravity.dx = CGFloat(accelerometerData.acceleration.x * 5)
-                    }
-                }
-            })
-        }
-        else {
-            print("Device motion unavailable");
-        }
- 
-         */
     }
     
     /// Функция, которая генерирует задний фон

@@ -15,6 +15,7 @@ extension GameScene {
         // Если текущий уровень boss, то останавливаем все таймеры
         if bossLevel != nil {
             if type == modalWindowType.menu || type == modalWindowType.lose {
+                bossEnemies.speed = 0
                 objectsLayer.speed = 0
                 bossLevel?.cleanTimers()
             }
@@ -170,12 +171,16 @@ extension GameScene {
         modalWindow.layer.shadowOffset = CGSize.zero
         modalWindow.layer.shadowOpacity = 0.35
         modalWindow.layer.shadowRadius = 10
+        
+        isModalWindowOpen = true
     }
     
     @objc func nextLevel(_ sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
         
         Model.sharedInstance.gameViewControllerConnect.goToLevels(moveCharacterFlag: true)
+        
+        isModalWindowOpen = false
     }
     
     @objc func restartLevelObjc(_ sender: UIButton) {
@@ -203,6 +208,8 @@ extension GameScene {
                 else {
                     self.isPaused = false
                 }
+                
+                self.isModalWindowOpen = false
             })
         }
     }
@@ -231,6 +238,8 @@ extension GameScene {
             self.modalWindowBg.removeFromSuperview()
             self.modalWindow.removeFromSuperview()
             self.restartLevel()
+            
+            self.isModalWindowOpen = false
         })
     }
     

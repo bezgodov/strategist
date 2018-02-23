@@ -20,9 +20,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if Model.sharedInstance.gameScene.bossLevel != nil {
                 if Model.sharedInstance.gameScene.bossLevel!.timerStar != nil && Model.sharedInstance.gameScene.bossLevel!.timerEnemy != nil {
                     if Model.sharedInstance.gameScene.bossLevel!.timerStar.isValid && Model.sharedInstance.gameScene.bossLevel!.timerEnemy.isValid {
-                        if Model.sharedInstance.gameScene.modalWindow == nil || Model.sharedInstance.gameScene.modalWindow.superview == nil {
+                        if Model.sharedInstance.gameScene.isModalWindowOpen == false {
                             Model.sharedInstance.gameScene.modalWindowPresent(type: GameScene.modalWindowType.menu)
                         }
+                    }
+                    else {
+                        Model.sharedInstance.gameScene.isPaused = true
                     }
                 }
                 else {
