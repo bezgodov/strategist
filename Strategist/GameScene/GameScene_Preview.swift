@@ -1,5 +1,6 @@
 import Foundation
 import SpriteKit
+import Flurry_iOS_SDK
 
 extension GameScene {
     func previewMainTimer() {
@@ -210,13 +211,25 @@ extension GameScene {
         if Model.sharedInstance.getCountGems() >= PREVIEW_MODE_PRICE {
             let alert = UIAlertController(title: "Buying preview mode", message: "Buying preview mode for all time is worth \(PREVIEW_MODE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-            let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: {_ in
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Cancel_buy_preview_mode", withParameters: eventParams)
+            })
+            
+            let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: { (_) in
                 Model.sharedInstance.setValuePreviewMode(true)
-                self.presentPreview()
+                
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 // Отнимаем 50 драг. камней, ибо мы покупаем
                 Model.sharedInstance.setCountGems(amountGems: -PREVIEW_MODE_PRICE)
+                
+                Flurry.logEvent("Buy_preview_mode", withParameters: eventParams)
+                
+                self.presentPreview()
+                
+                
             })
             
             alert.addAction(actionOk)
@@ -227,8 +240,17 @@ extension GameScene {
         else {
             let alert = UIAlertController(title: "Not enough GEMS", message: "Sorry, but is't quite expensive to use 'Preview mode' very often, help us with extra gems, but you do not have enough GEMS to buy preview mode for all time. You need \(PREVIEW_MODE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (in) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Cancel_buy_preview_mode_not_enough_gems", withParameters: eventParams)
+            })
+            
+            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Buy_gems_preview_mode_not_enough_gems", withParameters: eventParams)
+                
                 Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: true)
             })
             

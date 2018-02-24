@@ -264,7 +264,7 @@
                                                 <subviews>
                                                     <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KD8-5Q-kOM">
                                                         <rect key="frame" x="0.0" y="0.0" width="140" height="33"/>
-                                                        <state key="normal" title="WATCH ADV.">
+                                                        <state key="normal" title="WATCH AD">
                                                             <color key="titleColor" red="0.0" green="0.42745098040000001" blue="0.94117647059999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         </state>
                                                         <connections>
@@ -642,6 +642,7 @@
                         <outlet property="mainScrollView" destination="Fni-U3-u24" id="PRf-ao-scT"/>
                         <outlet property="showTipsSwitch" destination="MVx-oJ-udW" id="iq9-BD-0I1"/>
                         <outlet property="soundsSwitch" destination="OrI-y0-9Fr" id="zt6-at-Omd"/>
+                        <outlet property="watchAdButton" destination="KD8-5Q-kOM" id="onM-SD-fv9"/>
                         <outletCollection property="buyBtnBgView" destination="92H-4s-Il4" collectionClass="NSMutableArray" id="wl6-do-ml3"/>
                         <outletCollection property="buyBtnBgView" destination="5Bo-Oa-m8V" collectionClass="NSMutableArray" id="b9H-P6-uFe"/>
                         <outletCollection property="buyBtnBgView" destination="H8s-ko-6qk" collectionClass="NSMutableArray" id="3Qk-tS-CkV"/>

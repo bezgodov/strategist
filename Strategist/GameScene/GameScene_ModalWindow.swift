@@ -1,5 +1,6 @@
 import SpriteKit
 import Foundation
+import Flurry_iOS_SDK
 
 extension GameScene {
     /// Модальное окно
@@ -112,7 +113,7 @@ extension GameScene {
         if type == modalWindowType.win || type == modalWindowType.menu {
             if type == modalWindowType.menu {
                 startBtn.setTitle("LEVELS", for: UIControlState.normal)
-                startBtn.addTarget(self, action: #selector(goToLevels), for: .touchUpInside)
+                startBtn.addTarget(self, action: #selector(goToLevelsFromMenu), for: .touchUpInside)
             }
             else {
                 startBtn.setTitle("CONTINUE", for: UIControlState.normal)
@@ -135,7 +136,7 @@ extension GameScene {
         }
         else {
             goToSettingsBtn.setTitle("LEVELS", for: UIControlState.normal)
-            goToSettingsBtn.addTarget(self, action: #selector(goToLevels), for: .touchUpInside)
+            goToSettingsBtn.addTarget(self, action: #selector(goToLevelsAfterLose), for: .touchUpInside)
             
             if type == modalWindowType.lose {
                 startBtn.setTitle("RESTART", for: UIControlState.normal)
@@ -178,13 +179,25 @@ extension GameScene {
     @objc func nextLevel(_ sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
         
+        let eventParams = ["level": Model.sharedInstance.currentLevel]
+        
+        Flurry.logEvent("Continue_from_modal_window", withParameters: eventParams)
+        
         Model.sharedInstance.gameViewControllerConnect.goToLevels(moveCharacterFlag: true)
+        
+        Model.sharedInstance.currentLevel += 1
         
         isModalWindowOpen = false
     }
     
     @objc func restartLevelObjc(_ sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
+        
+        SKTAudio.sharedInstance().resumeBackgroundMusic()
+        
+        let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)] as [String : Any]
+        
+        Flurry.logEvent("Restart_level_from_modal_window", withParameters: eventParams)
         
         restartingLevel()
     }
@@ -246,13 +259,24 @@ extension GameScene {
     @objc func addExtraLife(_ sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
         
+        SKTAudio.sharedInstance().resumeBackgroundMusic()
+        
         // Если больше 10 драг. камней
         if Model.sharedInstance.getCountGems() >= EXTRA_LIFE_PRICE {
             let alert = UIAlertController(title: "Buying an extra life", message: "An extra life is worth \(EXTRA_LIFE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-            let actionOk = UIAlertAction(title: "Buy one life", style: UIAlertActionStyle.default, handler: {_ in
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Cancel_buy_extra_life_modal_window", withParameters: eventParams)
+            })
+            
+            let actionOk = UIAlertAction(title: "Buy one life", style: UIAlertActionStyle.default, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
                 Model.sharedInstance.setCountGems(amountGems: -EXTRA_LIFE_PRICE)
+                
+                Flurry.logEvent("Buy_extra_life_modal_window", withParameters: eventParams)
                 
                 Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + 1)
                 
@@ -267,8 +291,16 @@ extension GameScene {
         else {
             let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy an extra life. You need \(EXTRA_LIFE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Cancel_buy_extra_life_modal_window_not_enough_gems", withParameters: eventParams)
+            })
+            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Buy_gems_extra_life_modal_window_not_enough_gems", withParameters: eventParams)
+                
                 Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: true)
             })
             
@@ -279,8 +311,27 @@ extension GameScene {
         }
     }
     
-    @objc func goToLevels(_ sender: UIButton) {
+    @objc func goToLevelsFromMenu(_ sender: UIButton) {
+        goToLevels(modalWindowType.menu)
+    }
+    
+    @objc func goToLevelsAfterLose(_ sender: UIButton) {
+        goToLevels(modalWindowType.lose)
+    }
+    
+    func goToLevels(_ type: modalWindowType) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click_ModalWindow.wav")
+        
+        SKTAudio.sharedInstance().resumeBackgroundMusic()
+        
+        let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)] as [String : Any]
+        
+        if type == modalWindowType.lose {
+            Flurry.logEvent("Go_to_levels_after_lose_from_modal_window", withParameters: eventParams)
+        }
+        else {
+            Flurry.logEvent("Go_to_levels_from_menu_from_modal_window", withParameters: eventParams)
+        }
         
         Model.sharedInstance.gameViewControllerConnect.goToLevels()
     }

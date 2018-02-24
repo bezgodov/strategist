@@ -1,6 +1,7 @@
+import GoogleMobileAds
+import Flurry_iOS_SDK
 import Foundation
 import SpriteKit
-//import CoreMotion
 
 var TileWidth: CGFloat!
 var TileHeight: CGFloat!
@@ -138,6 +139,9 @@ class GameScene: SKScene {
     
     /// Переменная, которая содержит все текстуры для анимации ГП
     var playerWalkingFrames = [SKTexture]()
+    
+    /// Баннер, который всплывает после каждого 5-го проигранного уровня
+    var interstitial: GADInterstitial!
     
     override func didMove(to view: SKView) {
         
@@ -492,6 +496,10 @@ class GameScene: SKScene {
             }
             
             buttonsOnLevel = countButtonsOnLevel()
+            
+            if Model.sharedInstance.shouldPresentAd() {
+                loadAd()
+            }
         }
     }
     
@@ -737,6 +745,19 @@ class GameScene: SKScene {
                     if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
                         Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
                     }
+                    
+                    if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
+                        if bossLevel != nil {
+                            let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel), "countStars": bossLevel!.countStars] as [String : Any]
+                            
+                            Flurry.logEvent("Lose_boss_level", withParameters: eventParams)
+                        }
+                    }
+                    else {
+                        let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)] as [String : Any]
+                        
+                        Flurry.logEvent("Lose_level", withParameters: eventParams)
+                    }
                 }
             }
             
@@ -745,6 +766,22 @@ class GameScene: SKScene {
             }
             else {
                 modalWindowPresent(type: modalWindowType.lose)
+            }
+            
+            // Если рекламы не отключена
+            if Model.sharedInstance.isDisabledAd() == false {
+                // Если проигранный уровень % 8 == 0
+                if Model.sharedInstance.shouldPresentAd() {
+                    if interstitial.isReady {
+                        SKTAudio.sharedInstance().pauseBackgroundMusic()
+                        interstitial.present(fromRootViewController: Model.sharedInstance.gameViewControllerConnect)
+                    }
+                    else {
+                        Flurry.logEvent("Ad_wasnt_ready")
+                    }
+                }
+                
+                Model.sharedInstance.setCountLoseLevel()
             }
             
             if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
@@ -785,8 +822,21 @@ class GameScene: SKScene {
         gameTimer.invalidate()
         isPaused = true
         
+        if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
+            if bossLevel != nil {
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel), "countStars": bossLevel!.countStars] as [String : Any]
+                
+                Flurry.logEvent("Win_boss_level", withParameters: eventParams)
+            }
+        }
+        else {
+            let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel), "isCompletedWithHelp": Model.sharedInstance.isLevelsCompletedWithHelp(Model.sharedInstance.currentLevel)] as [String : Any]
+            
+            Flurry.logEvent("Win_level", withParameters: eventParams)
+        }
+        
         // Если уровень не был пройден, то обновляем кол-во драг. камней
-        if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+        if Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) == false {
             Model.sharedInstance.setCountGems(amountGems: self.gemsForLevel)
             
             for index in 1...self.gemsForLevel {
@@ -809,9 +859,16 @@ class GameScene: SKScene {
                     })
                 }
             }
+            
             Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
-            Model.sharedInstance.currentLevel += 1
         }
+    }
+    
+    func loadAd() {
+        interstitial = GADInterstitial(adUnitID: "ca-app-pub-3811728185284523/9724040842")
+        let request = GADRequest()
+//        request.testDevices = [ "711afb81711386bd498b76787d66e9d1" ]
+        interstitial.load(request)
     }
     
     /// Очистка уровня
@@ -1033,8 +1090,17 @@ class GameScene: SKScene {
             if Model.sharedInstance.getCountGems() >= WINNING_PATH_PRICE {
                 let alert = UIAlertController(title: "Buying winning path", message: "Buying winning path is worth \(WINNING_PATH_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
                 
-                let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-                let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: {_ in
+                let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                    let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                    
+                    Flurry.logEvent("Cancel_buy_winning_path", withParameters: eventParams)
+                })
+                
+                let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: { (_) in
+                    let eventParams = ["level": Model.sharedInstance.currentLevel]
+                    
+                    Flurry.logEvent("Buy_winning_path", withParameters: eventParams)
+                    
                     self.showWinningPath()
                 })
                 
@@ -1046,9 +1112,18 @@ class GameScene: SKScene {
             else {
                 let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy winning path. You need \(WINNING_PATH_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
                 
-                let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-                let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
+                let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                    let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                    
+                    Flurry.logEvent("Cancel_buy_winning_path_not_enough_gems", withParameters: eventParams)
+                })
+                
+                let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: { (_) in
                     Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: true)
+                    
+                    let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                    
+                    Flurry.logEvent("Buy_gems_winning_path_not_enough_gems", withParameters: eventParams)
                 })
                 
                 alert.addAction(actionOk)

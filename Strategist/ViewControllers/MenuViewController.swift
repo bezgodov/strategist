@@ -1,8 +1,8 @@
-import UIKit
 import SpriteKit
-import StoreKit
+import GoogleMobileAds
+import Flurry_iOS_SDK
 
-class MenuViewController: UIViewController {
+class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
     
     @IBOutlet weak var countOfGems: UILabel!
     @IBOutlet weak var showTipsSwitch: UISwitch!
@@ -13,13 +13,22 @@ class MenuViewController: UIViewController {
     @IBOutlet weak var lastViewForScrollView: UIView!
     @IBOutlet weak var buyPreviewModeView: UIView!
     @IBOutlet weak var buyPreviewModeButton: UIButton!
+    @IBOutlet weak var watchAdButton: UIButton!
     
     var isDismissed: Bool = false
+    
+    /// Кол-во секунд между просмотрами рекламы за вознаграждение
+    let TIME_REWARD_VIDEO: Double = 300
+    
+    /// Таймер, которые отсчитываем время до возможности просмотра рекламы за вознаграждение
+    var timeToWatchAd = Timer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         IAPSettings()
+        
+        gadRewardVideoSettings()
         
         // Выводим кол-во собранных драг. камней
         countOfGems.text = String(Model.sharedInstance.getCountGems())
@@ -39,12 +48,17 @@ class MenuViewController: UIViewController {
             buyPreviewModeButton.isEnabled = false
             buyPreviewModeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
+        
+        if Model.sharedInstance.getLastTimeClickToRewardVideo() != nil {
+            timeToWatchAd.invalidate()
+            timerToAbleWatchRewardVideo()
+        }
     }
     
     func IAPSettings() {
-        IAPHandler.shared.fetchAvailableProducts()
+        IAPHandler.sharedInstance.fetchAvailableProducts()
         
-        IAPHandler.shared.purchaseStatusBlock = {[weak self] (type) in
+        IAPHandler.sharedInstance.purchaseStatusBlock = {[weak self] (type) in
             guard let strongSelf = self else { return }
             
             if type != .error && type != .disabled {
@@ -58,6 +72,7 @@ class MenuViewController: UIViewController {
                     else {
                         if type == .purchased_125GEMS {
                             strongSelf.addGems(amount: 125)
+                            Model.sharedInstance.disableAd()
                         }
                     }
                 }
@@ -70,6 +85,13 @@ class MenuViewController: UIViewController {
                 strongSelf.present(alert, animated: true, completion: nil)
             }
         }
+    }
+    
+    func gadRewardVideoSettings() {
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
+        let request = GADRequest()
+//        request.testDevices = ["711afb81711386bd498b76787d66e9d1"]
+        GADRewardBasedVideoAd.sharedInstance().load(request, withAdUnitID: "ca-app-pub-3811728185284523/8355721492")
     }
     
     override func viewDidLayoutSubviews() {
@@ -118,11 +140,64 @@ class MenuViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    /// Конвертировать TimeInterval в минуты:секунды
+    func stringFromTimeInterval(_ interval: TimeInterval) -> String {
+        let time = Int(interval)
+        
+        let seconds = time % 60
+        let minutes = (time / 60) % 60
+        
+        return "\(minutes):\(seconds)"
+    }
+    
+    func timerToAbleWatchRewardVideo() {
+        watchAdButton.isEnabled = false
+        
+        if Model.sharedInstance.getLastTimeClickToRewardVideo() == nil {
+            Model.sharedInstance.setLastTimeClickToRewardVideo(Date())
+        }
+        
+        timeToWatchAd = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (timer) in
+            if Model.sharedInstance.getLastTimeClickToRewardVideo() != nil {
+                
+                let time = self.TIME_REWARD_VIDEO - (Model.sharedInstance.getLastTimeClickToRewardVideo()!.timeIntervalSinceNow * -1)
+                if time > 1 {
+                    self.watchAdButton.setTitle(self.stringFromTimeInterval(time), for: UIControlState.normal)
+                }
+                else {
+                    self.watchAdButton.isEnabled = true
+                    self.watchAdButton.setTitle("WATCH AD", for: UIControlState.normal)
+                    Model.sharedInstance.setLastTimeClickToRewardVideo(nil)
+                    self.gadRewardVideoSettings()
+                    
+                    timer.invalidate()
+                }
+            }
+        }
+    }
+    
     /// Функция, которая включает или выключает подсказки при клике на объекты на игровом поле
     @IBAction func showTips(sender: UISwitch) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Switch.wav")
         
-        Model.sharedInstance.setShowTips(val: sender.isOn)
+        if !sender.isOn {
+            let alert = UIAlertController(title: "CAUTION", message: "If you turn off tips you won't be able to look at new enemies' descriptions", preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionOk = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (_) in
+                Model.sharedInstance.setShowTips(val: sender.isOn)
+            })
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                self.showTipsSwitch.setOn(!sender.isOn, animated: true)
+            })
+            
+            alert.addAction(actionOk)
+            alert.addAction(actionCancel)
+            
+            self.present(alert, animated: true, completion: nil)
+        }
+        else {
+            Model.sharedInstance.setShowTips(val: sender.isOn)
+        }
     }
     
     @IBAction func buyGems(sender: UIButton) {
@@ -131,7 +206,7 @@ class MenuViewController: UIViewController {
         let amount = sender.tag
         
         if amount == 35 || amount == 85 || amount == 125 {
-            IAPHandler.shared.purchaseProduct(id: "Bezgodov.Strategist.\(amount)GEMS")
+            IAPHandler.sharedInstance.purchaseProduct(id: "Bezgodov.Strategist.\(amount)GEMS")
         }
     }
     
@@ -187,11 +262,15 @@ class MenuViewController: UIViewController {
                 navigationController?.pushViewController(chooseLevelViewController, animated: true)
             }
         }
+        
+        timeToWatchAd.invalidate()
     }
     
     /// Функция, которая предназначена для оценки игры
     @IBAction func rateApp(sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
+        Flurry.logEvent("Rate_app_menu")
         
         if #available(iOS 10.3,*) {
             SKStoreReviewController.requestReview()
@@ -226,7 +305,18 @@ class MenuViewController: UIViewController {
     @IBAction func watchAdv(sender: UIButton) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
         
-        addGems(amount: sender.tag, animation: false)
+        if GADRewardBasedVideoAd.sharedInstance().isReady == true {
+            GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+            
+            let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+            
+            Flurry.logEvent("Watch_ad", withParameters: eventParams)
+            
+            timerToAbleWatchRewardVideo()
+        }
+        else {
+            Flurry.logEvent("Ad_wasnt_ready_menu")
+        }
     }
     
     @IBAction func buyPreviewMode(sender: UIButton) {
@@ -235,15 +325,25 @@ class MenuViewController: UIViewController {
         if Model.sharedInstance.getCountGems() >= PREVIEW_MODE_PRICE {
             let alert = UIAlertController(title: "Buying preview mode", message: "Buying preview mode for all time is worth \(PREVIEW_MODE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-            let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: {_ in
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Cancel_buy_preview_mode_menu", withParameters: eventParams)
+            })
+            
+            let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: { (_) in
                 Model.sharedInstance.setValuePreviewMode(true)
+                
+                let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+                
+                self.addGems(amount: -PREVIEW_MODE_PRICE, animation: true)
+                
+                Flurry.logEvent("Buy_preview_mode_menu", withParameters: eventParams)
+                
                 self.buyPreviewModeButton.setTitle("PURCHASED", for: UIControlState.normal)
                 self.buyPreviewModeButton.isEnabled = false
                 self.buyPreviewModeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
                 self.buyPreviewModeView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
-                
-                self.addGems(amount: -PREVIEW_MODE_PRICE, animation: true)
             })
             
             alert.addAction(actionOk)
@@ -254,11 +354,43 @@ class MenuViewController: UIViewController {
         else {
             let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy preview mode for all time. You need \(PREVIEW_MODE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Ok", style: UIAlertActionStyle.cancel, handler: nil)
+            let actionCancel = UIAlertAction(title: "Ok", style: UIAlertActionStyle.cancel, handler: { (_) in
+                let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Cancel_buy_preview_mode_menu_not_enough_gems", withParameters: eventParams)
+            })
             
             alert.addAction(actionCancel)
             
             self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd,
+                            didRewardUserWith reward: GADAdReward) {
+        addGems(amount: Int(truncating: reward.amount), animation: false)
+        
+        if Model.sharedInstance.isActivatedSounds() {
+            SKTAudio.sharedInstance().resumeBackgroundMusic()
+        }
+    }
+    
+    func rewardBasedVideoAdDidOpen(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        if Model.sharedInstance.isActivatedSounds() {
+            SKTAudio.sharedInstance().pauseBackgroundMusic()
+        }
+    }
+    
+    func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        if Model.sharedInstance.isActivatedSounds() {
+            SKTAudio.sharedInstance().resumeBackgroundMusic()
+        }
+    }
+    
+    func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd,
+                            didFailToLoadWithError error: Error) {
+        if Model.sharedInstance.isActivatedSounds() {
+            SKTAudio.sharedInstance().resumeBackgroundMusic()
         }
     }
     

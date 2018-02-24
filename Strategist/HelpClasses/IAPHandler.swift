@@ -1,4 +1,3 @@
-import UIKit
 import StoreKit
 
 enum IAPHandlerAlertType {
@@ -25,7 +24,7 @@ enum IAPHandlerAlertType {
 }
 
 class IAPHandler: NSObject {
-    static let shared = IAPHandler()
+    static let sharedInstance = IAPHandler()
     
     let GEMS_35_ID = "Bezgodov.Strategist.35GEMS"
     let GEMS_85_ID = "Bezgodov.Strategist.85GEMS"

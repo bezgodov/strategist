@@ -1,5 +1,5 @@
-import UIKit
 import SpriteKit
+import Flurry_iOS_SDK
 
 class ChooseLevelViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
@@ -52,7 +52,8 @@ class ChooseLevelViewController: UIViewController {
         super.viewDidLoad()
 
         menuSettings()
-        
+//        UserDefaults.standard.removeObject(forKey: "isPaidPreviewMode")
+//        Model.sharedInstance.setCountGems(amountGems: 50)
         characterInitial()
         
         // Если самое начало игры, то делаем анимацию перехода на 1-ый уровень
@@ -214,6 +215,9 @@ class ChooseLevelViewController: UIViewController {
             /// текущая Y-позиция
             var row = from.row - 1
             
+            /// Кол-во кнопок между началом и концом пермещения (расстояние)
+            var countButtonsThrough = (to.row - from.row) / distanceBetweenLevels
+            
             // Если самое начало игры, то перемещаем на 1-ую ячейку
             if Model.sharedInstance.getCountCompletedLevels() == 0 {
                 path = pathToPoint(from: from, to: to)
@@ -223,6 +227,19 @@ class ChooseLevelViewController: UIViewController {
                     // В общем, бесполезная проверка, ибо всегда передаётся число кратное 3, а после добавляется 3, но мало ли :3
                     if row % 3 == 0 {
                         let path2point = pathToPoint(from: levelButtonsPositions[row / 3], to: levelButtonsPositions[row / 3 + 1])
+                        
+                        // Если последняя кнопка, то ГП должен двигаться в верную сторону
+                        if countButtonsThrough == 1 {
+                            if levelButtonsPositions[row / 3].column < levelButtonsPositions[row / 3 + 1].column {
+                                character.transform = CGAffineTransform(scaleX: 1, y: -1)
+                            }
+                            else {
+                                character.transform = CGAffineTransform(scaleX: -1, y: -1)
+                            }
+                        }
+                        
+                        countButtonsThrough -= 1
+                        
                         path.bezier.append(path2point.bezier)
                         path.count += path2point.count
                         row += 3
@@ -234,13 +251,6 @@ class ChooseLevelViewController: UIViewController {
             if character.layer.animation(forKey: "movement") == nil {
                 let movement = CAKeyframeAnimation(keyPath: "position")
                 scrollView.isScrollEnabled = false
-                
-                if from.column < to.column {
-                    character.transform = CGAffineTransform(scaleX: 1, y: -1)
-                }
-                else {
-                    character.transform = CGAffineTransform(scaleX: -1, y: -1)
-                }
                 
                 // Анимации ходьбы ГП
                 character.animationImages = walkFrames
@@ -404,8 +414,6 @@ class ChooseLevelViewController: UIViewController {
             secondButton.setTitle("SETTINGS", for: UIControlState.normal)
             secondButton.addTarget(self, action: #selector(goToMenuFromModalWindow), for: .touchUpInside)
         }
-        
-//        drawHearts(Model.sharedInstance.currentLevel)
     }
     
     @objc func startLevel() {
@@ -413,7 +421,7 @@ class ChooseLevelViewController: UIViewController {
         
         Model.sharedInstance.lastYpositionLevels = scrollView.contentOffset.y
         
-        self.goToLevel()
+        goToLevel()
     }
     
     @objc func bgClick(_ sender: UITapGestureRecognizer) {
@@ -485,9 +493,18 @@ class ChooseLevelViewController: UIViewController {
             
             let alert = UIAlertController(title: "Buying an extra life", message: "An extra life is worth \(EXTRA_LIFE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-            let actionOk = UIAlertAction(title: "Buy one life", style: UIAlertActionStyle.default, handler: {_ in
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Cancel_buy_extra_life_levels", withParameters: eventParams)
+            })
+            
+            let actionOk = UIAlertAction(title: "Buy one life", style: UIAlertActionStyle.default, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
                 self.buyExtraLife()
+                
+                Flurry.logEvent("Buy_extra_life_levels", withParameters: eventParams)
             })
             
             alert.addAction(actionOk)
@@ -498,8 +515,17 @@ class ChooseLevelViewController: UIViewController {
         else {
             let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy an extra life. You need \(EXTRA_LIFE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: {_ in
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Cancel_buy_extra_life_levels_not_enough_gems", withParameters: eventParams)
+            })
+            
+            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: { (_) in
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+                
+                Flurry.logEvent("Buy_gems_extra_life_levels_not_enough_gems", withParameters: eventParams)
+                
                 self.presentMenu(dismiss: true)
             })
             
@@ -521,50 +547,15 @@ class ChooseLevelViewController: UIViewController {
         viewToShake.layer.add(animation, forKey: "position")
     }
     
-    /*
-    /// Функция не используется на данный момент
-    ///
-    /// Функция, отрисовывающая количество оставшихся жизней на уровне
-    func drawHearts(_ forLevel: Int) {
-        if !Model.sharedInstance.isCompletedLevel(forLevel) {
-            let livesOnLevel = Model.sharedInstance.getLevelLives(forLevel)
-            let allLivesPerLevel = 5
-            
-            if livesOnLevel > 0 {
-                var heartTexture = SKTexture(imageNamed: "Heart")
-                let heartSize = CGSize(width: heartTexture.size().width / 1.5, height: heartTexture.size().height / 1.5)
-                
-                let heartsStackView = UIView(frame: CGRect(x: Int(modalWindow.bounds.midX - ((modalWindow.frame.width - 40) / 2)), y: Int(modalWindow.frame.size.height - heartSize.height - 15), width: Int(modalWindow.frame.size.width), height: Int(heartSize.height)))
-                
-                for index in 0...allLivesPerLevel - 1 {
-                    heartTexture = allLivesPerLevel - 1 - index < livesOnLevel ? SKTexture(imageNamed: "Heart") : SKTexture(imageNamed: "Heart_empty")
-                    
-                    let button = UIButton(frame: CGRect(x: 3 / 2 + (modalWindow.frame.size.width - (CGFloat((heartSize.width + 3) * CGFloat(allLivesPerLevel)))) / 2 + CGFloat((heartSize.width + 3) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
-                    button.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
-                    button.isUserInteractionEnabled = false
-                    button.tag = index + 1
-                    
-                    heartsStackView.addSubview(button)
-                }
-                modalWindow.addSubview(heartsStackView)
-            }
-        }
-        else {
-            let completedLabel = UILabel(frame: CGRect(x: modalWindow.bounds.midX - modalWindow.frame.size.width / 2, y: modalWindow.frame.size.height - 35 - 15, width: modalWindow.frame.size.width, height: 35))
-            completedLabel.text = "Completed"
-            completedLabel.textAlignment = NSTextAlignment.center
-            completedLabel.font = UIFont(name: "Avenir Next", size: 24)
-            completedLabel.textColor = UIColor.white
-            modalWindow.addSubview(completedLabel)
-        }
-    }
-     */
-    
     func goToLevel() {
         if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
             if Model.sharedInstance.gameScene != nil {
                 Model.sharedInstance.gameScene.cleanLevel()
             }
+            
+            let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)] as [String : Any]
+            
+            Flurry.logEvent("Go_to_level", withParameters: eventParams)
             
             if let storyboard = storyboard {
                 let gameViewController = storyboard.instantiateViewController(withIdentifier: "GameViewController") as! GameViewController
@@ -884,6 +875,8 @@ class ChooseLevelViewController: UIViewController {
     
     /// Найти ГП
     @IBAction func findCharacter(_ sender: UIButton) {
+        SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
+        
         let koefIfLastLevel = Model.sharedInstance.countLevels == Model.sharedInstance.getCountCompletedLevels() || isNextSectionDisabled ? 1 : 0
         let point = CGPoint(x: 0, y: CGFloat((Model.sharedInstance.getCountCompletedLevels() - 1 - koefIfLastLevel) * distanceBetweenLevels) * levelTileSize.height)
         scrollView.setContentOffset(point, animated: true)

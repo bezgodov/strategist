@@ -101,6 +101,15 @@ class Model {
     /// Включена ли музыка на заднем фоне
     private var isActivatedBgMusicVal = UserDefaults.standard.bool(forKey: "isActivatedBgMusic")
     
+    /// Включена ли реклама (по умолчанию: да)
+    private var isDisabledAdVal = UserDefaults.standard.bool(forKey: "isDisabledAd")
+    
+    /// Кол-во проигранных уровней (каждые 5 = показ рекламы)
+    private var countLoseLevelVal = UserDefaults.standard.integer(forKey: "countLoseLevel")
+    
+    /// Время последнего просмотра рекламы за вознаграждение
+    private var lastTimeClickToRewardVideoVal = UserDefaults.standard.object(forKey: "lastTimeClickToRewardVideo") as? Date
+    
     /// Последняя позиция, на которой находился пользователь, когда заходил на уровень или в меню
     var lastYpositionLevels: CGFloat?
     
@@ -274,5 +283,37 @@ class Model {
     
     func isDeviceIpad() -> Bool {
         return UIDevice().userInterfaceIdiom == .pad
+    }
+    
+    /// Функция отключает рекламу
+    func disableAd(_ value: Bool = true) {
+        isDisabledAdVal = value
+        
+        UserDefaults.standard.set(isDisabledAdVal, forKey: "isDisabledAd")
+    }
+    
+    func isDisabledAd() -> Bool {
+        return isDisabledAdVal
+    }
+    
+    func setCountLoseLevel(_ amount: Int = 1) {
+        countLoseLevelVal += amount
+        
+        UserDefaults.standard.set(countLoseLevelVal, forKey: "countLoseLevel")
+    }
+    
+    /// Если проиграно 5 уровней, то показать рекламу
+    func shouldPresentAd() -> Bool {
+        return countLoseLevelVal % 8 == 0 && countLoseLevelVal > 0
+    }
+    
+    func setLastTimeClickToRewardVideo(_ date: Date?) {
+        lastTimeClickToRewardVideoVal = date
+        
+        UserDefaults.standard.set(lastTimeClickToRewardVideoVal, forKey: "lastTimeClickToRewardVideo")
+    }
+    
+    func getLastTimeClickToRewardVideo() -> Date? {
+        return lastTimeClickToRewardVideoVal
     }
 }
