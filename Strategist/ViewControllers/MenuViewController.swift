@@ -14,6 +14,10 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
     @IBOutlet weak var buyPreviewModeView: UIView!
     @IBOutlet weak var buyPreviewModeButton: UIButton!
     @IBOutlet weak var watchAdButton: UIButton!
+    @IBOutlet weak var checkPromoCodeView: UIView!
+    @IBOutlet weak var checkPromoCodeButton: UIButton!
+    @IBOutlet weak var checkPromoCodeTextField: UITextField!
+    @IBOutlet var viewTopMenuBorder: [UIImageView]!
     
     var isDismissed: Bool = false
     
@@ -25,6 +29,10 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        /// При клике в любое место, необходимо закрыть клавиатуру
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tap)
         
         IAPSettings()
         
@@ -44,7 +52,7 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         
         // Если режим предпросмотра куплен
         if Model.sharedInstance.isPaidPreviewMode() {
-            buyPreviewModeButton.setTitle("PURCHASED", for: UIControlState.normal)
+            buyPreviewModeButton.setTitle(NSLocalizedString("PURCHASED", comment: ""), for: UIControlState.normal)
             buyPreviewModeButton.isEnabled = false
             buyPreviewModeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         }
@@ -52,6 +60,17 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         if Model.sharedInstance.getLastTimeClickToRewardVideo() != nil {
             timeToWatchAd.invalidate()
             timerToAbleWatchRewardVideo()
+        }
+        
+        checkPromoCodeTextField.placeholder = NSLocalizedString("Promo code", comment: "")
+        checkPromoCodeButton.setTitle(NSLocalizedString("CHECK", comment: ""), for: UIControlState.normal)
+        
+        // Если устройство Ipad, то заменяет border (ёлочку-шипы) на обычный цвет
+        if Model.sharedInstance.isDeviceIpad() {
+            for borderTop in viewTopMenuBorder {
+                borderTop.image = nil
+                borderTop.backgroundColor = UIColor.init(red: 146 / 255, green: 115 / 255, blue: 63 / 255, alpha: 1)
+            }
         }
     }
     
@@ -78,8 +97,8 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
                 }
             }
             else {
-                let alert = UIAlertController(title: "FAIL", message: type.message(), preferredStyle: .alert)
-                let actionOk = UIAlertAction(title: "OK", style: .default, handler: nil)
+                let alert = UIAlertController(title: NSLocalizedString("FAIL", comment: ""), message: type.message(), preferredStyle: .alert)
+                let actionOk = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil)
                 
                 alert.addAction(actionOk)
                 strongSelf.present(alert, animated: true, completion: nil)
@@ -101,13 +120,15 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
             btn.layer.borderColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1).cgColor
         }
         
+        checkPromoCodeView.layer.cornerRadius = 5
+        
         // Если режим предпросмотра куплен
         if Model.sharedInstance.isPaidPreviewMode() {
             buyPreviewModeView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
         }
         
         mainScrollView.backgroundColor = UIColor.init(red: 149/255, green: 201/255, blue: 45/255, alpha: 0.1)
-        mainScrollView.contentSize = CGSize(width: self.view.bounds.width, height: lastViewForScrollView.frame.maxY)
+        mainScrollView.contentSize = CGSize(width: self.view.bounds.width, height: lastViewForScrollView.frame.maxY + 61)
         mainScrollView.showsVerticalScrollIndicator = false
     }
     
@@ -166,7 +187,7 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
                 }
                 else {
                     self.watchAdButton.isEnabled = true
-                    self.watchAdButton.setTitle("WATCH AD", for: UIControlState.normal)
+                    self.watchAdButton.setTitle(NSLocalizedString("WATCH AD", comment: ""), for: UIControlState.normal)
                     Model.sharedInstance.setLastTimeClickToRewardVideo(nil)
                     self.gadRewardVideoSettings()
                     
@@ -181,12 +202,12 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Switch.wav")
         
         if !sender.isOn {
-            let alert = UIAlertController(title: "CAUTION", message: "If you turn off tips you won't be able to look at new enemies' descriptions", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: NSLocalizedString("CAUTION", comment: ""), message: NSLocalizedString("If you turn off tips you won't be able to look at new enemies' descriptions", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionOk = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (_) in
+            let actionOk = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                 Model.sharedInstance.setShowTips(val: sender.isOn)
             })
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+            let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                 self.showTipsSwitch.setOn(!sender.isOn, animated: true)
             })
             
@@ -323,15 +344,17 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
         
         if Model.sharedInstance.getCountGems() >= PREVIEW_MODE_PRICE {
-            let alert = UIAlertController(title: "Buying preview mode", message: "Buying preview mode for all time is worth \(PREVIEW_MODE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+            let message = "\(NSLocalizedString("Buying preview mode for all time is worth", comment: "")) \(PREVIEW_MODE_PRICE) \(NSLocalizedString("GEMS", comment: "")) (\(NSLocalizedString("you have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: "")))"
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+            let alert = UIAlertController(title: NSLocalizedString("Buying preview mode", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                 let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Cancel_buy_preview_mode_menu", withParameters: eventParams)
             })
             
-            let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: { (_) in
+            let actionOk = UIAlertAction(title: NSLocalizedString("Buy", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                 Model.sharedInstance.setValuePreviewMode(true)
                 
                 let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
@@ -340,7 +363,7 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
                 
                 Flurry.logEvent("Buy_preview_mode_menu", withParameters: eventParams)
                 
-                self.buyPreviewModeButton.setTitle("PURCHASED", for: UIControlState.normal)
+                self.buyPreviewModeButton.setTitle(NSLocalizedString("PURCHASED", comment: ""), for: UIControlState.normal)
                 self.buyPreviewModeButton.isEnabled = false
                 self.buyPreviewModeButton.setTitleColor(UIColor.white, for: UIControlState.normal)
                 self.buyPreviewModeView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
@@ -352,9 +375,11 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
             self.present(alert, animated: true, completion: nil)
         }
         else {
-            let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy preview mode for all time. You need \(PREVIEW_MODE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+            let message = "\(NSLocalizedString("Not enough gems to buy preview mode menu", comment: "")). \(NSLocalizedString("You need", comment: "")) \(PREVIEW_MODE_PRICE) \(NSLocalizedString("GEMS", comment: "")), \(NSLocalizedString("but you only have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: ""))"
             
-            let actionCancel = UIAlertAction(title: "Ok", style: UIAlertActionStyle.cancel, handler: { (_) in
+            let alert = UIAlertController(title: NSLocalizedString("Not enough GEMS", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                 let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Cancel_buy_preview_mode_menu_not_enough_gems", withParameters: eventParams)
@@ -363,6 +388,52 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
             alert.addAction(actionCancel)
             
             self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    @IBAction func checkPromoCode(_ sender: Any) {
+        dismissKeyboard()
+        checkingPromo()
+    }
+    
+    func checkingPromo() {
+        let promoCode = checkPromoCodeTextField.text
+        if promoCode != nil {
+            if !promoCode!.isEmpty {
+                if promoCode == Model.sharedInstance.getPromoCode() {
+                    if Model.sharedInstance.isUsedPromoCode() == false {
+                        addGems(amount: 100)
+                        
+                        Model.sharedInstance.setUsedPromoCode(true)
+                        
+                        Flurry.logEvent("Right_promo_code")
+                    }
+                    else {
+                        let message = "\(NSLocalizedString("Promotional code", comment: "")) (\(promoCode!)) \(NSLocalizedString("was already used", comment: ""))"
+                        
+                        let alert = UIAlertController(title: NSLocalizedString("Wrong promotional code", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
+                        
+                        let actionCancel = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.cancel, handler: nil)
+                        
+                        alert.addAction(actionCancel)
+                        
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                }
+                else {
+                    let message = "\(NSLocalizedString("Promotional code", comment: "")) (\(promoCode!)) \(NSLocalizedString("is incorrect. If everything is right then try again or type another promo code", comment: ""))"
+                    
+                    let alert = UIAlertController(title: NSLocalizedString("Wrong promotional code", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
+                    
+                    let actionCancel = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.cancel, handler: nil)
+                    
+                    alert.addAction(actionCancel)
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    
+                    Flurry.logEvent("Wrong_promo_code")
+                }
+            }
         }
     }
     
@@ -392,6 +463,10 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         if Model.sharedInstance.isActivatedSounds() {
             SKTAudio.sharedInstance().resumeBackgroundMusic()
         }
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     override var prefersStatusBarHidden: Bool {

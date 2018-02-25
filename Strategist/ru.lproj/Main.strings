@@ -1,0 +1,60 @@
+
+/* Class = "UILabel"; text = "50"; ObjectID = "1DJ-y4-gOv"; */
+"1DJ-y4-gOv.text" = "50";
+
+/* Class = "UILabel"; text = "Show tips"; ObjectID = "1ep-24-dRe"; */
+"1ep-24-dRe.text" = "Подсказки";
+
+/* Class = "UILabel"; text = "X85"; ObjectID = "ATF-vk-Zsw"; */
+"ATF-vk-Zsw.text" = "X85";
+
+/* Class = "UILabel"; text = "Purchases"; ObjectID = "GR0-Xt-kAU"; */
+"GR0-Xt-kAU.text" = "Покупки";
+
+/* Class = "UIButton"; normalTitle = "WATCH AD"; ObjectID = "KD8-5Q-kOM"; */
+"KD8-5Q-kOM.normalTitle" = "РЕКЛАМА";
+
+/* Class = "UILabel"; text = "X35"; ObjectID = "LQz-VN-TWw"; */
+"LQz-VN-TWw.text" = "X35";
+
+/* Class = "UILabel"; text = "Background music"; ObjectID = "Lcn-bT-gXv"; */
+"Lcn-bT-gXv.text" = "Музыка";
+
+/* Class = "UILabel"; text = "Erase data"; ObjectID = "PjJ-iM-vK7"; */
+"PjJ-iM-vK7.text" = "Erase data";
+
+/* Class = "UILabel"; text = "X1"; ObjectID = "Qec-NQ-qUN"; */
+"Qec-NQ-qUN.text" = "X1";
+
+/* Class = "UIButton"; normalTitle = "BUY FOR 3$"; ObjectID = "Rn5-rb-NvO"; */
+"Rn5-rb-NvO.normalTitle" = "КУПИТЬ ЗА 229РУБ";
+
+/* Class = "UILabel"; text = "Customization"; ObjectID = "U7f-lm-711"; */
+"U7f-lm-711.text" = "Настройки";
+
+/* Class = "UIButton"; normalTitle = "BUY FOR 0.99$"; ObjectID = "UV9-qX-haO"; */
+"UV9-qX-haO.normalTitle" = "КУПИТЬ ЗА 75РУБ";
+
+/* Class = "UILabel"; text = "PREVIEW MODE"; ObjectID = "aRj-MZ-AFI"; */
+"aRj-MZ-AFI.text" = "РЕЖИМ ПРЕДПРОСМОТРА";
+
+/* Class = "UIButton"; normalTitle = "BUY FOR 50 GEMS"; ObjectID = "ca3-Ez-uOE"; */
+"ca3-Ez-uOE.normalTitle" = "50 АЛМАЗОВ";
+
+/* Class = "UIButton"; normalTitle = "Leave a review"; ObjectID = "d8t-QQ-fV1"; */
+"d8t-QQ-fV1.normalTitle" = "Оставить отзыв";
+
+/* Class = "UILabel"; text = "Sounds"; ObjectID = "mVr-kG-s6I"; */
+"mVr-kG-s6I.text" = "Звуки";
+
+/* Class = "UILabel"; text = "X125+NO AD."; ObjectID = "o55-cf-ayA"; */
+"o55-cf-ayA.text" = "X125";
+
+/* Class = "UILabel"; text = "10"; ObjectID = "ocF-LN-Q0r"; */
+"ocF-LN-Q0r.text" = "10";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "roU-ev-QPD"; */
+"roU-ev-QPD.normalTitle" = "Назад";
+
+/* Class = "UIButton"; normalTitle = "BUY FOR 2$"; ObjectID = "zJi-2Q-34o"; */
+"zJi-2Q-34o.normalTitle" = "КУПИТЬ ЗА 149РУБ";

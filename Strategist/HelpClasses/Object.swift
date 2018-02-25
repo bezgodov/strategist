@@ -16,7 +16,7 @@ import SpriteKit
 /// - rotator: поворот (неготовый блок);
 /// - rotatorPointer: поворот со стрелкой (неготовый блок);
 enum ObjectType: Int {
-    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, spikes, electric, star, snail, arrow, tulip, cabbage, lock, key, magnet, button
+    case unknown = 0, spaceAlien, gem, bee, spinner, bomb, stopper, alarmclock, bridge, spikes, star, snail, arrow, tulip, cabbage, lock, key, magnet, button
     
     /// Свойство для получения имя спрайта перемещающегося блока;
     var spriteName: String {
@@ -30,7 +30,6 @@ enum ObjectType: Int {
             "AlarmClock",
             "Bridge",
             "SpikesBox",
-            "Donut",
             "Star",
             "Snail",
             "Arrow",
@@ -48,25 +47,24 @@ enum ObjectType: Int {
     /// Описание объекта
     var description: String {
         let descriptions = [
-            "A cute space alien",
-            "You should pick up a gem to win. Space aliens need much gems",
-            "Bee moves one cell by one game's move. If your and bee's positions are same you lose",
-            "Spinner never changes its position. If you get at spinner's position you lose",
-            "Bomb will destroy you if you are around its in N moves. You can't get at bomb's position",
-            "Stop sing stops you for one move",
-            "Alarm Clock stops all objects for one move except a space alien",
-            "Bridge is rotated each move. You can tap bridge to change its direction",
-            "Spikes appear one move and disappear next one. If you get at them you lose",
-            "Eletro destroys you if you get at any position around its",
-            "Star doesn't destroy you and never moves. You should collect all stars to win",
-            "Snail moves one move per two game's moves. Alarmclock can cause double freeze",
-            "If yours directions are different you lose. Checking directions is only occured when an alien comes in",
-            "If bee gets at tulip bee stops for one move and then tulip will disappear",
-            "If snail gets at cabbage then snail moves without stopping for two moves and then cabbage will disappear",
-            "To open the lock pick up a key with same color. If you do not have a key you lose",
-            "Key opens the door with same color",
-            "Pick up a magnet to collect stars within one point radius around an alien. Magnet will be activated in 1 move",
-            "Tap at button to switch all other buttons. If an alien gets at button only that button is switched down"
+            NSLocalizedString("spaceAlien_description", comment: ""),
+            NSLocalizedString("gem_description", comment: ""),
+            NSLocalizedString("bee_description", comment: ""),
+            NSLocalizedString("spinner_description", comment: ""),
+            NSLocalizedString("bomb_description", comment: ""),
+            NSLocalizedString("stopper_description", comment: ""),
+            NSLocalizedString("alarmclock_description", comment: ""),
+            NSLocalizedString("bridge_description", comment: ""),
+            NSLocalizedString("spikes_description", comment: ""),
+            NSLocalizedString("star_description", comment: ""),
+            NSLocalizedString("snail_description", comment: ""),
+            NSLocalizedString("arrow_description", comment: ""),
+            NSLocalizedString("tulip_description", comment: ""),
+            NSLocalizedString("cabbage_description", comment: ""),
+            NSLocalizedString("lock_description", comment: ""),
+            NSLocalizedString("key_description", comment: ""),
+            NSLocalizedString("magnet_description", comment: ""),
+            NSLocalizedString("button_description", comment: "")
         ]
         
         return rawValue <= descriptions.count ? descriptions[rawValue - 1] : "No description"

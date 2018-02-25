@@ -8,6 +8,7 @@ class GameViewController: UIViewController {
     @IBOutlet weak var viewTopMenu: UIView!
     @IBOutlet weak var moveRemainCircleBg: UIImageView!
     @IBOutlet weak var startRightEdgeOutlet: NSLayoutConstraint!
+    @IBOutlet var viewTopMenuBorder: [UIImageView]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +31,14 @@ class GameViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
             view.presentScene(Model.sharedInstance.gameScene)
         })
+        
+        // Если устройство Ipad, то заменяет border (ёлочку-шипы) на обычный цвет
+        if Model.sharedInstance.isDeviceIpad() {
+            for borderTop in viewTopMenuBorder {
+                borderTop.image = nil
+                borderTop.backgroundColor = UIColor.init(red: 146 / 255, green: 115 / 255, blue: 63 / 255, alpha: 1)
+            }
+        }
     }
 
     override var shouldAutorotate: Bool {

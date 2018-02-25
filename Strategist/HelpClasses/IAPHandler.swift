@@ -10,9 +10,9 @@ enum IAPHandlerAlertType {
     func message() -> String{
         switch self {
             case .error:
-                return "Something went wrong, try again"
+                return NSLocalizedString("Something went wrong, try again", comment: "")
             case .disabled:
-                return "Purchases are disabled in your device"
+                return NSLocalizedString("Purchases are disabled in your device", comment: "")
             case .purchased_35GEMS:
                 return "You've successfully bought 35 GEMS"
             case .purchased_85GEMS:

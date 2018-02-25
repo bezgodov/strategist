@@ -178,7 +178,7 @@ extension GameScene {
     
     func presentPreview() {
         if isPreviewing {
-            removeObjectInfoView(toAlpha: 1)
+            removeObjectInfoView()
             
             previewTimer.invalidate()
             cleanLevel()
@@ -199,7 +199,7 @@ extension GameScene {
                 object.path(hide: true)
             }
             
-            presentObjectInfoView(spriteName: "PlayerStaysFront", description: "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner")
+            presentObjectInfoView(spriteName: "PlayerStaysFront", description: NSLocalizedString("Preview mode", comment: ""))
             
             Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
             Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
@@ -209,15 +209,17 @@ extension GameScene {
     
     func buyPreviewOnGameBoard() {
         if Model.sharedInstance.getCountGems() >= PREVIEW_MODE_PRICE {
-            let alert = UIAlertController(title: "Buying preview mode", message: "Buying preview mode for all time is worth \(PREVIEW_MODE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+            let message = "\(NSLocalizedString("Buying preview mode for all time is worth", comment: "")) \(PREVIEW_MODE_PRICE) \(NSLocalizedString("GEMS", comment: "")) (\(NSLocalizedString("you have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: "")))"
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+            let alert = UIAlertController(title: NSLocalizedString("Buying preview mode", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Cancel_buy_preview_mode", withParameters: eventParams)
             })
             
-            let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: { (_) in
+            let actionOk = UIAlertAction(title: NSLocalizedString("Buy", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                 Model.sharedInstance.setValuePreviewMode(true)
                 
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
@@ -228,8 +230,6 @@ extension GameScene {
                 Flurry.logEvent("Buy_preview_mode", withParameters: eventParams)
                 
                 self.presentPreview()
-                
-                
             })
             
             alert.addAction(actionOk)
@@ -238,15 +238,17 @@ extension GameScene {
             Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
         }
         else {
-            let alert = UIAlertController(title: "Not enough GEMS", message: "Sorry, but is't quite expensive to use 'Preview mode' very often, help us with extra gems, but you do not have enough GEMS to buy preview mode for all time. You need \(PREVIEW_MODE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+            let message = "\(NSLocalizedString("Expensive Preview mode", comment: "")). \(NSLocalizedString("You need", comment: "")) \(PREVIEW_MODE_PRICE) \(NSLocalizedString("GEMS", comment: "")), \(NSLocalizedString("but you only have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: ""))"
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (in) in
+            let alert = UIAlertController(title: NSLocalizedString("Not enough GEMS", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (in) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Cancel_buy_preview_mode_not_enough_gems", withParameters: eventParams)
             })
             
-            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: { (_) in
+            let actionOk = UIAlertAction(title: NSLocalizedString("Buy GEMS", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Buy_gems_preview_mode_not_enough_gems", withParameters: eventParams)

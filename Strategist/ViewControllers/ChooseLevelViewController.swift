@@ -50,10 +50,9 @@ class ChooseLevelViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         menuSettings()
-//        UserDefaults.standard.removeObject(forKey: "isPaidPreviewMode")
-//        Model.sharedInstance.setCountGems(amountGems: 50)
+        
         characterInitial()
         
         // Если самое начало игры, то делаем анимацию перехода на 1-ый уровень
@@ -318,15 +317,19 @@ class ChooseLevelViewController: UIViewController {
         
         // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
         if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
-            modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+            modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bgClick(_:))))
         }
+        else {
+            modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(shakeModalWindow(_:))))
+        }
+        
         modalWindowBg.isUserInteractionEnabled = true
         
         scrollView.addSubview(modalWindowBg)
         scrollView.isScrollEnabled = false
         
         // Добавляем модальное окно
-        modalWindow = UIView(frame: CGRect(x: scrollView.bounds.minX - 200, y: scrollView.bounds.midY - 200 / 2, width: 200, height: 200))
+        modalWindow = UIView(frame: CGRect(x: scrollView.bounds.minX - 220, y: scrollView.bounds.midY - 200 / 2, width: 220, height: 200))
         modalWindow.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
         
         modalWindow.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
@@ -348,15 +351,21 @@ class ChooseLevelViewController: UIViewController {
         // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
         if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
             modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+            
+            // Добавляем иконку закрытия модального окна
+            let modalWindowClose = UIImageView(image: UIImage(named: "Modal_window_close"))
+            modalWindowClose.frame.size = CGSize(width: modalWindowClose.frame.size.width * 0.1, height: modalWindowClose.frame.size.height * 0.1)
+            modalWindowClose.frame.origin = CGPoint(x: modalWindow.frame.width + 3, y: 0 - modalWindowClose.frame.size.height)
+            modalWindow.addSubview(modalWindowClose)
         }
         
         /// Название выбранного уровня
         let levelNumberLabel = UILabel(frame: CGRect(x: 20, y: 25, width: modalWindow.frame.size.width - 40, height: 35))
-        levelNumberLabel.text = "Level \(Model.sharedInstance.currentLevel)"
+        levelNumberLabel.text = "\(NSLocalizedString("Level", comment: "")) \(Model.sharedInstance.currentLevel)"
         
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
             let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
-            levelNumberLabel.text = "BOSS #\(bossNumberTitle)"
+            levelNumberLabel.text = "\(NSLocalizedString("BOSS", comment: "")) #\(bossNumberTitle)"
         }
         
         levelNumberLabel.textAlignment = NSTextAlignment.left
@@ -370,21 +379,23 @@ class ChooseLevelViewController: UIViewController {
         btnStart.backgroundColor = UIColor.init(red: 217 / 255, green: 29 / 255, blue: 29 / 255, alpha: 1)
         btnStart.titleLabel?.font = UIFont(name: "AvenirNext-Medium", size: 19)
         btnStart.addTarget(self, action: #selector(startLevel), for: .touchUpInside)
-        btnStart.setTitle("START", for: UIControlState.normal)
+        btnStart.setTitle(NSLocalizedString("START", comment: ""), for: UIControlState.normal)
         modalWindow.addSubview(btnStart)
         
         if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-            let countOfGemsImage = UIImageView(image: UIImage(named: "Heart"))
-            countOfGemsImage.frame.size = CGSize(width: countOfGemsImage.frame.size.width * 0.75, height: countOfGemsImage.frame.size.height * 0.75)
-            countOfGemsImage.frame.origin = CGPoint(x: modalWindow.frame.size.width - 35 - 20, y: 22)
-            modalWindow.addSubview(countOfGemsImage)
-        
-            let countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 75 / 2, y: countOfGemsImage.frame.height / 2 - 50 / 2, width: 75, height: 50))
-            countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 18)
-            countGemsModalWindowLabel.text = String(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel))
-            countGemsModalWindowLabel.textAlignment = NSTextAlignment.center
-            countGemsModalWindowLabel.textColor = UIColor.white
-            countOfGemsImage.addSubview(countGemsModalWindowLabel)
+            if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
+                let countOfGemsImage = UIImageView(image: UIImage(named: "Heart"))
+                countOfGemsImage.frame.size = CGSize(width: countOfGemsImage.frame.size.width * 0.75, height: countOfGemsImage.frame.size.height * 0.75)
+                countOfGemsImage.frame.origin = CGPoint(x: modalWindow.frame.size.width - 35 - 20, y: 22)
+                modalWindow.addSubview(countOfGemsImage)
+            
+                let countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 75 / 2, y: countOfGemsImage.frame.height / 2 - 50 / 2, width: 75, height: 50))
+                countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 18)
+                countGemsModalWindowLabel.text = String(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel))
+                countGemsModalWindowLabel.textAlignment = NSTextAlignment.center
+                countGemsModalWindowLabel.textColor = UIColor.white
+                countOfGemsImage.addSubview(countGemsModalWindowLabel)
+            }
         }
         else {
             let completedLevelLabel = UIImageView(image: UIImage(named: "Checked"))
@@ -402,16 +413,16 @@ class ChooseLevelViewController: UIViewController {
         modalWindow.addSubview(secondButton)
         
         // Если количество жизенй на уровне меньше 0, то добавляем кнопку получения новой жизни
-        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
+        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 && Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
             btnStart.backgroundColor = UIColor.init(red: 187 / 255, green: 36 / 255, blue: 36 / 255, alpha: 0.9)
             btnStart.removeTarget(self, action: nil, for: .allEvents)
             btnStart.addTarget(self, action: #selector(shakeBtnStart), for: .touchUpInside)
             
-            secondButton.setTitle("EXTRA LIFE", for: UIControlState.normal)
+            secondButton.setTitle(NSLocalizedString("EXTRA LIFE", comment: ""), for: UIControlState.normal)
             secondButton.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
         }
         else {
-            secondButton.setTitle("SETTINGS", for: UIControlState.normal)
+            secondButton.setTitle(NSLocalizedString("SETTINGS", comment: ""), for: UIControlState.normal)
             secondButton.addTarget(self, action: #selector(goToMenuFromModalWindow), for: .touchUpInside)
         }
     }
@@ -449,6 +460,14 @@ class ChooseLevelViewController: UIViewController {
         shakeView(self.view)
         
         SKTAudio.sharedInstance().playSoundEffect(filename: "Disable.wav")
+    }
+    
+    @objc func shakeModalWindow(_ sender: UITapGestureRecognizer) {
+        if modalWindow != nil {
+            if modalWindow.superview != nil {
+                shakeView(modalWindow)
+            }
+        }
     }
     
     @objc func goToMenuFromModalWindow(sender: UIButton) {
@@ -490,16 +509,17 @@ class ChooseLevelViewController: UIViewController {
         
         // Если больше 10 драг. камней, то добавляем новую жизнь
         if Model.sharedInstance.getCountGems() >= EXTRA_LIFE_PRICE {
+            let message = "\(NSLocalizedString("An extra life is worth", comment: "")) \(EXTRA_LIFE_PRICE) \(NSLocalizedString("GEMS", comment: "")) (\(NSLocalizedString("you have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: "")))"
             
-            let alert = UIAlertController(title: "Buying an extra life", message: "An extra life is worth \(EXTRA_LIFE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: NSLocalizedString("Buying an extra life", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+            let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Cancel_buy_extra_life_levels", withParameters: eventParams)
             })
             
-            let actionOk = UIAlertAction(title: "Buy one life", style: UIAlertActionStyle.default, handler: { (_) in
+            let actionOk = UIAlertAction(title: NSLocalizedString("Buy one life", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 self.buyExtraLife()
@@ -513,15 +533,17 @@ class ChooseLevelViewController: UIViewController {
             self.present(alert, animated: true, completion: nil)
         }
         else {
-            let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy an extra life. You need \(EXTRA_LIFE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+            let message = "\(NSLocalizedString("You do not have enough GEMS to buy an extra life", comment: "")). \(NSLocalizedString("You need", comment: "")) \(EXTRA_LIFE_PRICE) \(NSLocalizedString("GEMS", comment: "")), \(NSLocalizedString("but you only have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: ""))"
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+            let alert = UIAlertController(title: NSLocalizedString("Not enough GEMS", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
+            
+            let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Cancel_buy_extra_life_levels_not_enough_gems", withParameters: eventParams)
             })
             
-            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: { (_) in
+            let actionOk = UIAlertAction(title: NSLocalizedString("Buy GEMS", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Buy_gems_extra_life_levels_not_enough_gems", withParameters: eventParams)
@@ -548,7 +570,7 @@ class ChooseLevelViewController: UIViewController {
     }
     
     func goToLevel() {
-        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
+        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 || Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
             if Model.sharedInstance.gameScene != nil {
                 Model.sharedInstance.gameScene.cleanLevel()
             }
@@ -701,7 +723,9 @@ class ChooseLevelViewController: UIViewController {
                     button.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
                     
                     if (row > 0) && ((row / distanceBetweenLevels + 1) % Model.sharedInstance.distanceBetweenSections == 0) {
-                        button.setTitle("BOSS", for: UIControlState.normal)
+                        let sizeBoss: CGFloat = (!Model.sharedInstance.isDeviceIpad() ? 21 : (21 * 2.5))
+                        button.titleLabel?.font = UIFont(name: "Avenir Next", size: sizeBoss)
+                        button.setTitle(NSLocalizedString("BOSS", comment: ""), for: UIControlState.normal)
                     }
                     
                     var koefForLastLevel = 0
@@ -742,10 +766,10 @@ class ChooseLevelViewController: UIViewController {
                                 characterPointStart = levelButtonsPositions.last!
                             }
                             
-                            let textAboutLevels = "at least \(needCompleteLevelsPreviousSection - completedLevels) more levels"
-                            let textAboutFinalLevel = "section's final level"
-                            let ifBothTrue = (completedLevels < needCompleteLevelsPreviousSection && !Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels)) ? " and " : ""
-                            let disabledSectionText = "Complete \(completedLevels < needCompleteLevelsPreviousSection ? textAboutLevels : "")\(ifBothTrue)\(!Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels) ? textAboutFinalLevel : "") to unlock next section"
+                            let textAboutLevels = "\(NSLocalizedString("at least", comment: "")) \(needCompleteLevelsPreviousSection - completedLevels) \(NSLocalizedString("more levels", comment: ""))"
+                            let textAboutFinalLevel = NSLocalizedString("section's final level", comment: "")
+                            let ifBothTrue = (completedLevels < needCompleteLevelsPreviousSection && !Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels)) ? " \(NSLocalizedString("and", comment: "")) " : ""
+                            let disabledSectionText = "\(NSLocalizedString("Complete", comment: "")) \(completedLevels < needCompleteLevelsPreviousSection ? textAboutLevels : "")\(ifBothTrue)\(!Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels) ? textAboutFinalLevel : "")\(NSLocalizedString("to unlock next section", comment: ""))"
                             
                             presentInfoBlock(point: Point(column: 1, row: row - 2), message: disabledSectionText)
                         }
@@ -753,13 +777,13 @@ class ChooseLevelViewController: UIViewController {
                     
                     // Если последний уровень пройден, то выводим надпись о том, что новые уровни разрабатываются
                     if ((row / distanceBetweenLevels + 1) == Model.sharedInstance.getCountCompletedLevels()) && (Model.sharedInstance.getCountCompletedLevels() == Model.sharedInstance.countLevels) {
-                        presentInfoBlock(point: Point(column: 1, row: row + 1), message: "New levels are coming. We are already designing new levels. Wait for updates")
+                        presentInfoBlock(point: Point(column: 1, row: row + 1), message: NSLocalizedString("New levels are coming. We are already designing new levels. Wait for updates", comment: ""))
                     }
                     
                     if (row / distanceBetweenLevels) <= Model.sharedInstance.getCountCompletedLevels() + 1 && !isLevelsAfterSectionDisabled {
                         if Model.sharedInstance.emptySavedLevelsLives() == false {
                             // Если на уровне не осталось жизней, то добавляем соответствующую метку
-                            if Model.sharedInstance.getLevelLives(row / distanceBetweenLevels + 1) <= 0 {
+                            if Model.sharedInstance.getLevelLives(row / distanceBetweenLevels + 1) <= 0 && (row / distanceBetweenLevels + 1) % Model.sharedInstance.distanceBetweenSections != 0 {
                                 addLevelImageState(spriteName: "Heart_empty-unfilled", buttonToPin: button, sizeKoef: CGSize(width: 0.275, height: 0.25))
                             }
                         }
@@ -918,7 +942,7 @@ class ChooseLevelViewController: UIViewController {
             scaleFactorForIpad = 2
         }
         
-        infoBlockLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 18 * scaleFactorForIpad)
+        infoBlockLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 17 * scaleFactorForIpad)
         infoBlockLabel.textColor = UIColor.white
         infoBlockBgView.addSubview(infoBlockLabel)
     }

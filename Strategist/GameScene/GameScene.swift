@@ -237,7 +237,7 @@ class GameScene: SKScene {
     }
     
     func createLevel() {
-        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0 {
+        if (Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) > 0) || (Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0) {
             
             goToLevel(Model.sharedInstance.currentLevel)
             
@@ -457,7 +457,7 @@ class GameScene: SKScene {
         
             self.addChild(gameLayer)
         
-            // Добавляем ячейке игрового поля
+            // Добавляем ячейки игрового поля
             addTiles(toNode: tilesLayer)
             
             drawHearts()
@@ -517,7 +517,7 @@ class GameScene: SKScene {
                     
                     // Если уровень больше, чем 26, то показываем рюкзак (так как до 26 нет объектов, которые можно положить в рюкзак)
                     if Model.sharedInstance.currentLevel > 26 && checkForCollectibleObjects() {
-                        presentObjectInfoView(spriteName: "Bag", description: "")
+                        presentObjectInfoView(spriteName: "Bag", description: "", infoViewHeight: 65)
                     }
                     
                     lastPathStepSprite.alpha = 0
@@ -691,49 +691,53 @@ class GameScene: SKScene {
         completedLabel.textAlignment = NSTextAlignment.center
         completedLabel.layer.masksToBounds = true
         completedLabel.layer.cornerRadius = 15
-        Model.sharedInstance.gameViewControllerConnect.viewTopMenu.addSubview(completedLabel)
         
         if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-            let livesOnLevel = Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)
-            let allLivesPerLevel = 5
-            
-            var heartTexture = SKTexture(imageNamed: "Heart")
-            let heartSize = CGSize(width: heartTexture.size().width / 2.1, height: heartTexture.size().height / 2.1)
-            
-            if livesOnLevel > 0 {
-                let eachHeartXpos = (CGFloat(heartSize.width + 1) * CGFloat(allLivesPerLevel)) / 2
-                let xKoefForHeartStack = eachHeartXpos + CGFloat((allLivesPerLevel - 1) / 2) - 2
-                heartsStackView = UIStackView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.bounds.midX)! - xKoefForHeartStack, y: 13 + 35 / 2 - heartSize.height / 2, width: heartSize.width * CGFloat(livesOnLevel), height: heartSize.height))
+            // Если обычный урвоень (не босс), то выводим сердечки (жизни)
+            if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
+                Model.sharedInstance.gameViewControllerConnect.viewTopMenu.addSubview(completedLabel)
                 
-                for index in 0...allLivesPerLevel - 1 {
-                    heartTexture = allLivesPerLevel - 1 - index < livesOnLevel ? SKTexture(imageNamed: "Heart") : SKTexture(imageNamed: "Heart_empty")
-                    let heartImageView = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 1) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
-                    heartImageView.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
-                    heartImageView.isUserInteractionEnabled = false
-    //                button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-                    heartImageView.tag = index + 1
+                let livesOnLevel = Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)
+                let allLivesPerLevel = 5
+                
+                var heartTexture = SKTexture(imageNamed: "Heart")
+                let heartSize = CGSize(width: heartTexture.size().width / 2.1, height: heartTexture.size().height / 2.1)
+                
+                if livesOnLevel > 0 {
+                    let eachHeartXpos = (CGFloat(heartSize.width + 1) * CGFloat(allLivesPerLevel)) / 2
+                    let xKoefForHeartStack = eachHeartXpos + CGFloat((allLivesPerLevel - 1) / 2) - 2
+                    heartsStackView = UIStackView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.bounds.midX)! - xKoefForHeartStack, y: 13 + 35 / 2 - heartSize.height / 2, width: heartSize.width * CGFloat(livesOnLevel), height: heartSize.height))
                     
-                    if allLivesPerLevel - livesOnLevel == index {
-                        lastHeartButton = heartImageView
+                    for index in 0...allLivesPerLevel - 1 {
+                        heartTexture = allLivesPerLevel - 1 - index < livesOnLevel ? SKTexture(imageNamed: "Heart") : SKTexture(imageNamed: "Heart_empty")
+                        let heartImageView = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 1) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
+                        heartImageView.setBackgroundImage(UIImage(cgImage: heartTexture.cgImage()), for: UIControlState.normal)
+                        heartImageView.isUserInteractionEnabled = false
+                        heartImageView.tag = index + 1
                         
-                        // Добавляем пустое сердце под последнее непустое сердце (если проигрывает, то скрываем непустое и убедт анимация)
-                        let losesButton = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 1) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
-                        losesButton.setBackgroundImage(UIImage(named: "Heart_empty"), for: UIControlState.normal)
-                        heartsStackView.addSubview(losesButton)
+                        if allLivesPerLevel - livesOnLevel == index {
+                            lastHeartButton = heartImageView
+                            
+                            // Добавляем пустое сердце под последнее непустое сердце (если проигрывает, то скрываем непустое и убедт анимация)
+                            let losesButton = UIButton(frame: CGRect(x: CGFloat((heartSize.width + 1) * CGFloat(index)), y: 0, width: heartSize.width, height: heartSize.height))
+                            losesButton.setBackgroundImage(UIImage(named: "Heart_empty"), for: UIControlState.normal)
+                            heartsStackView.addSubview(losesButton)
+                        }
+                        
+                        heartsStackView.addSubview(heartImageView)
                     }
-                    
-                    heartsStackView.addSubview(heartImageView)
+                    Model.sharedInstance.gameViewControllerConnect.viewTopMenu.addSubview(heartsStackView)
                 }
-                Model.sharedInstance.gameViewControllerConnect.viewTopMenu.addSubview(heartsStackView)
+                
+                completedLabel.frame.size.width = heartSize.width * CGFloat(allLivesPerLevel) + 20
+                completedLabel.frame.origin.x = self.view!.frame.midX - completedLabel.frame.width / 2
             }
-            
-            completedLabel.frame.size.width = heartSize.width * CGFloat(allLivesPerLevel) + 20
-            completedLabel.frame.origin.x = self.view!.frame.midX - completedLabel.frame.width / 2
         }
         else {
-            // (35 * 4) = 140, (7 * 6) = 42
             completedLabel.font = UIFont(name: "AvenirNext-Medium", size: 18)
-            completedLabel.text = "Completed"
+            completedLabel.text = NSLocalizedString("Completed", comment: "")
+            
+            Model.sharedInstance.gameViewControllerConnect.viewTopMenu.addSubview(completedLabel)
         }
     }
     
@@ -748,7 +752,7 @@ class GameScene: SKScene {
                     
                     if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
                         if bossLevel != nil {
-                            let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel), "countStars": bossLevel!.countStars] as [String : Any]
+                            let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countAttemps": abs(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 5), "countStars": bossLevel!.countStars] as [String : Any]
                             
                             Flurry.logEvent("Lose_boss_level", withParameters: eventParams)
                         }
@@ -761,7 +765,8 @@ class GameScene: SKScene {
                 }
             }
             
-            if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 {
+            // Если обычный уровень (не босс) и жизней = 0, то окно nolives (если босс, то всегда выводить lose)
+            if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 && Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
                 modalWindowPresent(type: modalWindowType.nolives)
             }
             else {
@@ -784,14 +789,17 @@ class GameScene: SKScene {
                 Model.sharedInstance.setCountLoseLevel()
             }
             
-            if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-                let btnFadeOutAnim = CABasicAnimation(keyPath: "opacity")
-                btnFadeOutAnim.toValue = 0
-                btnFadeOutAnim.duration = 0.35
-                btnFadeOutAnim.fillMode = kCAFillModeForwards
-                btnFadeOutAnim.isRemovedOnCompletion = false
-                
-                lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
+            // Если обычный уровень (не босс), то скрываем одно сердечко
+            if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
+                if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                    let btnFadeOutAnim = CABasicAnimation(keyPath: "opacity")
+                    btnFadeOutAnim.toValue = 0
+                    btnFadeOutAnim.duration = 0.35
+                    btnFadeOutAnim.fillMode = kCAFillModeForwards
+                    btnFadeOutAnim.isRemovedOnCompletion = false
+                    
+                    lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
+                }
             }
             
             SKTAudio.sharedInstance().playSoundEffect(filename: "Lose.mp3")
@@ -824,7 +832,7 @@ class GameScene: SKScene {
         
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
             if bossLevel != nil {
-                let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel), "countStars": bossLevel!.countStars] as [String : Any]
+                let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countAttemps": abs(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 5), "countStars": bossLevel!.countStars] as [String : Any]
                 
                 Flurry.logEvent("Win_boss_level", withParameters: eventParams)
             }
@@ -837,9 +845,9 @@ class GameScene: SKScene {
         
         // Если уровень не был пройден, то обновляем кол-во драг. камней
         if Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) == false {
-            Model.sharedInstance.setCountGems(amountGems: self.gemsForLevel)
+            Model.sharedInstance.setCountGems(amountGems: gemsForLevel)
             
-            for index in 1...self.gemsForLevel {
+            for index in 1...gemsForLevel {
                 let gem = UIImageView(image: UIImage(named: "Gem_blue"))
                 
                 gem.frame.origin = CGPoint(x: self.view!.frame.width + 200, y: self.view!.frame.height + 200)
@@ -848,7 +856,7 @@ class GameScene: SKScene {
                 
                 DispatchQueue.main.async {
                     UIView.animate(withDuration: TimeInterval(0.5 + CGFloat(index) * 0.425), animations: {
-                        gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 100 - 55, y: self.view!.frame.height / 2 - 78)
+                        gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 110 - 55, y: self.view!.frame.height / 2 - 78)
                         gem.frame.size = CGSize(width: gem.frame.width / 5 * 0.75, height: gem.frame.height / 5 * 0.75)
                     }, completion: { (_) in
                         
@@ -881,7 +889,6 @@ class GameScene: SKScene {
         finish = Point(column: 0, row: 0)
         characterStart = Point(column: 0, row: 0)
         boardSize = Point(column: 0, row: 0)
-//        character = Character()
         checkChoosingPath = Point(column: 0, row: 0)
         checkChoosingPathArray.removeAll()
         addedLastPointByMove = false
@@ -941,14 +948,6 @@ class GameScene: SKScene {
         cleanLevel()
         createLevel()
     }
-    
-    /*
-    func objectAT(column: Int, row: Int) -> Object? {
-        assert(column >= 0 && column < boardSize.column)
-        assert(row >= 0 && row < boardSize.row)
-        return objects[column, row]
-    }
-     */
     
     /// Функция добавляет игровые ячейки (создание игрового поля)
     func addTiles(toNode: SKNode) {
@@ -1088,16 +1087,17 @@ class GameScene: SKScene {
         }
         else {
             if Model.sharedInstance.getCountGems() >= WINNING_PATH_PRICE {
-                let alert = UIAlertController(title: "Buying winning path", message: "Buying winning path is worth \(WINNING_PATH_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+                let message = "\(NSLocalizedString("Buying winning path is worth", comment: "")) \(WINNING_PATH_PRICE) \(NSLocalizedString("GEMS", comment: "")) (\(NSLocalizedString("you have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: "")))"
+                let alert = UIAlertController(title: NSLocalizedString("Buying winning path", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
                 
-                let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                     let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                     
                     Flurry.logEvent("Cancel_buy_winning_path", withParameters: eventParams)
                 })
                 
-                let actionOk = UIAlertAction(title: "Buy", style: UIAlertActionStyle.default, handler: { (_) in
-                    let eventParams = ["level": Model.sharedInstance.currentLevel]
+                let actionOk = UIAlertAction(title: NSLocalizedString("Buy", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
+                    let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                     
                     Flurry.logEvent("Buy_winning_path", withParameters: eventParams)
                     
@@ -1110,15 +1110,17 @@ class GameScene: SKScene {
                 Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
             }
             else {
-                let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy winning path. You need \(WINNING_PATH_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+                let message = "\(NSLocalizedString("You do not have enough GEMS to buy winning path", comment: "")). \(NSLocalizedString("You need", comment: "")) \(WINNING_PATH_PRICE) \(NSLocalizedString("GEMS", comment: "")), \(NSLocalizedString("but you only have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: ""))"
                 
-                let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+                let alert = UIAlertController(title: NSLocalizedString("Not enough GEMS", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
+                
+                let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                     let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                     
                     Flurry.logEvent("Cancel_buy_winning_path_not_enough_gems", withParameters: eventParams)
                 })
                 
-                let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: { (_) in
+                let actionOk = UIAlertAction(title: NSLocalizedString("Buy GEMS", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                     Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: true)
                     
                     let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]

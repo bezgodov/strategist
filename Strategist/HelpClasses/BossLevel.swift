@@ -361,8 +361,13 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     }
     
     func cleanTimers() {
-        timerEnemy.invalidate()
-        timerStar.invalidate()
+        if timerEnemy != nil {
+            timerEnemy.invalidate()
+        }
+        
+        if timerStar != nil {
+            timerStar.invalidate()
+        }
         gameScene.bossEnemies.speed = 0
         
         if Model.sharedInstance.isActivatedBgMusic() {

@@ -1,0 +1,133 @@
+"Something went wrong, try again" = "Something went wrong, try again";
+"Purchases are disabled in your device" = "Purchases are disabled in your device";
+"Completed" = "Completed";
+"Buying winning path" = "Buying winning path";
+"Buying winning path is worth" = "Buying winning path is worth";
+"GEMS" = "GEMS";
+"you have" = "you have";
+"Cancel" = "Cancel";
+"Buy" = "Buy";
+"Not enough GEMS" = "Not enough GEMS";
+"Buy GEMS" = "Buy GEMS";
+"You do not have enough GEMS to buy winning path" = "You do not have enough GEMS to buy winning path";
+"You need" = "You need";
+"but you only have" = "but you only have";
+"Level" = "Level";
+"BOSS" = "BOSS";
+
+"Awesome" = "Awesome";
+"Well done" = "Well done";
+"Nice" = "Nice";
+"Great job" = "Great job";
+"Cool" = "Cool";
+"Good job" = "Good job";
+"Perfect" = "Perfect";
+"Amazing" = "Amazing";
+
+"START" = "START";
+"SETTINGS" = "SETTINGS";
+"LEVELS" = "LEVELS";
+"CONTINUE" = "CONTINUE";
+"RESTART" = "RESTART";
+"EXTRA LIFE" = "EXTRA LIFE";
+
+"Buying an extra life" = "Buying an extra life";
+"An extra life is worth" = "An extra life is worth";
+"Buy one life" = "Buy one life";
+"You do not have enough GEMS to buy an extra life" = "You do not have enough GEMS to buy an extra life";
+"You lose" = "You lose";
+"No lives" = "No lives";
+"Preview mode" = "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner";
+"Expensive Preview mode" = "Sorry, but is't quite expensive to use 'Preview mode' very often, help us with extra gems, but you do not have enough GEMS to buy preview mode for all time";
+"Buying preview mode" = "Buying preview mode";
+"Buying preview mode for all time is worth" = "Buying preview mode for all time is worth";
+
+"Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]" = "Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]";
+"Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!" = "Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!";
+"Firstly tap at the middle cell to choose alien's path..." = "Firstly tap at the middle cell to choose alien's path...";
+"Now choose next cell at column#3 and row#2 (right from the middle cell)..." = "Now choose next cell at column#3 and row#2 (right from the middle cell)...";
+"Then choose cell where GEM is..." = "Then choose cell where GEM is...";
+"And finally tap at start button" = "And finally tap at start button";
+"Oooppps.. Be careful, everything in this planet wants to kill us. Tap restart to try again..." = "Oooppps.. Be careful, everything in this planet wants to kill us. Tap restart to try again...";
+"But we already know how each of them behaves itself. Tap at bee..." = "But we have already known how each of them behaves itself. Tap at bee...";
+"That red line shows how bee moves. When a bee reaches last cell bee goes back and again..." = "That red line shows how bee moves. When a bee reaches last cell bee goes back and repeat again...";
+"Now let's find right way to get GEM. Tap at column#1 and row#1 (left-bottom cell)..." = "Now let's find right way to get GEM. Tap at column#1 and row#1 (left-bottom cell)...";
+"Next cell must be column#2 and row#1..." = "Next cell must be column#2 and row#1...";
+"Next cell must be column#3 and row#1..." = "Next cell must be column#3 and row#1...";
+"Next cell must be column#3 and row#2..." = "Next cell must be column#3 and row#2...";
+"And finally last cell must be column#3 and row#3..." = "And finally last cell must be column#3 and row#3...";
+"And as you guessed tap at start button" = "And as you guessed tap at start button";
+
+"For previous level you got 3 GEMS. You can look how many gems you have in menu or settings..."  = "For previous level you got 3 GEMS. You can look how many gems you have in menu or settings...";
+"You can buy extra lives for GEMS or winning paths..." = "You can buy extra lives for GEMS or winning paths...";
+"You can tap at any object to find out how it behaves itself or how it moves..." = "You can tap at any object to find out how it behaves itself or how it moves...";
+"Tap at the nearest star to find out what it is like..." = "Tap at the nearest star to find out what it is like...";
+
+"If you still did not choose path you can activate preview mode..." = "If you still did not choose path you can activate preview mode...";
+"Tap at 'Start' button to activate preview mode" = "Tap at 'Start' button to activate preview mode";
+
+"You can tap at last your choosen path's point and delete it" = "You can tap at last your choosen path's point and delete it";
+
+"Except tapping at screen you can slide along the game board" = "Except tapping at screen you can slide along the game board";
+
+"If label with maximum count of moves has red color you should use all moves" = "If label with maximum count of moves has red color you should use all moves";
+
+"If you've already chosen path you can still look at enemy's info. Just tap long at it" = "If you've already chosen path you can still look at enemy's info. Just tap long at it";
+
+"To get some info about dynamic enemy just tap long at it" = "To get some info about dynamic enemy just tap long at it";
+
+"Now your managing is going to be different..." = "Now your managing is going to be different...";
+"Use 'swipes' to control a space alien, just slide finger along your screen..." = "Use 'swipes' to control a space alien, just slide finger along your screen...";
+"You can try passing this level as many times as you wish" = "You can try passing this level as many times as you wish";
+"Collect 10 stars to win level and be careful you should avoid your enemies" = "Collect 10 stars to win level and be careful you should avoid your enemies";
+
+"Sometimes levels can contain lots of enemies but resolution can be very easy..." = "Sometimes levels can contain lots of enemies but resolution can be very easy...";
+"Solve this level only for 7 moves" = "Solve this level only for 7 moves";
+
+"Press down all buttons to win the level and do not forget about stars..." = "Press down all buttons to win the level and do not forget about stars...";
+"Tap at button to switch all other button..." = "Tap at button to switch all other button...";
+"If an alien gets at button and that button was pressed down then nothing happens, but..." = "If an alien gets at button and that button was pressed down then nothing happens, but...";
+"If an alien gets at active button (button was not pressed down). Only that button is switched" = "If an alien gets at active button (button was not pressed down). Only that button is switched";
+
+"New levels are coming. We are already designing new levels. Wait for updates" = "New levels are coming. We are already designing new levels. Wait for updates";
+"Complete" = "Complete";
+"at least" = "at least";
+"section's final level" = "section's final level";
+"and" = "and";
+"to unlock next section" = " to unlock next section";
+
+"PURCHASED" = "PURCHASED";
+"FAIL" = "FAIL";
+"WATCH AD" = "WATCH AD";
+"CAUTION" = "CAUTION";
+"Ok" = "Ok";
+"OK" = "OK";
+"If you turn off tips you won't be able to look at new enemies' descriptions" = "If you turn off tips you won't be able to look at new enemies' descriptions";
+"Not enough gems to buy preview mode menu" = "You do not have enough GEMS to buy preview mode for all time";
+
+"Promotional code" = "Promotional code";
+"was already used" = "was already used";
+"Wrong promotional code" = "Wrong promotional code";
+"is incorrect. If everything is right then try again or type another promo code" = "is incorrect. If everything is right then try again or type another promo code";
+"Promo code" = "Promo code";
+"CHECK" = "CHECK";
+
+
+"spaceAlien_description" = "Just a cute space alien";
+"gem_description" = "You should pick up a gem to win. Space aliens need much gems";
+"bee_description" = "Bee moves one cell by one game's move. If your and bee's positions are same you lose";
+"spinner_description" = "Spinner never changes its position. If you get at spinner's position you lose";
+"bomb_description" = "Bomb will destroy you if you are around its in N moves. You can't get at bomb's position";
+"stopper_description" = "Stop sing stops you for one move";
+"alarmclock_description" = "Alarm Clock stops all objects for one move except a space alien";
+"bridge_description" = "Bridge is rotated each move. You can tap bridge to change its direction";
+"spikes_description" = "Spikes appear one move and disappear next one. If you get at them you lose";
+"star_description" = "Star doesn't destroy you and never moves. You should collect all stars to win";
+"snail_description" = "Snail moves one move per two game's moves. Alarmclock can cause double freeze";
+"arrow_description" = "When an alien comes in his direction should match arrow's direction";
+"tulip_description" = "If bee gets at tulip bee stops for one move and then tulip will disappear";
+"cabbage_description" = "If snail gets at cabbage then snail moves without stopping for two moves and then cabbage will disappear";
+"lock_description" = "To open the lock pick up a key with same color. If you do not have a key you lose";
+"key_description" = "Key opens the door with same color";
+"magnet_description" = "Pick up a magnet to collect stars within one point radius around an alien. Magnet will be activated in 1 move";
+"button_description" = "Tap at button to switch all other buttons. If an alien gets at button only that button is switched down";

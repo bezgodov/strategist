@@ -32,12 +32,21 @@ extension GameScene {
             modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bgClick(_:))))
             self.isPaused = true
         }
+        else {
+            modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(shakeModalWindow(_:))))
+        }
         
         // Добавляем модальное окно
-        modalWindow = UIView(frame: CGRect(x: self.view!.frame.maxX, y: self.view!.bounds.midY - 200 / 2, width: 200, height: 200))
+        modalWindow = UIView(frame: CGRect(x: self.view!.frame.maxX, y: self.view!.bounds.midY - 200 / 2, width: 220, height: 200))
         
         if type == modalWindowType.menu {
             modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bgClick(_:))))
+            
+            // Добавляем иконку закрытия модального окна
+            let modalWindowClose = UIImageView(image: UIImage(named: "Modal_window_close"))
+            modalWindowClose.frame.size = CGSize(width: modalWindowClose.frame.size.width * 0.1, height: modalWindowClose.frame.size.height * 0.1)
+            modalWindowClose.frame.origin = CGPoint(x: modalWindow.frame.width + 3, y: 0 - modalWindowClose.frame.size.height)
+            modalWindow.addSubview(modalWindowClose)
         }
         
         // Если обучение на 1-ом уровне, то модальное окно должно быть ниже бг для обучения
@@ -72,11 +81,12 @@ extension GameScene {
             modalWindow.addSubview(modalWindowTitleView)
             
             let modalWindowTitleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: modalWindowTitleView.frame.width, height: modalWindowTitleView.frame.height))
-            modalWindowTitleLabel.text = "Level \(Model.sharedInstance.currentLevel)"
+            
+            modalWindowTitleLabel.text = "\(NSLocalizedString("Level", comment: "")) \(Model.sharedInstance.currentLevel)"
             
             if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
                 let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
-                modalWindowTitleLabel.text = "BOSS #\(bossNumberTitle)"
+                modalWindowTitleLabel.text = "\(NSLocalizedString("BOSS", comment: "")) #\(bossNumberTitle)"
             }
             
             modalWindowTitleLabel.textAlignment = NSTextAlignment.center
@@ -86,7 +96,7 @@ extension GameScene {
         }
         
         /// Название выбранного уровня (для выйгрышного модального окна)
-        let endingSentence = ["Awesome", "Well done", "Nice", "Great job", "Cool", "Good job", "Perfect", "Amazing"]
+        let endingSentence = [NSLocalizedString("Awesome", comment: ""), NSLocalizedString("Well done", comment: ""), NSLocalizedString("Nice", comment: ""), NSLocalizedString("Great job", comment: ""), NSLocalizedString("Cool", comment: ""), NSLocalizedString("Good job", comment: ""), NSLocalizedString("Perfect", comment: ""), NSLocalizedString("Amazing", comment: "")]
         
         // Кнопка "настройки" в модальном окне
         let goToSettingsBtn = UIButton(frame: CGRect(x: modalWindow.bounds.midX - ((modalWindow.frame.width - 40) / 2), y: modalWindow.frame.size.height - 50 - 15, width: modalWindow.frame.width - 40, height: 50))
@@ -94,7 +104,7 @@ extension GameScene {
         goToSettingsBtn.backgroundColor = UIColor.init(red: 165 / 255, green: 240 / 255, blue: 16 / 255, alpha: 1)
         goToSettingsBtn.setTitleColor(UIColor.black, for: UIControlState.normal)
         goToSettingsBtn.titleLabel?.font = UIFont(name: "AvenirNext-Medium", size: 19)
-        goToSettingsBtn.setTitle("SETTINGS", for: UIControlState.normal)
+        goToSettingsBtn.setTitle(NSLocalizedString("SETTINGS", comment: ""), for: UIControlState.normal)
         modalWindow.addSubview(goToSettingsBtn)
         
         let sentenceLabel = UILabel(frame: CGRect(x: 20, y: 25, width: modalWindow.frame.size.width - 40, height: 35))
@@ -112,11 +122,11 @@ extension GameScene {
         // В зависимости от модального окна выставляем нужные кнопки и действия к ним
         if type == modalWindowType.win || type == modalWindowType.menu {
             if type == modalWindowType.menu {
-                startBtn.setTitle("LEVELS", for: UIControlState.normal)
+                startBtn.setTitle(NSLocalizedString("LEVELS", comment: ""), for: UIControlState.normal)
                 startBtn.addTarget(self, action: #selector(goToLevelsFromMenu), for: .touchUpInside)
             }
             else {
-                startBtn.setTitle("CONTINUE", for: UIControlState.normal)
+                startBtn.setTitle(NSLocalizedString("CONTINUE", comment: ""), for: UIControlState.normal)
                 startBtn.addTarget(self, action: #selector(nextLevel), for: .touchUpInside)
             }
             
@@ -126,29 +136,29 @@ extension GameScene {
                 sentenceLabel.text = endingSentence[Int(arc4random_uniform(UInt32(endingSentence.count)))]
             }
             else {
-                sentenceLabel.text = "Level \(Model.sharedInstance.currentLevel)"
+                sentenceLabel.text = "\(NSLocalizedString("Level", comment: "")) \(Model.sharedInstance.currentLevel)"
                 
                 if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
                     let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
-                    sentenceLabel.text = "BOSS #\(bossNumberTitle)"
+                    sentenceLabel.text = "\(NSLocalizedString("BOSS", comment: "")) #\(bossNumberTitle)"
                 }
             }
         }
         else {
-            goToSettingsBtn.setTitle("LEVELS", for: UIControlState.normal)
+            goToSettingsBtn.setTitle(NSLocalizedString("LEVELS", comment: ""), for: UIControlState.normal)
             goToSettingsBtn.addTarget(self, action: #selector(goToLevelsAfterLose), for: .touchUpInside)
             
             if type == modalWindowType.lose {
-                startBtn.setTitle("RESTART", for: UIControlState.normal)
+                startBtn.setTitle(NSLocalizedString("RESTART", comment: ""), for: UIControlState.normal)
                 startBtn.addTarget(self, action: #selector(restartLevelObjc), for: .touchUpInside)
                 
-                sentenceLabel.text = "You lose"
+                sentenceLabel.text = NSLocalizedString("You lose", comment: "")
             }
             else {
-                startBtn.setTitle("EXTRA LIFE", for: UIControlState.normal)
+                startBtn.setTitle(NSLocalizedString("EXTRA LIFE", comment: ""), for: UIControlState.normal)
                 startBtn.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
                 
-                sentenceLabel.text = "No lives"
+                sentenceLabel.text = NSLocalizedString("No lives", comment: "")
             }
         }
         
@@ -227,6 +237,14 @@ extension GameScene {
         }
     }
     
+    @objc func shakeModalWindow(_ sender: UITapGestureRecognizer) {
+        if modalWindow != nil {
+            if modalWindow.superview != nil {
+                shakeView(modalWindow)
+            }
+        }
+    }
+    
     func restartingLevel() {
         self.isPaused = false
         objectsLayer.speed = 1
@@ -263,15 +281,16 @@ extension GameScene {
         
         // Если больше 10 драг. камней
         if Model.sharedInstance.getCountGems() >= EXTRA_LIFE_PRICE {
-            let alert = UIAlertController(title: "Buying an extra life", message: "An extra life is worth \(EXTRA_LIFE_PRICE) GEMS (you have \(Model.sharedInstance.getCountGems()) GEMS)", preferredStyle: UIAlertControllerStyle.alert)
+            let message = "\(NSLocalizedString("An extra life is worth", comment: "")) \(EXTRA_LIFE_PRICE) \(NSLocalizedString("GEMS", comment: "")) (\(NSLocalizedString("you have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: "")))"
+            let alert = UIAlertController(title: NSLocalizedString("Buying an extra life", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+            let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Cancel_buy_extra_life_modal_window", withParameters: eventParams)
             })
             
-            let actionOk = UIAlertAction(title: "Buy one life", style: UIAlertActionStyle.default, handler: { (_) in
+            let actionOk = UIAlertAction(title: NSLocalizedString("Buy one life", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Model.sharedInstance.setCountGems(amountGems: -EXTRA_LIFE_PRICE)
@@ -289,14 +308,15 @@ extension GameScene {
             Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
         }
         else {
-            let alert = UIAlertController(title: "Not enough GEMS", message: "You do not have enough GEMS to buy an extra life. You need \(EXTRA_LIFE_PRICE) GEMS, but you have only \(Model.sharedInstance.getCountGems()) GEMS", preferredStyle: UIAlertControllerStyle.alert)
+            let message = "\(NSLocalizedString("You do not have enough GEMS to buy an extra life", comment: "")). \(NSLocalizedString("You need", comment: "")) \(EXTRA_LIFE_PRICE) \(NSLocalizedString("GEMS", comment: "")), \(NSLocalizedString("but you only have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: ""))"
+            let alert = UIAlertController(title: NSLocalizedString("Not enough GEMS", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
             
-            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (_) in
+            let actionCancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertActionStyle.cancel, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Cancel_buy_extra_life_modal_window_not_enough_gems", withParameters: eventParams)
             })
-            let actionOk = UIAlertAction(title: "Buy GEMS", style: UIAlertActionStyle.default, handler: { (_) in
+            let actionOk = UIAlertAction(title: NSLocalizedString("Buy GEMS", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
                 Flurry.logEvent("Buy_gems_extra_life_modal_window_not_enough_gems", withParameters: eventParams)

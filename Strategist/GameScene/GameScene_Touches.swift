@@ -6,7 +6,7 @@ extension GameScene {
     @objc func longPressed(sender: UILongPressGestureRecognizer)
     {
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-            if !gameBegan && Model.sharedInstance.getShowTips() && !isLevelWithTutorial && !isPreviewing {
+            if !gameBegan && Model.sharedInstance.getShowTips() && !isLevelWithTutorial && !isPreviewing && !isModalWindowOpen {
                 /// Был ли клик сделан по какому-либо объекту
                 var objectTypeClicked: ObjectType?
                 
@@ -63,7 +63,7 @@ extension GameScene {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-            if !gameBegan && !isPreviewing {
+            if !gameBegan && !isPreviewing && !isModalWindowOpen {
                 if let touch = touches.first {
                     let touchLocation = touch.location(in: objectsLayer)
                     // Если не сделан ещё первый ход
@@ -86,7 +86,7 @@ extension GameScene {
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-            if !gameBegan && !isLevelWithTutorial && !isPreviewing {
+            if !gameBegan && !isLevelWithTutorial && !isPreviewing && !isModalWindowOpen {
                 if let touch = touches.first {
                     let touchLocation = touch.location(in: objectsLayer)
                     if !isLastTapLongPress {
@@ -166,7 +166,7 @@ extension GameScene {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-            if !gameBegan && !isLevelWithTutorial && !isPreviewing {
+            if !gameBegan && !isLevelWithTutorial && !isPreviewing && !isModalWindowOpen {
                 if let touch = touches.first {
                     if !isLastTapLongPress {
                         if move == 0 {
@@ -357,21 +357,25 @@ extension GameScene {
         DispatchQueue.main.async {
             UIView.animate(withDuration: 0.25, animations: {
                 if lastInfoView != nil {
-                    lastInfoView?.frame.origin.x = -1 * (Model.sharedInstance.gameScene.view?.frame.size.width)!
-                    lastInfoView?.alpha = toAlpha
+                    if lastInfoView?.superview != nil {
+                        lastInfoView?.frame.origin.x = -1 * (Model.sharedInstance.gameScene.view?.frame.size.width)!
+                        lastInfoView?.alpha = toAlpha
+                    }
                 }
             }, completion: { (_) in
                 if lastInfoView != nil {
-                    lastInfoView?.removeFromSuperview()
+                    if lastInfoView?.superview != nil {
+                        lastInfoView?.removeFromSuperview()
+                    }
                 }
             })
         }
     }
     
-    func presentObjectInfoView(spriteName: String?, description: String) {
+    func presentObjectInfoView(spriteName: String?, description: String, infoViewHeight: CGFloat = 85) {
         SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
         
-        let objectInfoViewSize = CGSize(width: (Model.sharedInstance.gameScene.view?.frame.width)!, height: 65)
+        let objectInfoViewSize = CGSize(width: (Model.sharedInstance.gameScene.view?.frame.width)!, height: infoViewHeight)
         
         // ((Model.sharedInstance.gameScene.frame.height - (Model.sharedInstance.gameScene.frame.height - (TileHeight * CGFloat(boardSize.row)))) / 2) - (TileHeight * CGFloat(boardSize.row))
         let ypos = -(TileHeight * CGFloat(boardSize.row)) / 2
@@ -392,7 +396,7 @@ extension GameScene {
             let objectDescription = UILabel(frame: CGRect(x: objectIcon.frame.size.width + 10 + 10, y: 0, width: objectInfoView!.frame.size.width - objectIcon.frame.size.width - 20 - 10 - 10, height: objectInfoView!.frame.size.height))
             objectDescription.alpha = 0.0
             objectDescription.lineBreakMode = NSLineBreakMode.byWordWrapping
-            objectDescription.numberOfLines = 3
+            objectDescription.numberOfLines = 4
             objectDescription.font = UIFont(name: "Avenir Next", size: 14)
             
             if Model.sharedInstance.isDeviceIpad() {

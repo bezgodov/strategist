@@ -14,17 +14,6 @@ extension GameScene {
             isLosed = true
         }
         
-        if object.type == ObjectType.electric {
-            for point in getPointsAround(object.moves[object.move]) {
-                if point == character.moves[move] {
-                    if isLoseLevelByDefault {
-                        loseLevel()
-                    }
-                    isLosed = true
-                }
-            }
-        }
-        
         return isLosed
     }
     

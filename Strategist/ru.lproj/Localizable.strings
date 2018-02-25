@@ -1,0 +1,134 @@
+"Something went wrong, try again" = "Что-то пошло не так, попробуйте снова";
+"Purchases are disabled in your device" = "Встроенные покупки недоступны на вашем устройстве";
+"Completed" = "Завершён";
+"Buying winning path" = "Покупка выйгрышного пути";
+"Buying winning path is worth" = "Покупка выйгрышного пути стоит";
+"GEMS" = "алмазов";
+"you have" = "у вас есть";
+"Cancel" = "Отмена";
+"Buy" = "Купить";
+"Not enough GEMS" = "Недостаточно алмазов";
+"Buy GEMS" = "Купить алмазов";
+"You do not have enough GEMS to buy winning path" = "У вас недостаточно алмазов для покупки выйгрышного пути";
+"You need" = "Вам необходимо";
+"but you only have" = "но у вас есть только";
+"Level" = "Уровень";
+"BOSS" = "БОСС";
+
+"Awesome" = "Класс";
+"Well done" = "Молодец";
+"Nice" = "Отлично";
+"Great job" = "Отлично";
+"Cool" = "Здорово";
+"Good job" = "Супер";
+"Perfect" = "Идеально";
+"Amazing" = "Круто";
+
+"START" = "СТАРТ";
+"SETTINGS" = "НАСТРОЙКИ";
+"LEVELS" = "УРОВНИ";
+"CONTINUE" = "ПРОДОЛЖИТЬ";
+"RESTART" = "ЗАНОВО";
+"EXTRA LIFE" = "ДОП. ЖИЗНЬ";
+
+"Buying an extra life" = "Покупка доп. жизни";
+"An extra life is worth" = "Дополнительная жизнь стоит";
+"Buy one life" = "Купить одну жизнь";
+"You do not have enough GEMS to buy an extra life" = "У вас недостаточно алмазов для покупки дополнительной жизни";
+"You lose" = "Проигрыш";
+"No lives" = "Нет жизней";
+"Preview mode" = "Режим предпросмотра активирован. Чтобы выключить, нажмите 'Стоп' в правом верхнем углу";
+"Expensive Preview mode" = "Извините, но для нас достаточно дорого часто использовать 'Режим просмотра', помогите нам дополнительными алмазами, но у вас недостаточно алмазов, чтобы купить 'Режим просмотра' навсегда";
+"Buying preview mode" = "Покупка режима предпросмотра";
+"Buying preview mode for all time is worth" = "Покупка режима предпросмотра навсегда стоит";
+
+"Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]" = "Привет, вас только что повысили, теперь вы СТРАТЕГИСТ... [Нажмите где-нибудь, чтобы продолжить]";
+"Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!" = "Ваша основная задача управлять обычными инопланетянами и помогать им собирать алмазы. Давайте приступим!";
+"Firstly tap at the middle cell to choose alien's path..." = "Во-первых, нажмите на центральную клетку, чтобы выбрать путь инопланетянина...";
+"Now choose next cell at column#3 and row#2 (right from the middle cell)..." = "Сейчас выберите следующую ячейку в третьем ряду, второй строке (справа от центральной клетки)...";
+"Then choose cell where GEM is..." = "Затем выберите ячейку, где находится алмаз...";
+"And finally tap at start button" = "И наконец, нажмите кнопку 'Старт'";
+"Oooppps.. Be careful, everything in this planet wants to kill us. Tap restart to try again..." = "Упссс. Будьте аккуратны, всё живое на этой планете хочет нас убить. Нажмите 'Заново', чтобы попробовать ещё раз...";
+"But we already know how each of them behaves itself. Tap at bee..." = "Но мы уже знаем, как каждый из них ведёт себя. Нажмите на пчелу...";
+"That red line shows how bee moves. When a bee reaches last cell bee goes back and again..." = "Красная линия показывает перемещние пчелы. Когда она доходит до конца, то идёт в обратную сторону и так далее...";
+"Now let's find right way to get GEM. Tap at column#1 and row#1 (left-bottom cell)..." = "Давайте найдём верный путь, чтобы получить алмаз. Нажмите на ячейку в левом нижнем углу...";
+"Next cell must be column#2 and row#1..." = "Следующая ячейка должна быть во втором ряду, первой строке...";
+"Next cell must be column#3 and row#1..." = "Следующая ячейка должна быть в третьем ряду, первой строке...";
+"Next cell must be column#3 and row#2..." = "Следующая ячейка должна быть в третьем ряду, второй строке...";
+"And finally last cell must be column#3 and row#3..." = "И наконец, последняя ячейка должна быть в правом верхнем углу...";
+"And as you guessed tap at start button" = "И как вы уже угадали, нажмите на кнопку 'Старт'";
+
+"For previous level you got 3 GEMS. You can look how many gems you have in menu or settings..."  = "За предыдущий уровень вы получили 3 алмаза. Вы можете посмотреть количество алмазов в меню или настройках";
+"You can buy extra lives for GEMS or winning paths..." = "Вы можете купить дополнительные жизни за алмазы или выйгрышные пути...";
+"You can tap at any object to find out how it behaves itself or how it moves..." = "Можете нажать на любое существо на доске, чтобы посмотреть как оно себя ведёт...";
+"Tap at the nearest star to find out what it is like..." = "Нажмите на ближайшую звезду, чтобы выянить что это такое...";
+
+"If you still did not choose path you can activate preview mode..." = "Если вы ещё не выбрали путь, то можете активировать режим предпросмотра...";
+"Tap at 'Start' button to activate preview mode" = "Нажмите на 'Старт', чтобы активировать режим предпросмотра";
+
+"You can tap at last your choosen path's point and delete it" = "Вы можете нажать на последнюю ячейку выбранного пути, чтобы удалить её";
+
+"Except tapping at screen you can slide along the game board" = "Вы можете провести пальцем от пришельца до ближайшей пчелы, чтобы выбрать путь";
+
+"If label with maximum count of moves has red color you should use all moves" = "Если 'Количество ходов' имеет красный цвет, то вам необходимо использовать все доступные ходы";
+
+"If you've already chosen path you can still look at enemy's info. Just tap long at it" = "Если вы уже выбрали путь, то всё ещё можете посмотреть на описания врагов. Зажмите на 1 секунду, вместо нажатия";
+
+"To get some info about dynamic enemy just tap long at it" = "Чтобы получить информацию об активном объекте, просто зажмите на него на 1 секунду";
+
+"Now your managing is going to be different..." = "Сейчас ваша задача немного изменилась...";
+"Use 'swipes' to control a space alien, just slide finger along your screen..." = "Используйте 'Swipes', чтобы перемещать инопланетянина. Просто проведите быстро в любую сторону...";
+"You can try passing this level as many times as you wish" = "Вы можете проходить босс-уровень неограниченное число раз";
+"Collect 10 stars to win level and be careful you should avoid your enemies" = "Соберите 10 звёзд, чтобы завершить уровень и будьте аккуратны, необходимо избегать врагов";
+
+"Sometimes levels can contain lots of enemies but resolution can be very easy..." = "Бывает, уровни могут содержать множество врагов, но решение может быть очень простым...";
+"Solve this level only for 7 moves" = "Пройдите данный уровень всего лишь за 7 ходов";
+
+"Press down all buttons to win the level and do not forget about stars..." = "Включите (вниз) все кнопки, чтобы выйграть уровень и не забывайте о звёздах...";
+"Tap at button to switch all other button..." = "Нажмите на кнопку, чтобы переключить все другие кнопки...";
+"If an alien gets at button and that button was pressed down then nothing happens, but..." = "Если инопланетянин попадает на нажатую (вниз) кнопку, то ничего не происходит, но...";
+"If an alien gets at active button (button was not pressed down). Only that button is switched" = "Если инопланетянин попадает на активную (вверх) кнопку, то толька та кнопка будет нажата (вниз)";
+
+"New levels are coming. We are already designing new levels. Wait for updates" = "Новые уровни скоро будут. Мы уже разрабатываем их";
+"Complete" = "Завершите";
+"at least" = "ещё";
+"more levels" = "уровней";
+"section's final level" = "босса в секции";
+"and" = "и";
+"to unlock next section" = ", чтобы открыть новую секцию";
+
+"PURCHASED" = "КУПЛЕНО";
+"FAIL" = "ОШИБКА";
+"WATCH AD" = "РЕКЛАМА";
+"CAUTION" = "ПРЕДУПРЕЖДЕНИЕ";
+"Ok" = "Ок";
+"OK" = "ОК";
+"If you turn off tips you won't be able to look at new enemies' descriptions" = "Если вы выключите подсказки, то не сможете посмотреть на описания новых объектов";
+"Not enough gems to buy preview mode menu" = "Недостаточно алмазов, чтобы купить режим предпросмотра";
+
+"Promotional code" = "Промо код";
+"was already used" = "уже был использован";
+"Wrong promotional code" = "Неверный промо код";
+"is incorrect. If everything is right then try again or type another promo code" = "неверен. Если всё верно, то попробуйте ещё раз или введите другой промо код";
+"Promo code" = "Промо код";
+"CHECK" = "ПРОВЕРИТЬ";
+
+
+"spaceAlien_description" = "Просто милый инопланетянин";
+"gem_description" = "Чтобы выйграть, необходимо подобрать алмаз. Пришельцам нужно больше алмазов";
+"bee_description" = "Пчела перемещается на одну клетку за один ход. Если вы попадёте на пчелу, то проиграете";
+"spinner_description" = "Спиннер не перемещается. Если вы попадёте на спиннер, то проиграете";
+"bomb_description" = "Бомба взорвётся через N ходов и взорвёт вас, если вы в радиусу 1 клетки от бомбы. Нельзя наступать на бомбу";
+"stopper_description" = "Стоп знак останавливает вас на один ход";
+"alarmclock_description" = "Будильник останавливает всех, кроме инопланетянина";
+"bridge_description" = "Мост вращается на 90 градусов каждый ход. Нажмите на мост, чтобы изменить его направление";
+"spikes_description" = "Шипы 'вылезают' и после одного хода прячутся и так далее. Если попадёте на шипы, то проиграете";
+"star_description" = "Необходимо собрать все звёзды, чтобы выйграть. Звезда не перемещается";
+"snail_description" = "Улитка перемещается на одну клетку за 2 игровых хода. Улитка может остановиться на 2 хода (из-за будильника)";
+"arrow_description" = "Когда инопланетянин заходит в клетку его направление должно совпадать со стрелкой или вы проиграете";
+"tulip_description" = "Если пчела попадает на тюльпан, то пчела останавливается на 1 ход. После чего тюльпан исчезнет";
+"cabbage_description" = "Если улитка попадает на капусту, то улитка перемещается 2 хода без остановок. После чего капуста исчезнет";
+"lock_description" = "Чтобы открыть замок необходимо подобрать ключ того же цвета. Если у вас нет ключа, то вы проиграете";
+"key_description" = "Ключ открывает дверь того же цвета";
+"magnet_description" = "Подберите магнит, чтобы собирать звезды в радиусе 1 клетки. Магнит активируется через 1 ход";
+"button_description" = "Нажмите для переключения всех кнопок. Если инопланетянин попадает на кнопку, то только та кнопку будет нажата";

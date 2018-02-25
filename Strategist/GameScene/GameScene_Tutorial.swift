@@ -103,7 +103,8 @@ extension GameScene {
                 16: [
                         0: self.view!.bounds,
                         1: self.view!.bounds,
-                        2: self.view!.bounds
+                        2: self.view!.bounds,
+                        3: self.view!.bounds
                     ],
                 24:
                     [
@@ -167,76 +168,76 @@ extension GameScene {
     }
     
     func nextSlideInfo(slide: Int, sender: UITapGestureRecognizer?) {
-        
         let infoBlockTutorial: [Int: [String]] =
         [
             1:
                 [
-                "Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]",
-                "Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!",
-                "First click at the middle cell to choose alien's path...",
-                "Now choose next point at column#2 and row#1 (right from the middle cell)...",
-                "Then choose cell where GEM is...",
-                "And finally tap at start button",
-                "Oooppps.. Be careful, everything in this planet wants to kill us. Tap restart to try again...",
-                "But we already know how each of them behaves itself. Tap at bee...",
-                "That red line shows how bee moves. When a bee reaches last cell bee goes back and again...",
-                "Now let's find right way to get GEM. Tap at column#1 and row#1 (left-bottom cell)...",
-                "Next cell must be column#2 and row#1...",
-                "Next cell must be column#3 and row#1...",
-                "Next cell must be column#3 and row#2...",
-                "And finally last cell must be column#3 and row#3...",
-                "And as you guested tap at start button"
+                NSLocalizedString("Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]", comment: ""),
+                NSLocalizedString("Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!", comment: ""),
+                NSLocalizedString("Firstly tap at the middle cell to choose alien's path...", comment: ""),
+                NSLocalizedString("Now choose next cell at column#3 and row#2 (right from the middle cell)...", comment: ""),
+                NSLocalizedString("Then choose cell where GEM is...", comment: ""),
+                NSLocalizedString("And finally tap at start button", comment: ""),
+                NSLocalizedString("Oooppps.. Be careful, everything in this planet wants to kill us. Tap restart to try again...", comment: ""),
+                NSLocalizedString("But we already know how each of them behaves itself. Tap at bee...", comment: ""),
+                NSLocalizedString("That red line shows how bee moves. When a bee reaches last cell bee goes back and again...", comment: ""),
+                NSLocalizedString("Now let's find right way to get GEM. Tap at column#1 and row#1 (left-bottom cell)...", comment: ""),
+                NSLocalizedString("Next cell must be column#2 and row#1...", comment: ""),
+                NSLocalizedString("Next cell must be column#3 and row#1...", comment: ""),
+                NSLocalizedString("Next cell must be column#3 and row#2...", comment: ""),
+                NSLocalizedString("And finally last cell must be column#3 and row#3...", comment: ""),
+                NSLocalizedString("And as you guessed tap at start button", comment: "")
                 ],
             2:
                 [
-                "For previous level you got 3 GEMS. You can look how many gems you have in menu or settings...",
-                "You can buy extra lives for GEMS or winning paths...",
-                "You can tap at any object to find out how it behaves itself or how it moves...",
-                "Tap at the nearest star to find out what it is like...",
+                NSLocalizedString("For previous level you got 3 GEMS. You can look how many gems you have in menu or settings...", comment: ""),
+                NSLocalizedString("You can buy extra lives for GEMS or winning paths...", comment: ""),
+                NSLocalizedString("You can tap at any object to find out how it behaves itself or how it moves...", comment: ""),
+                NSLocalizedString("Tap at the nearest star to find out what it is like...", comment: ""),
                 ],
             3:
                 [
-                "If you did not choose path you can activate preview mode...",
-                "Click at 'Start' button to activate preview mode"
+                NSLocalizedString("If you still did not choose path you can activate preview mode...", comment: ""),
+                NSLocalizedString("Tap at 'Start' button to activate preview mode", comment: "")
                 ],
             4:
                 [
-                "You can click at last your path's point and delete it"
+                NSLocalizedString("You can tap at last your choosen path's point and delete it", comment: "")
                 ],
             5:
                 [
-                "Except tapping at screen you can slide along the game board"
+                NSLocalizedString("Except tapping at screen you can slide along the game board", comment: "")
                 ],
             6:
                 [
-                "If label with maximum count of moves has red color you should use all moves"
+                NSLocalizedString("If label with maximum count of moves has red color you should use all moves", comment: "")
                 ],
             7:
                 [
-                "If you've already chosen path you can still look at enemy's info. Just tap long at it"
+                NSLocalizedString("If you've already chosen path you can still look at enemy's info. Just tap long at it", comment: "")
                 ],
             14:
                 [
-                "To get some info about dynamic enemy just tap long at it"
+                NSLocalizedString("To get some info about dynamic enemy just tap long at it", comment: "")
                 ],
             16:
                 [
-                "Now your managing is going to be different...",
-                "Use 'swipes' to control a space alien, just slide finger along your screen...",
-                "Collect 10 stars to win level and be careful you should avoid your enemies"
+                NSLocalizedString("Now your managing is going to be different...", comment: ""),
+                NSLocalizedString("Use 'swipes' to control a space alien, just slide finger along your screen...", comment: ""),
+                NSLocalizedString("You can try passing this level as many times as you wish", comment: ""),
+                NSLocalizedString("Collect 10 stars to win level and be careful you should avoid your enemies", comment: "")
                 ],
             24:
                 [
-                "Sometimes levels can contain lots of enemies but resolution can be very easy...",
-                "Solve this level only for 7 moves"
+                NSLocalizedString("Sometimes levels can contain lots of enemies but resolution can be very easy...", comment: ""),
+                NSLocalizedString("Solve this level only for 7 moves", comment: "")
                 ],
             33:
                 [
-                "Press down all buttons to win the level and do not forget about stars...",
-                "Tap at button to switch all other button...",
-                "If an alien gets at button and that button was pressed down then nothing happens, but...",
-                "If an alien gets at active button (button was not pressed down). Only that button is switched"
+                NSLocalizedString("Press down all buttons to win the level and do not forget about stars...", comment: ""),
+                NSLocalizedString("Tap at button to switch all other button...", comment: ""),
+                NSLocalizedString("If an alien gets at button and that button was pressed down then nothing happens, but...", comment: ""),
+                NSLocalizedString("If an alien gets at active button (button was not pressed down). Only that button is switched", comment: "")
             ],
         ]
         
@@ -357,7 +358,7 @@ extension GameScene {
                     previewMainTimer()
                     isPreviewing = true
                     
-                    presentObjectInfoView(spriteName: "PlayerStaysFront", description: "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner")
+                    presentObjectInfoView(spriteName: "PlayerStaysFront", description: NSLocalizedString("Preview mode", comment: ""))
                 
                     Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
@@ -367,7 +368,7 @@ extension GameScene {
             }
         case 16:
             switch slide {
-                case 2:
+                case 3:
                     if bossLevel != nil {
                         self.isPaused = false
                         bossLevel?.isFinishedLevel = false
