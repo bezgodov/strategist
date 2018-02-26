@@ -109,7 +109,6 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
     func gadRewardVideoSettings() {
         GADRewardBasedVideoAd.sharedInstance().delegate = self
         let request = GADRequest()
-//        request.testDevices = ["711afb81711386bd498b76787d66e9d1"]
         GADRewardBasedVideoAd.sharedInstance().load(request, withAdUnitID: "ca-app-pub-3811728185284523/8355721492")
     }
     
@@ -130,35 +129,6 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         mainScrollView.backgroundColor = UIColor.init(red: 149/255, green: 201/255, blue: 45/255, alpha: 0.1)
         mainScrollView.contentSize = CGSize(width: self.view.bounds.width, height: lastViewForScrollView.frame.maxY + 61)
         mainScrollView.showsVerticalScrollIndicator = false
-    }
-    
-    /// При нажатии на Switch, удаление сохранённых данных
-    @IBAction func resetData(sender: UISwitch) {
-        let alert = UIAlertController(title: "Erasing data", message: "Pressing 'OK' will erase all your saved game data", preferredStyle: UIAlertControllerStyle.alert)
-        
-        let actionOk = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: {_ in
-            UserDefaults.standard.removeObject(forKey: "countLives")
-            UserDefaults.standard.removeObject(forKey: "completedLevels")
-            UserDefaults.standard.removeObject(forKey: "countCompletedLevels")
-            UserDefaults.standard.removeObject(forKey: "countGems")
-            UserDefaults.standard.removeObject(forKey: "showTips")
-            UserDefaults.standard.removeObject(forKey: "levelsCompletedWithHelp")
-            UserDefaults.standard.removeObject(forKey: "isActivatedSounds")
-            UserDefaults.standard.removeObject(forKey: "isActivatedBgMusic")
-            UserDefaults.standard.removeObject(forKey: "levelsTilesPositions")
-            UserDefaults.standard.removeObject(forKey: "isPaidPreviewMode")
-            
-            UserDefaults.standard.synchronize()
-            
-            exit(0)
-        })
-        
-        let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-        
-        alert.addAction(actionOk)
-        alert.addAction(actionCancel)
-        
-        self.present(alert, animated: true, completion: nil)
     }
     
     /// Конвертировать TimeInterval в минуты:секунды

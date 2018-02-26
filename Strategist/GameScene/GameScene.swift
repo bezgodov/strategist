@@ -875,7 +875,6 @@ class GameScene: SKScene {
     func loadAd() {
         interstitial = GADInterstitial(adUnitID: "ca-app-pub-3811728185284523/9724040842")
         let request = GADRequest()
-//        request.testDevices = [ "711afb81711386bd498b76787d66e9d1" ]
         interstitial.load(request)
     }
     

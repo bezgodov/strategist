@@ -655,18 +655,6 @@
                                             <action selector="goBackWithSender:" destination="eS8-W6-LWO" eventType="touchUpInside" id="rnB-3v-yEI"/>
                                         </connections>
                                     </button>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yNH-s2-XX2">
-                                        <rect key="frame" x="176.5" y="17" width="51" height="31"/>
-                                        <connections>
-                                            <action selector="resetDataWithSender:" destination="eS8-W6-LWO" eventType="valueChanged" id="IZ8-sI-gEL"/>
-                                        </connections>
-                                    </switch>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Erase data" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PjJ-iM-vK7">
-                                        <rect key="frame" x="84" y="22" width="87.5" height="25"/>
-                                        <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="18"/>
-                                        <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" red="0.58431372550000005" green="0.78823529410000004" blue="0.1764705882" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -675,20 +663,16 @@
                                     <constraint firstItem="1DJ-y4-gOv" firstAttribute="top" secondItem="c44-w8-0EB" secondAttribute="bottom" constant="13.5" id="BXJ-YB-4av"/>
                                     <constraint firstAttribute="trailing" secondItem="QJk-zd-WKb" secondAttribute="trailing" constant="16" id="D3T-h9-Wqu"/>
                                     <constraint firstAttribute="trailing" secondItem="c44-w8-0EB" secondAttribute="trailing" id="Gbi-Mr-g7w"/>
-                                    <constraint firstItem="yNH-s2-XX2" firstAttribute="leading" secondItem="PjJ-iM-vK7" secondAttribute="trailing" constant="5" id="LNg-1C-1Zz"/>
-                                    <constraint firstItem="PjJ-iM-vK7" firstAttribute="top" secondItem="c44-w8-0EB" secondAttribute="bottom" constant="16" id="RN6-ao-VGW"/>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="61" id="SPt-Ul-jDW"/>
                                     <constraint firstAttribute="bottom" secondItem="D82-gH-lpw" secondAttribute="bottom" id="Uyl-n0-WrI"/>
                                     <constraint firstItem="vDt-nh-8sT" firstAttribute="leading" secondItem="bVN-dB-CmC" secondAttribute="leading" constant="16" id="VBj-Pz-gez"/>
                                     <constraint firstItem="c44-w8-0EB" firstAttribute="leading" secondItem="bVN-dB-CmC" secondAttribute="leading" id="Xcj-fM-c8Q"/>
-                                    <constraint firstItem="yNH-s2-XX2" firstAttribute="top" secondItem="bVN-dB-CmC" secondAttribute="top" constant="17" id="ZTh-5p-XXA"/>
                                     <constraint firstItem="c44-w8-0EB" firstAttribute="width" secondItem="bVN-dB-CmC" secondAttribute="width" id="eWa-0k-c1a"/>
                                     <constraint firstItem="QJk-zd-WKb" firstAttribute="leading" secondItem="1DJ-y4-gOv" secondAttribute="trailing" constant="3" id="eoo-Gr-ssd"/>
                                     <constraint firstAttribute="trailing" secondItem="D82-gH-lpw" secondAttribute="trailing" id="gtx-OU-rbj"/>
                                     <constraint firstItem="D82-gH-lpw" firstAttribute="width" secondItem="bVN-dB-CmC" secondAttribute="width" id="nUt-oj-5Ps"/>
                                     <constraint firstAttribute="height" constant="61" id="pBU-AT-FLn"/>
                                     <constraint firstItem="QJk-zd-WKb" firstAttribute="top" secondItem="c44-w8-0EB" secondAttribute="bottom" constant="14" id="xma-Qj-21a"/>
-                                    <constraint firstItem="PjJ-iM-vK7" firstAttribute="leading" secondItem="vDt-nh-8sT" secondAttribute="trailing" constant="20" id="y7G-zA-yz3"/>
                                     <constraint firstItem="1DJ-y4-gOv" firstAttribute="centerY" secondItem="jGk-gp-4bD" secondAttribute="centerY" id="yg2-Xt-xfI"/>
                                     <constraint firstItem="c44-w8-0EB" firstAttribute="top" secondItem="bVN-dB-CmC" secondAttribute="top" id="ysi-TL-LOK"/>
                                 </constraints>
