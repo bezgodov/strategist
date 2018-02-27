@@ -40,7 +40,7 @@
 "Preview mode" = "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner";
 "Expensive Preview mode" = "Sorry, but is't quite expensive to use 'Preview mode' very often, help us with extra gems, but you do not have enough GEMS to buy preview mode for all time";
 "Buying preview mode" = "Buying preview mode";
-"Buying preview mode for all time is worth" = "Buying preview mode for all time is worth";
+"Buying preview mode for all time is worth" = "When you activate this feature you are able to look at how all dynamic enemies behaves before you start. Buying preview mode for all time is worth";
 
 "Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]" = "Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]";
 "Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!" = "Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!";
@@ -109,9 +109,6 @@
 "was already used" = "was already used";
 "Wrong promotional code" = "Wrong promotional code";
 "is incorrect. If everything is right then try again or type another promo code" = "is incorrect. If everything is right then try again or type another promo code";
-"Promo code" = "Promo code";
-"CHECK" = "CHECK";
-
 
 "spaceAlien_description" = "Just a cute space alien";
 "gem_description" = "You should pick up a gem to win. Space aliens need much gems";

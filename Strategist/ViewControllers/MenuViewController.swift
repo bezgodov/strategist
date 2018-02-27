@@ -14,9 +14,6 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
     @IBOutlet weak var buyPreviewModeView: UIView!
     @IBOutlet weak var buyPreviewModeButton: UIButton!
     @IBOutlet weak var watchAdButton: UIButton!
-    @IBOutlet weak var checkPromoCodeView: UIView!
-    @IBOutlet weak var checkPromoCodeButton: UIButton!
-    @IBOutlet weak var checkPromoCodeTextField: UITextField!
     @IBOutlet var viewTopMenuBorder: [UIImageView]!
     
     var isDismissed: Bool = false
@@ -61,9 +58,7 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
             timeToWatchAd.invalidate()
             timerToAbleWatchRewardVideo()
         }
-        
-        checkPromoCodeTextField.placeholder = NSLocalizedString("Promo code", comment: "")
-        checkPromoCodeButton.setTitle(NSLocalizedString("CHECK", comment: ""), for: UIControlState.normal)
+
         
         // Если устройство Ipad, то заменяет border (ёлочку-шипы) на обычный цвет
         if Model.sharedInstance.isDeviceIpad() {
@@ -89,9 +84,8 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
                         strongSelf.addGems(amount: 85)
                     }
                     else {
-                        if type == .purchased_125GEMS {
-                            strongSelf.addGems(amount: 125)
-                            Model.sharedInstance.disableAd()
+                        if type == .purchased_150GEMS {
+                            strongSelf.addGems(amount: 150)
                         }
                     }
                 }
@@ -119,15 +113,13 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
             btn.layer.borderColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1).cgColor
         }
         
-        checkPromoCodeView.layer.cornerRadius = 5
-        
         // Если режим предпросмотра куплен
         if Model.sharedInstance.isPaidPreviewMode() {
             buyPreviewModeView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
         }
         
         mainScrollView.backgroundColor = UIColor.init(red: 149/255, green: 201/255, blue: 45/255, alpha: 0.1)
-        mainScrollView.contentSize = CGSize(width: self.view.bounds.width, height: lastViewForScrollView.frame.maxY + 61)
+        mainScrollView.contentSize = CGSize(width: self.view.bounds.width, height: lastViewForScrollView.frame.maxY)
         mainScrollView.showsVerticalScrollIndicator = false
     }
     
@@ -196,7 +188,7 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         
         let amount = sender.tag
         
-        if amount == 35 || amount == 85 || amount == 125 {
+        if amount == 35 || amount == 85 || amount == 150 {
             IAPHandler.sharedInstance.purchaseProduct(id: "Bezgodov.Strategist.\(amount)GEMS")
         }
     }
@@ -358,52 +350,6 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
             alert.addAction(actionCancel)
             
             self.present(alert, animated: true, completion: nil)
-        }
-    }
-    
-    @IBAction func checkPromoCode(_ sender: Any) {
-        dismissKeyboard()
-        checkingPromo()
-    }
-    
-    func checkingPromo() {
-        let promoCode = checkPromoCodeTextField.text
-        if promoCode != nil {
-            if !promoCode!.isEmpty {
-                if promoCode == Model.sharedInstance.getPromoCode() {
-                    if Model.sharedInstance.isUsedPromoCode() == false {
-                        addGems(amount: 100)
-                        
-                        Model.sharedInstance.setUsedPromoCode(true)
-                        
-                        Flurry.logEvent("Right_promo_code")
-                    }
-                    else {
-                        let message = "\(NSLocalizedString("Promotional code", comment: "")) (\(promoCode!)) \(NSLocalizedString("was already used", comment: ""))"
-                        
-                        let alert = UIAlertController(title: NSLocalizedString("Wrong promotional code", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
-                        
-                        let actionCancel = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.cancel, handler: nil)
-                        
-                        alert.addAction(actionCancel)
-                        
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                }
-                else {
-                    let message = "\(NSLocalizedString("Promotional code", comment: "")) (\(promoCode!)) \(NSLocalizedString("is incorrect. If everything is right then try again or type another promo code", comment: ""))"
-                    
-                    let alert = UIAlertController(title: NSLocalizedString("Wrong promotional code", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
-                    
-                    let actionCancel = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.cancel, handler: nil)
-                    
-                    alert.addAction(actionCancel)
-                    
-                    self.present(alert, animated: true, completion: nil)
-                    
-                    Flurry.logEvent("Wrong_promo_code")
-                }
-            }
         }
     }
     

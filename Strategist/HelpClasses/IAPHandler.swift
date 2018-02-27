@@ -5,7 +5,7 @@ enum IAPHandlerAlertType {
     case disabled
     case purchased_35GEMS
     case purchased_85GEMS
-    case purchased_125GEMS
+    case purchased_150GEMS
     
     func message() -> String{
         switch self {
@@ -17,8 +17,8 @@ enum IAPHandlerAlertType {
                 return "You've successfully bought 35 GEMS"
             case .purchased_85GEMS:
                 return "You've successfully bought 85 GEMS"
-            case .purchased_125GEMS:
-                return "You've successfully bought 125 GEMS"
+            case .purchased_150GEMS:
+                return "You've successfully bought 150 GEMS"
         }
     }
 }
@@ -28,7 +28,7 @@ class IAPHandler: NSObject {
     
     let GEMS_35_ID = "Bezgodov.Strategist.35GEMS"
     let GEMS_85_ID = "Bezgodov.Strategist.85GEMS"
-    let GEMS_125_ID = "Bezgodov.Strategist.125GEMS"
+    let GEMS_150_ID = "Bezgodov.Strategist.150GEMS"
     
     fileprivate var productID = String()
     fileprivate var productsRequest = SKProductsRequest()
@@ -56,7 +56,7 @@ class IAPHandler: NSObject {
     
     func fetchAvailableProducts() {
         
-        let productIdentifiers = NSSet(objects: GEMS_35_ID,GEMS_85_ID,GEMS_125_ID
+        let productIdentifiers = NSSet(objects: GEMS_35_ID,GEMS_85_ID,GEMS_150_ID
         )
         
         productsRequest = SKProductsRequest(productIdentifiers: productIdentifiers as! Set<String>)
@@ -88,8 +88,8 @@ extension IAPHandler: SKProductsRequestDelegate, SKPaymentTransactionObserver{
                                 purchaseStatusBlock?(.purchased_85GEMS)
                             }
                             else {
-                                if productID == GEMS_125_ID {
-                                    purchaseStatusBlock?(.purchased_125GEMS)
+                                if productID == GEMS_150_ID {
+                                    purchaseStatusBlock?(.purchased_150GEMS)
                                 }
                                 else {
                                     purchaseStatusBlock?(.error)

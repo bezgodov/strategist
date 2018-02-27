@@ -147,7 +147,6 @@
 		2BF041951FF7295800624C4C /* Spinner.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF041941FF7295800624C4C /* Spinner.png */; };
 		2BF5BE2F20343BCD0098A571 /* LaunchScreenPicture.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF5BE2E20343BCD0098A571 /* LaunchScreenPicture.png */; };
 		2BF905A3204167CD000ED113 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2BF905A1204167CD000ED113 /* Localizable.strings */; };
-		2BF905A620416E19000ED113 /* No_ad.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF905A520416E19000ED113 /* No_ad.png */; };
 		2BF905AA204277FB000ED113 /* Modal_window_close.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BF905A9204277FA000ED113 /* Modal_window_close.png */; };
 		2BF905B42042B397000ED113 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2BF905B22042B397000ED113 /* InfoPlist.strings */; };
 		2BFD739D20084C8A00968FB5 /* Gem_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BFD739920084C8700968FB5 /* Gem_blue.png */; };
@@ -304,7 +303,6 @@
 		2BF9059F2041675F000ED113 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
 		2BF905A2204167CD000ED113 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Strategist/Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2BF905A420416814000ED113 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = Strategist/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		2BF905A520416E19000ED113 /* No_ad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = No_ad.png; sourceTree = "<group>"; };
 		2BF905A9204277FA000ED113 /* Modal_window_close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Modal_window_close.png; sourceTree = "<group>"; };
 		2BF905B32042B397000ED113 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2BF905B52042B3BF000ED113 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -563,7 +561,6 @@
 				2B30C82B203ABF8D009EE444 /* Cabbage.png */,
 				2B30C846203BD1C6009EE444 /* Magnet.png */,
 				2B91D6EF203D489400801BEA /* Bag.png */,
-				2BF905A520416E19000ED113 /* No_ad.png */,
 				2BF905A9204277FA000ED113 /* Modal_window_close.png */,
 				2B30C831203AEF21009EE444 /* LocksKeys */,
 				2B30C851203C4A5C009EE444 /* Buttons */,
@@ -803,7 +800,6 @@
 				2B91D6E5203D339C00801BEA /* Level_35.json in Resources */,
 				2B54018C1FDA41B400E03C63 /* Level_4.json in Resources */,
 				2BF905B42042B397000ED113 /* InfoPlist.strings in Resources */,
-				2BF905A620416E19000ED113 /* No_ad.png in Resources */,
 				2B91D6E7203D42AF00801BEA /* Unlocked.wav in Resources */,
 				2B70BAC42014C9AF001866D5 /* Level_17.json in Resources */,
 				2B30C837203AEF41009EE444 /* Lock_blue.png in Resources */,

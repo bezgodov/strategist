@@ -110,14 +110,8 @@ class Model {
     /// Время последнего просмотра рекламы за вознаграждение
     private var lastTimeClickToRewardVideoVal = UserDefaults.standard.object(forKey: "lastTimeClickToRewardVideo") as? Date
     
-    /// true, если промо код уже был использован
-    private var isUsedPromoCodeVal = UserDefaults.standard.bool(forKey: "isUsedPromoCode")
-    
     /// Последняя позиция, на которой находился пользователь, когда заходил на уровень или в меню
     var lastYpositionLevels: CGFloat?
-    
-    /// Промо код
-    private let promoCode = "y3F7r4E9w2B1"
     
     /// Функция, которая проверяет наличие сохранённых данных
     func emptySavedLevelsLives() -> Bool {
@@ -321,20 +315,5 @@ class Model {
     
     func getLastTimeClickToRewardVideo() -> Date? {
         return lastTimeClickToRewardVideoVal
-    }
-    
-    func getPromoCode() -> String {
-        return promoCode
-    }
-    
-    func setUsedPromoCode(_ value: Bool) {
-        isUsedPromoCodeVal = value
-        
-        UserDefaults.standard.set(isUsedPromoCodeVal, forKey: "isUsedPromoCode")
-    }
-    
-    /// true, если промо код был использован
-    func isUsedPromoCode() -> Bool {
-        return isUsedPromoCodeVal
     }
 }
