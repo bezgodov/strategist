@@ -188,8 +188,11 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         
         let amount = sender.tag
         
-        if amount == 35 || amount == 85 || amount == 150 {
+        if amount == 35 || amount == 85 {
             IAPHandler.sharedInstance.purchaseProduct(id: "Bezgodov.Strategist.\(amount)GEMS")
+        }
+        if amount == 150 {
+            IAPHandler.sharedInstance.purchaseProduct(id: "Bezgodov.Strategist.\(amount)GEMS_extra")
         }
     }
     

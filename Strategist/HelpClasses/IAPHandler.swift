@@ -28,7 +28,7 @@ class IAPHandler: NSObject {
     
     let GEMS_35_ID = "Bezgodov.Strategist.35GEMS"
     let GEMS_85_ID = "Bezgodov.Strategist.85GEMS"
-    let GEMS_150_ID = "Bezgodov.Strategist.150GEMS"
+    let GEMS_150_ID = "Bezgodov.Strategist.150GEMS_extra"
     
     fileprivate var productID = String()
     fileprivate var productsRequest = SKProductsRequest()
