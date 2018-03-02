@@ -2,10 +2,10 @@ import Foundation
 import SpriteKit
 
 /// Цена в драг. камнях доп. жизни
-let EXTRA_LIFE_PRICE = 10
+let EXTRA_LIFE_PRICE = 5
 
 /// Цена в драг. камнях выйгрышного пути
-let WINNING_PATH_PRICE = 25
+let WINNING_PATH_PRICE = 15
 
 /// Цена в драг. камнях режима предпросмотра
 let PREVIEW_MODE_PRICE = 50
@@ -64,6 +64,7 @@ class Model {
     static let sharedInstance = Model()
     var gameViewControllerConnect: GameViewController!
     var gameScene: GameScene!
+    var menuViewController: MenuViewController!
     
     /// Общее количество уровней
     let countLevels: Int = 36

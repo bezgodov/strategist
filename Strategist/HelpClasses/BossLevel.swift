@@ -336,8 +336,11 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
                 }
                 
                 if point.point.column >= 0 && point.point.column < gameScene.boardSize.column && point.point.row >= 0 && point.point.row < gameScene.boardSize.row {
-                    SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
-                    self.gameScene.character.run(SKAction.move(to: self.gameScene.pointFor(column: point.point.column, row: point.point.row), duration: 0.2))
+                    
+                    DispatchQueue.main.async {
+                        SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
+                        self.gameScene.character.run(SKAction.move(to: self.gameScene.pointFor(column: point.point.column, row: point.point.row), duration: 0.2))
+                    }
                 }
                 else {
                     gameScene.shakeView(gameScene.view!, repeatCount: 2, amplitude: 3)

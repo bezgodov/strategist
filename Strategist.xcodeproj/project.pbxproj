@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01BAE17E1621DB27AE84AEA6 /* Pods_Strategist.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 701E409CAA27604594FB52F7 /* Pods_Strategist.framework */; };
 		2B09151320316C9F0057E3DC /* Checked.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B09151220316C9F0057E3DC /* Checked.png */; };
 		2B09151520316CBB0057E3DC /* Locked.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B09151420316CBB0057E3DC /* Locked.png */; };
 		2B09151720316CED0057E3DC /* AlarmClock.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B09151620316CED0057E3DC /* AlarmClock.png */; };
@@ -154,7 +155,6 @@
 		2BFD739F20084C8A00968FB5 /* Gem_yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BFD739B20084C8900968FB5 /* Gem_yellow.png */; };
 		2BFD73A020084C8A00968FB5 /* Gem_red.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BFD739C20084C8900968FB5 /* Gem_red.png */; };
 		2BFEF9AD200A3DC300A7AB79 /* PlayerStaysFront.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BFEF9AC200A3DC200A7AB79 /* PlayerStaysFront.png */; };
-		51C2EFB7CC05D38806B45246 /* Pods_Strategist.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E606DDEF91389A3E99C8CBB /* Pods_Strategist.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -311,9 +311,9 @@
 		2BFD739B20084C8900968FB5 /* Gem_yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Gem_yellow.png; sourceTree = "<group>"; };
 		2BFD739C20084C8900968FB5 /* Gem_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Gem_red.png; sourceTree = "<group>"; };
 		2BFEF9AC200A3DC200A7AB79 /* PlayerStaysFront.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayerStaysFront.png; sourceTree = "<group>"; };
-		3E606DDEF91389A3E99C8CBB /* Pods_Strategist.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Strategist.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C8904ACC1F20CC9060A2EB9D /* Pods-Strategist.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Strategist.release.xcconfig"; path = "Pods/Target Support Files/Pods-Strategist/Pods-Strategist.release.xcconfig"; sourceTree = "<group>"; };
-		D3B54EAB5D95342A677354A3 /* Pods-Strategist.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Strategist.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Strategist/Pods-Strategist.debug.xcconfig"; sourceTree = "<group>"; };
+		49BEE9A0AE1A66CD95BAC37D /* Pods-Strategist.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Strategist.release.xcconfig"; path = "Pods/Target Support Files/Pods-Strategist/Pods-Strategist.release.xcconfig"; sourceTree = "<group>"; };
+		701E409CAA27604594FB52F7 /* Pods_Strategist.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Strategist.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D5620DD48A9D8A94DFFC7FB /* Pods-Strategist.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Strategist.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Strategist/Pods-Strategist.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -322,7 +322,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B8B8C7E203EF3E2009A3022 /* StoreKit.framework in Frameworks */,
-				51C2EFB7CC05D38806B45246 /* Pods_Strategist.framework in Frameworks */,
+				01BAE17E1621DB27AE84AEA6 /* Pods_Strategist.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -487,7 +487,7 @@
 			isa = PBXGroup;
 			children = (
 				2B8B8C7D203EF3E2009A3022 /* StoreKit.framework */,
-				3E606DDEF91389A3E99C8CBB /* Pods_Strategist.framework */,
+				701E409CAA27604594FB52F7 /* Pods_Strategist.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -626,8 +626,8 @@
 		57182E44C987FEED6CB4159E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				D3B54EAB5D95342A677354A3 /* Pods-Strategist.debug.xcconfig */,
-				C8904ACC1F20CC9060A2EB9D /* Pods-Strategist.release.xcconfig */,
+				7D5620DD48A9D8A94DFFC7FB /* Pods-Strategist.debug.xcconfig */,
+				49BEE9A0AE1A66CD95BAC37D /* Pods-Strategist.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -639,12 +639,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2B0B63E81FAFD1AF002C0322 /* Build configuration list for PBXNativeTarget "Strategist" */;
 			buildPhases = (
-				A0F6811DE303EDFA1E62FD40 /* [CP] Check Pods Manifest.lock */,
+				4999FB440E30657B31230875 /* [CP] Check Pods Manifest.lock */,
 				2B0B63CC1FAFD1AF002C0322 /* Sources */,
 				2B0B63CD1FAFD1AF002C0322 /* Frameworks */,
 				2B0B63CE1FAFD1AF002C0322 /* Resources */,
-				B6D72C1EC2CD5054542B8721 /* [CP] Embed Pods Frameworks */,
-				A3C52B745B9673AE19DCD947 /* [CP] Copy Pods Resources */,
+				387F81720CD2058E68B68C45 /* [CP] Embed Pods Frameworks */,
+				BD6BEDC68403E8DC20B3D538 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -835,7 +835,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		A0F6811DE303EDFA1E62FD40 /* [CP] Check Pods Manifest.lock */ = {
+		387F81720CD2058E68B68C45 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Strategist/Pods-Strategist-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Flurry-iOS-SDK/Flurry_iOS_SDK.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flurry_iOS_SDK.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Strategist/Pods-Strategist-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4999FB440E30657B31230875 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -853,7 +871,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A3C52B745B9673AE19DCD947 /* [CP] Copy Pods Resources */ = {
+		BD6BEDC68403E8DC20B3D538 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -866,24 +884,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Strategist/Pods-Strategist-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B6D72C1EC2CD5054542B8721 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Strategist/Pods-Strategist-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Flurry-iOS-SDK/Flurry_iOS_SDK.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flurry_iOS_SDK.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Strategist/Pods-Strategist-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1006,7 +1006,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
@@ -1060,7 +1060,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1071,7 +1071,7 @@
 		};
 		2B0B63E91FAFD1AF002C0322 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D3B54EAB5D95342A677354A3 /* Pods-Strategist.debug.xcconfig */;
+			baseConfigurationReference = 7D5620DD48A9D8A94DFFC7FB /* Pods-Strategist.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Strategist/Strategist.entitlements;
@@ -1080,7 +1080,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G3EGPMFS52;
 				INFOPLIST_FILE = "$(SRCROOT)/Strategist/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Bezgodov.Strategist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1092,7 +1092,7 @@
 		};
 		2B0B63EA1FAFD1AF002C0322 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C8904ACC1F20CC9060A2EB9D /* Pods-Strategist.release.xcconfig */;
+			baseConfigurationReference = 49BEE9A0AE1A66CD95BAC37D /* Pods-Strategist.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Strategist/Strategist.entitlements;
@@ -1101,7 +1101,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G3EGPMFS52;
 				INFOPLIST_FILE = "$(SRCROOT)/Strategist/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Bezgodov.Strategist;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -15,8 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Flurry.startSession("6Y9TM3QJN3BFHJBPD58R", with: FlurrySessionBuilder
             .init()
-            .withCrashReporting(true)
-            .withLogLevel(FlurryLogLevelAll))
+            .withCrashReporting(true))
+//            .withLogLevel(FlurryLogLevelAll))
         
         return true
     }

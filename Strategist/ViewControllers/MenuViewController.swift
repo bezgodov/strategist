@@ -24,8 +24,14 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
     /// Таймер, которые отсчитываем время до возможности просмотра рекламы за вознаграждение
     var timeToWatchAd = Timer()
     
+    var viewToIAP: UIView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if Model.sharedInstance.menuViewController == nil {
+            Model.sharedInstance.menuViewController = self
+        }
         
         /// При клике в любое место, необходимо закрыть клавиатуру
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -71,33 +77,6 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
     
     func IAPSettings() {
         IAPHandler.sharedInstance.fetchAvailableProducts()
-        
-        IAPHandler.sharedInstance.purchaseStatusBlock = {[weak self] (type) in
-            guard let strongSelf = self else { return }
-            
-            if type != .error && type != .disabled {
-                if type == .purchased_35GEMS {
-                    strongSelf.addGems(amount: 35)
-                }
-                else {
-                    if type == .purchased_85GEMS {
-                        strongSelf.addGems(amount: 85)
-                    }
-                    else {
-                        if type == .purchased_150GEMS {
-                            strongSelf.addGems(amount: 150)
-                        }
-                    }
-                }
-            }
-            else {
-                let alert = UIAlertController(title: NSLocalizedString("FAIL", comment: ""), message: type.message(), preferredStyle: .alert)
-                let actionOk = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil)
-                
-                alert.addAction(actionOk)
-                strongSelf.present(alert, animated: true, completion: nil)
-            }
-        }
     }
     
     func gadRewardVideoSettings() {
@@ -146,12 +125,17 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
                 let time = self.TIME_REWARD_VIDEO - (Model.sharedInstance.getLastTimeClickToRewardVideo()!.timeIntervalSinceNow * -1)
                 if time > 1 {
                     self.watchAdButton.setTitle(self.stringFromTimeInterval(time), for: UIControlState.normal)
+                    
+                    if time < 15 {
+                        if GADRewardBasedVideoAd.sharedInstance().isReady == false {
+                            self.gadRewardVideoSettings()
+                        }
+                    }
                 }
                 else {
                     self.watchAdButton.isEnabled = true
                     self.watchAdButton.setTitle(NSLocalizedString("WATCH AD", comment: ""), for: UIControlState.normal)
                     Model.sharedInstance.setLastTimeClickToRewardVideo(nil)
-                    self.gadRewardVideoSettings()
                     
                     timer.invalidate()
                 }
@@ -188,11 +172,28 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         
         let amount = sender.tag
         
-        if amount == 35 || amount == 85 {
-            IAPHandler.sharedInstance.purchaseProduct(id: "Bezgodov.Strategist.\(amount)GEMS")
+        if amount == 50 || amount == 300 || amount == 500 {
+            IAPHandler.sharedInstance.purchaseProduct(id: "Bezgodov.Strategist.\(amount)GEMS_new")
         }
-        if amount == 150 {
-            IAPHandler.sharedInstance.purchaseProduct(id: "Bezgodov.Strategist.\(amount)GEMS_extra")
+    }
+    
+    func presentViewIAP(remove: Bool = false) {
+        if remove && viewToIAP != nil {
+            viewToIAP.removeFromSuperview()
+        }
+        
+        if remove == false {
+            viewToIAP = UIView(frame: self.view.bounds)
+            viewToIAP.backgroundColor = UIColor.black
+            viewToIAP.alpha = 0.5
+            
+            let indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
+            indicator.center = viewToIAP.center
+            indicator.startAnimating()
+            
+            viewToIAP.addSubview(indicator)
+            
+            self.view.addSubview(viewToIAP)
         }
     }
     
@@ -263,8 +264,8 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
         }
         else {
             let appId = 1351841309
-            let url = URL(string: "itms-apps:itunes.apple.com/us/app/apple-store/id\(appId)?mt=8&action=write-review")!
-            UIApplication.shared.openURL(url)
+            let url = URL(string: "itms-apps:itunes.apple.com/us/app/apple-store/id\(appId)")!
+            UIApplication.shared.open(url, options: ["mt": 8, "action": "write-review"], completionHandler: nil)
         }
     }
     
@@ -301,6 +302,7 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
             timerToAbleWatchRewardVideo()
         }
         else {
+            gadRewardVideoSettings()
             Flurry.logEvent("Ad_wasnt_ready_menu")
         }
     }

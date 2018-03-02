@@ -48,6 +48,9 @@ class ChooseLevelViewController: UIViewController {
     /// Заблокирована ли следующая секция (если не пройдено необходимо кол-во уровней за предыдущую секцию)
     var isNextSectionDisabled = false
     
+    /// true, если модальное окно открыто
+    var isModalWindowOpen = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -178,7 +181,14 @@ class ChooseLevelViewController: UIViewController {
         scrollView.contentOffset.y = CGFloat((Model.sharedInstance.getCountCompletedLevels() - 1) * distanceBetweenLevels) * levelTileSize.height
         
         scrollView.contentInset = UIEdgeInsets.zero
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.never
+        
+        if #available(iOS 11.0, *) {
+            scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.never
+        }
+        else {
+            automaticallyAdjustsScrollViewInsets = false
+        }
+        
         scrollView.scrollIndicatorInsets = UIEdgeInsets.zero
         
         scrollView.alwaysBounceVertical = true
@@ -309,121 +319,125 @@ class ChooseLevelViewController: UIViewController {
     
     /// Функция показывает модальное окно с информацией об уровне
     func modalWindowPresent() {
-        // Добавляем бг, чтобы при клике на него закрыть всё модальное окно
-        modalWindowBg = UIView(frame: scrollView.bounds)
-        modalWindowBg.backgroundColor = UIColor.black
-        modalWindowBg.restorationIdentifier = "modalWindowBg"
-        modalWindowBg.alpha = 0
-        
-        // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
-        if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
-            modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bgClick(_:))))
-        }
-        else {
-            modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(shakeModalWindow(_:))))
-        }
-        
-        modalWindowBg.isUserInteractionEnabled = true
-        
-        scrollView.addSubview(modalWindowBg)
-        scrollView.isScrollEnabled = false
-        
-        // Добавляем модальное окно
-        modalWindow = UIView(frame: CGRect(x: scrollView.bounds.minX - 220, y: scrollView.bounds.midY - 200 / 2, width: 220, height: 200))
-        modalWindow.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-        
-        modalWindow.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
-        modalWindow.layer.cornerRadius = 15
-        modalWindow.layer.shadowColor = UIColor.black.cgColor
-        modalWindow.layer.shadowOffset = CGSize.zero
-        modalWindow.layer.shadowOpacity = 0.35
-        modalWindow.layer.shadowRadius = 10
-        
-        scrollView.addSubview(modalWindow)
-        
-        UIView.animate(withDuration: 0.215, animations: {
-            self.settingsButton.alpha = 0
-            self.findCharacterButton.alpha = 0
-            self.modalWindowBg.alpha = 0.5
-            self.modalWindow.frame.origin.x = self.scrollView.bounds.midX - self.modalWindow.frame.width / 2
-        })
-        
-        // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
-        if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
-            modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+        if isModalWindowOpen == false {
+            isModalWindowOpen = true
             
-            // Добавляем иконку закрытия модального окна
-            let modalWindowClose = UIImageView(image: UIImage(named: "Modal_window_close"))
-            modalWindowClose.frame.size = CGSize(width: modalWindowClose.frame.size.width * 0.1, height: modalWindowClose.frame.size.height * 0.1)
-            modalWindowClose.frame.origin = CGPoint(x: modalWindow.frame.width + 3, y: 0 - modalWindowClose.frame.size.height)
-            modalWindow.addSubview(modalWindowClose)
-        }
-        
-        /// Название выбранного уровня
-        let levelNumberLabel = UILabel(frame: CGRect(x: 20, y: 25, width: modalWindow.frame.size.width - 40, height: 35))
-        levelNumberLabel.text = "\(NSLocalizedString("Level", comment: "")) \(Model.sharedInstance.currentLevel)"
-        
-        if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
-            let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
-            levelNumberLabel.text = "\(NSLocalizedString("BOSS", comment: "")) #\(bossNumberTitle)"
-        }
-        
-        levelNumberLabel.textAlignment = NSTextAlignment.left
-        levelNumberLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
-        levelNumberLabel.textColor = UIColor.white
-        modalWindow.addSubview(levelNumberLabel)
-        
-        // Кнопка "старт" в модальном окне, которая переносит на выбранный уровень
-        let btnStart = UIButton(frame: CGRect(x: modalWindow.bounds.midX - ((modalWindow.frame.width - 40) / 2), y: modalWindow.bounds.midY - 50 / 2, width: modalWindow.frame.width - 40, height: 50))
-        btnStart.layer.cornerRadius = 10
-        btnStart.backgroundColor = UIColor.init(red: 217 / 255, green: 29 / 255, blue: 29 / 255, alpha: 1)
-        btnStart.titleLabel?.font = UIFont(name: "AvenirNext-Medium", size: 19)
-        btnStart.addTarget(self, action: #selector(startLevel), for: .touchUpInside)
-        btnStart.setTitle(NSLocalizedString("START", comment: ""), for: UIControlState.normal)
-        modalWindow.addSubview(btnStart)
-        
-        if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
-            if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-                let countOfGemsImage = UIImageView(image: UIImage(named: "Heart"))
-                countOfGemsImage.frame.size = CGSize(width: countOfGemsImage.frame.size.width * 0.75, height: countOfGemsImage.frame.size.height * 0.75)
-                countOfGemsImage.frame.origin = CGPoint(x: modalWindow.frame.size.width - 35 - 20, y: 22)
-                modalWindow.addSubview(countOfGemsImage)
+            // Добавляем бг, чтобы при клике на него закрыть всё модальное окно
+            modalWindowBg = UIView(frame: scrollView.bounds)
+            modalWindowBg.backgroundColor = UIColor.black
+            modalWindowBg.restorationIdentifier = "modalWindowBg"
+            modalWindowBg.alpha = 0
             
-                let countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 75 / 2, y: countOfGemsImage.frame.height / 2 - 50 / 2, width: 75, height: 50))
-                countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 18)
-                countGemsModalWindowLabel.text = String(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel))
-                countGemsModalWindowLabel.textAlignment = NSTextAlignment.center
-                countGemsModalWindowLabel.textColor = UIColor.white
-                countOfGemsImage.addSubview(countGemsModalWindowLabel)
+            // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
+            if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
+                modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bgClick(_:))))
             }
-        }
-        else {
-            let completedLevelLabel = UIImageView(image: UIImage(named: "Checked"))
-            completedLevelLabel.frame.size = CGSize(width: 32, height: 32)
-            completedLevelLabel.frame.origin = CGPoint(x: modalWindow.frame.size.width - 45, y: 22)
-            modalWindow.addSubview(completedLevelLabel)
-        }
-        
-        // Кнопка "дополнительная жизнь" или "настройки" в модальном окне в зависимости от кол-ва жизней
-        let secondButton = UIButton(frame: CGRect(x: modalWindow.bounds.midX - ((modalWindow.frame.width - 40) / 2), y: modalWindow.frame.size.height - 50 - 15, width: modalWindow.frame.width - 40, height: 50))
-        secondButton.layer.cornerRadius = 10
-        secondButton.backgroundColor = UIColor.init(red: 165 / 255, green: 240 / 255, blue: 16 / 255, alpha: 1)
-        secondButton.titleLabel?.font = UIFont(name: "AvenirNext-Medium", size: 19)
-        secondButton.setTitleColor(UIColor.black, for: UIControlState.normal)
-        modalWindow.addSubview(secondButton)
-        
-        // Если количество жизенй на уровне меньше 0, то добавляем кнопку получения новой жизни
-        if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 && Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
-            btnStart.backgroundColor = UIColor.init(red: 187 / 255, green: 36 / 255, blue: 36 / 255, alpha: 0.9)
-            btnStart.removeTarget(self, action: nil, for: .allEvents)
-            btnStart.addTarget(self, action: #selector(shakeBtnStart), for: .touchUpInside)
+            else {
+                modalWindowBg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(shakeModalWindow(_:))))
+            }
             
-            secondButton.setTitle(NSLocalizedString("EXTRA LIFE", comment: ""), for: UIControlState.normal)
-            secondButton.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
-        }
-        else {
-            secondButton.setTitle(NSLocalizedString("SETTINGS", comment: ""), for: UIControlState.normal)
-            secondButton.addTarget(self, action: #selector(goToMenuFromModalWindow), for: .touchUpInside)
+            modalWindowBg.isUserInteractionEnabled = true
+            
+            scrollView.addSubview(modalWindowBg)
+            scrollView.isScrollEnabled = false
+            
+            // Добавляем модальное окно
+            modalWindow = UIView(frame: CGRect(x: scrollView.bounds.minX - 220, y: scrollView.bounds.midY - 200 / 2, width: 220, height: 200))
+            modalWindow.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+            
+            modalWindow.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
+            modalWindow.layer.cornerRadius = 15
+            modalWindow.layer.shadowColor = UIColor.black.cgColor
+            modalWindow.layer.shadowOffset = CGSize.zero
+            modalWindow.layer.shadowOpacity = 0.35
+            modalWindow.layer.shadowRadius = 10
+            
+            scrollView.addSubview(modalWindow)
+            
+            UIView.animate(withDuration: 0.215, animations: {
+                self.settingsButton.alpha = 0
+                self.findCharacterButton.alpha = 0
+                self.modalWindowBg.alpha = 0.5
+                self.modalWindow.frame.origin.x = self.scrollView.bounds.midX - self.modalWindow.frame.width / 2
+            })
+            
+            // Если уровни без начального обучения, то можно скрыть окно с выбором уровня
+            if (Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2) || Model.sharedInstance.getCountCompletedLevels() > 1 {
+                modalWindow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.bgClick(_:))))
+                
+                // Добавляем иконку закрытия модального окна
+                let modalWindowClose = UIImageView(image: UIImage(named: "Modal_window_close"))
+                modalWindowClose.frame.size = CGSize(width: modalWindowClose.frame.size.width * 0.1, height: modalWindowClose.frame.size.height * 0.1)
+                modalWindowClose.frame.origin = CGPoint(x: modalWindow.frame.width + 3, y: 0 - modalWindowClose.frame.size.height)
+                modalWindow.addSubview(modalWindowClose)
+            }
+            
+            /// Название выбранного уровня
+            let levelNumberLabel = UILabel(frame: CGRect(x: 20, y: 25, width: modalWindow.frame.size.width - 40, height: 35))
+            levelNumberLabel.text = "\(NSLocalizedString("Level", comment: "")) \(Model.sharedInstance.currentLevel)"
+            
+            if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
+                let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
+                levelNumberLabel.text = "\(NSLocalizedString("BOSS", comment: "")) #\(bossNumberTitle)"
+            }
+            
+            levelNumberLabel.textAlignment = NSTextAlignment.left
+            levelNumberLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
+            levelNumberLabel.textColor = UIColor.white
+            modalWindow.addSubview(levelNumberLabel)
+            
+            // Кнопка "старт" в модальном окне, которая переносит на выбранный уровень
+            let btnStart = UIButton(frame: CGRect(x: modalWindow.bounds.midX - ((modalWindow.frame.width - 40) / 2), y: modalWindow.bounds.midY - 50 / 2, width: modalWindow.frame.width - 40, height: 50))
+            btnStart.layer.cornerRadius = 10
+            btnStart.backgroundColor = UIColor.init(red: 217 / 255, green: 29 / 255, blue: 29 / 255, alpha: 1)
+            btnStart.titleLabel?.font = UIFont(name: "AvenirNext-Medium", size: 19)
+            btnStart.addTarget(self, action: #selector(startLevel), for: .touchUpInside)
+            btnStart.setTitle(NSLocalizedString("START", comment: ""), for: UIControlState.normal)
+            modalWindow.addSubview(btnStart)
+            
+            if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
+                    let countOfGemsImage = UIImageView(image: UIImage(named: "Heart"))
+                    countOfGemsImage.frame.size = CGSize(width: countOfGemsImage.frame.size.width * 0.75, height: countOfGemsImage.frame.size.height * 0.75)
+                    countOfGemsImage.frame.origin = CGPoint(x: modalWindow.frame.size.width - 35 - 20, y: 22)
+                    modalWindow.addSubview(countOfGemsImage)
+                
+                    let countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 75 / 2, y: countOfGemsImage.frame.height / 2 - 50 / 2, width: 75, height: 50))
+                    countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 18)
+                    countGemsModalWindowLabel.text = String(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel))
+                    countGemsModalWindowLabel.textAlignment = NSTextAlignment.center
+                    countGemsModalWindowLabel.textColor = UIColor.white
+                    countOfGemsImage.addSubview(countGemsModalWindowLabel)
+                }
+            }
+            else {
+                let completedLevelLabel = UIImageView(image: UIImage(named: "Checked"))
+                completedLevelLabel.frame.size = CGSize(width: 32, height: 32)
+                completedLevelLabel.frame.origin = CGPoint(x: modalWindow.frame.size.width - 45, y: 22)
+                modalWindow.addSubview(completedLevelLabel)
+            }
+            
+            // Кнопка "дополнительная жизнь" или "настройки" в модальном окне в зависимости от кол-ва жизней
+            let secondButton = UIButton(frame: CGRect(x: modalWindow.bounds.midX - ((modalWindow.frame.width - 40) / 2), y: modalWindow.frame.size.height - 50 - 15, width: modalWindow.frame.width - 40, height: 50))
+            secondButton.layer.cornerRadius = 10
+            secondButton.backgroundColor = UIColor.init(red: 165 / 255, green: 240 / 255, blue: 16 / 255, alpha: 1)
+            secondButton.titleLabel?.font = UIFont(name: "AvenirNext-Medium", size: 19)
+            secondButton.setTitleColor(UIColor.black, for: UIControlState.normal)
+            modalWindow.addSubview(secondButton)
+            
+            // Если количество жизенй на уровне меньше 0, то добавляем кнопку получения новой жизни
+            if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) <= 0 && Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
+                btnStart.backgroundColor = UIColor.init(red: 187 / 255, green: 36 / 255, blue: 36 / 255, alpha: 0.9)
+                btnStart.removeTarget(self, action: nil, for: .allEvents)
+                btnStart.addTarget(self, action: #selector(shakeBtnStart), for: .touchUpInside)
+                
+                secondButton.setTitle(NSLocalizedString("EXTRA LIFE", comment: ""), for: UIControlState.normal)
+                secondButton.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
+            }
+            else {
+                secondButton.setTitle(NSLocalizedString("SETTINGS", comment: ""), for: UIControlState.normal)
+                secondButton.addTarget(self, action: #selector(goToMenuFromModalWindow), for: .touchUpInside)
+            }
         }
     }
     
@@ -448,6 +462,8 @@ class ChooseLevelViewController: UIViewController {
                 self.modalWindowBg.removeFromSuperview()
                 self.modalWindow.removeFromSuperview()
                 self.scrollView.isScrollEnabled = true
+                
+                self.isModalWindowOpen = false
             })
         }
     }
@@ -499,6 +515,8 @@ class ChooseLevelViewController: UIViewController {
                     subview.removeFromSuperview()
                 }
             }
+            
+            self.isModalWindowOpen = false
             
             self.modalWindowPresent()
         })
