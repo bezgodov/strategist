@@ -1,6 +1,14 @@
 import StoreKit
+import Flurry_iOS_SDK
 
 class IAPHandler: NSObject {
+    
+    override init() {
+        super.init()
+        
+        SKPaymentQueue.default().add(self)
+    }
+    
     static let sharedInstance = IAPHandler()
     
     let GEMS_50_ID = "Bezgodov.Strategist.50GEMS_new"
@@ -19,16 +27,18 @@ class IAPHandler: NSObject {
         if isAbleToPurchase() {
             let product = iapProducts[id]!
             let payment = SKPayment(product: product)
-            SKPaymentQueue.default().add(self)
+//            SKPaymentQueue.default().add(self)
             SKPaymentQueue.default().add(payment)
             
             productID = product.productIdentifier
         }
         else {
-            let alertController = UIAlertController(title: NSLocalizedString("FAIL", comment: ""), message: NSLocalizedString("Purchases are disabled in your device", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
-            let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.default)
-            alertController.addAction(okAction)
-            UIApplication.shared.keyWindow?.rootViewController?.present(alertController, animated: true, completion: nil)
+            if Model.sharedInstance.menuViewController != nil {
+                let alertController = UIAlertController(title: NSLocalizedString("FAIL", comment: ""), message: NSLocalizedString("Purchases are disabled in your device", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
+                let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.default)
+                alertController.addAction(okAction)
+                Model.sharedInstance.menuViewController.present(alertController, animated: true, completion: nil)
+            }
         }
     }
     
@@ -68,6 +78,9 @@ extension IAPHandler: SKProductsRequestDelegate, SKPaymentTransactionObserver {
                             
                             Model.sharedInstance.menuViewController.presentViewIAP(remove: true)
                             SKPaymentQueue.default().finishTransaction(transaction as! SKPaymentTransaction)
+                            
+                            let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+                            Flurry.logEvent("Buy_gems_50_success", withParameters: eventParams)
                         }
                         else {
                             if trans.payment.productIdentifier == GEMS_300_ID {
@@ -81,6 +94,9 @@ extension IAPHandler: SKProductsRequestDelegate, SKPaymentTransactionObserver {
                                 
                                 Model.sharedInstance.menuViewController.presentViewIAP(remove: true)
                                 SKPaymentQueue.default().finishTransaction(transaction as! SKPaymentTransaction)
+                                
+                                let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+                                Flurry.logEvent("Buy_gems_300_success", withParameters: eventParams)
                             }
                             else {
                                 if trans.payment.productIdentifier == GEMS_500_ID {
@@ -94,28 +110,53 @@ extension IAPHandler: SKProductsRequestDelegate, SKPaymentTransactionObserver {
                                     
                                     Model.sharedInstance.menuViewController.presentViewIAP(remove: true)
                                     SKPaymentQueue.default().finishTransaction(transaction as! SKPaymentTransaction)
+                                    
+                                    let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+                                    Flurry.logEvent("Buy_gems_500_success", withParameters: eventParams)
                                 }
                             }
                         }
                         break
                     case .failed:
-                        Model.sharedInstance.menuViewController.presentViewIAP(remove: true)
-                        
-                        let alertController = UIAlertController(title: NSLocalizedString("FAIL", comment: ""), message: NSLocalizedString("Something went wrong, try again", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
-                        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.default)
-                        alertController.addAction(okAction)
-                        UIApplication.shared.keyWindow?.rootViewController?.present(alertController, animated: true, completion: nil)
+                        if Model.sharedInstance.menuViewController != nil {
+                            Model.sharedInstance.menuViewController.presentViewIAP(remove: true)
+                            
+                            var title = NSLocalizedString("FAIL", comment: "")
+                            var message = NSLocalizedString("Something went wrong, try again", comment: "")
+                            
+                            // Если покупка была отменена, то выводим сообщение об этом
+                            if trans.error?._code != SKError.paymentCancelled.rawValue {
+                                title = NSLocalizedString("Cancel", comment: "")
+                                message = NSLocalizedString("Purchasing cancelled", comment: "")
+                                
+                                let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+                                Flurry.logEvent("Buy_gems_cancel", withParameters: eventParams)
+                            }
+                            else {
+                                let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+                                Flurry.logEvent("Buy_gems_error", withParameters: eventParams)
+                            }
+                            
+                            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+                            let actionOk = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.default)
+                            alert.addAction(actionOk)
+                            Model.sharedInstance.menuViewController.present(alert, animated: true, completion: nil)
+                        }
                         
                         SKPaymentQueue.default().finishTransaction(transaction as! SKPaymentTransaction)
                         break
                     case .purchasing:
-                        Model.sharedInstance.menuViewController.presentViewIAP()
+                        if Model.sharedInstance.menuViewController != nil {
+                            Model.sharedInstance.menuViewController.presentViewIAP()
+                        }
                         break
                     case .deferred:
-                        Model.sharedInstance.menuViewController.presentViewIAP(remove: true)
+                        if Model.sharedInstance.menuViewController != nil {
+                            Model.sharedInstance.menuViewController.presentViewIAP(remove: true)
+                        }
                         break
-                    default:
-                        break
+                case .restored:
+                    break
                 }
             }
         }

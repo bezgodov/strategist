@@ -65,6 +65,9 @@ class GameScene: SKScene {
     /// Таймер для предпросмотра сцены
     var previewTimer = Timer()
     
+    /// Таймер для получения бесплатной жизни на уровне
+    var timerToClaimFreeLife = Timer()
+    
     /// Слой, на который добавляются все остальные Nodes
     var gameLayer = SKSpriteNode()
     
@@ -86,8 +89,8 @@ class GameScene: SKScene {
     /// View, который выводит информацию об объекте
     var objectInfoView: UIView?
     
-    /// Последний выбранный объект
-    var objectTypeClickedLast: ObjectType?
+    /// true, если окно окно подсказки об объекте открыто
+    var isOpenInfoView = false
     
     /// Полсдений клик, который был сделан на игровом поле
     var lastClickOnGameBoard = Point(column: -1, row: -1)
@@ -112,9 +115,6 @@ class GameScene: SKScene {
     
     /// Переменные для модального окна
     var mainBgTutorial, modalWindowBg, modalWindow: UIView!
-    
-    /// Переменная для спрайта, который отображает крестик на последней точке выбранного пути
-    var lastPathStepSprite: SKSpriteNode!
     
     /// Уровень, который находится в конце секции
     var bossLevel: BossLevel?
@@ -142,6 +142,9 @@ class GameScene: SKScene {
     
     /// Баннер, который всплывает после каждого 5-го проигранного уровня
     var interstitial: GADInterstitial!
+    
+    /// окно для таймера для получения бесплатной доп. жизни
+    var viewExtraLifeForAd: UIView!
     
     override func didMove(to view: SKView) {
         
@@ -483,13 +486,6 @@ class GameScene: SKScene {
                 }
             }
             
-            lastPathStepSprite = SKSpriteNode(imageNamed: "ErasePath")
-            lastPathStepSprite.size = CGSize(width: TileWidth / 4, height: TileHeight / 4)
-            lastPathStepSprite.position = pointFor(column: -5, row: -5)
-            lastPathStepSprite.alpha = 0
-            lastPathStepSprite.zPosition = 4
-            objectsLayer.addChild(lastPathStepSprite)
-            
             // Если финальный уровень в секции
             if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
                 bossLevel = BossLevel()
@@ -499,6 +495,10 @@ class GameScene: SKScene {
             
             if Model.sharedInstance.shouldPresentAd() {
                 loadAd()
+            }
+            
+            if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) < 2 {
+                loadClaimFreeLifeAD()
             }
         }
     }
@@ -520,8 +520,6 @@ class GameScene: SKScene {
                         presentObjectInfoView(spriteName: "Bag", description: "", infoViewHeight: 65)
                     }
                     
-                    lastPathStepSprite.alpha = 0
-                    
                     DispatchQueue.main.async {
                         self.character.pathNode.run(SKAction.fadeAlpha(to: 0, duration: 0.25), completion: {
                             self.character.pathNode.removeFromParent()
@@ -540,15 +538,8 @@ class GameScene: SKScene {
                 }
             }
             else {
-                // Если режим предпросмотра был куплен или сейчас 3-ий уровень, так как там обучение с этим происходит
-                if Model.sharedInstance.isPaidPreviewMode() || Model.sharedInstance.currentLevel == 3 {
-                    presentPreview()
-                }
-                else {
-                    SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
-                    
-                    buyPreviewOnGameBoard()
-                }
+                // В новой версии (1.04) режим предпросмотра бесплатно
+                presentPreview()
             }
         }
     }
@@ -741,10 +732,31 @@ class GameScene: SKScene {
         }
     }
     
+    func presentInterstitialLoseWin() {
+        // Если рекламы не отключена
+        if Model.sharedInstance.isDisabledAd() == false {
+            // Если проигранный уровень % 6 == 0
+            if Model.sharedInstance.shouldPresentAd() {
+                if interstitial.isReady {
+                    SKTAudio.sharedInstance().pauseBackgroundMusic()
+                    interstitial.present(fromRootViewController: Model.sharedInstance.gameViewControllerConnect)
+                    
+                    Model.sharedInstance.setCountLoseLevel()
+                }
+                else {
+                    Flurry.logEvent("Ad_wasnt_ready")
+                }
+            }
+            else {
+                Model.sharedInstance.setCountLoseLevel()
+            }
+        }
+    }
+    
     /// Уровень не пройден
     func loseLevel() {
         if !isLosedLevel {
-            if Model.sharedInstance.currentLevel != 1 {
+            if Model.sharedInstance.currentLevel != 1 && Model.sharedInstance.currentLevel != 2 {
                 if Model.sharedInstance.emptySavedLevelsLives() == false {
                     if !Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
                         Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 1)
@@ -773,21 +785,7 @@ class GameScene: SKScene {
                 modalWindowPresent(type: modalWindowType.lose)
             }
             
-            // Если рекламы не отключена
-            if Model.sharedInstance.isDisabledAd() == false {
-                // Если проигранный уровень % 8 == 0
-                if Model.sharedInstance.shouldPresentAd() {
-                    if interstitial.isReady {
-                        SKTAudio.sharedInstance().pauseBackgroundMusic()
-                        interstitial.present(fromRootViewController: Model.sharedInstance.gameViewControllerConnect)
-                    }
-                    else {
-                        Flurry.logEvent("Ad_wasnt_ready")
-                    }
-                }
-                
-                Model.sharedInstance.setCountLoseLevel()
-            }
+            presentInterstitialLoseWin()
             
             // Если обычный уровень (не босс), то скрываем одно сердечко
             if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
@@ -870,6 +868,9 @@ class GameScene: SKScene {
             
             Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
         }
+        else {
+            presentInterstitialLoseWin()
+        }
     }
     
     func loadAd() {
@@ -908,17 +909,17 @@ class GameScene: SKScene {
         tilesLayer.removeAllActions()
         tilesLayer.removeFromParent()
         heartsStackView.removeFromSuperview()
-        objectTypeClickedLast = nil
         isLastTapLongPress = false
         lastClickOnGameBoard = Point(column: -1, row: -1)
         gameBegan = false
         isNextCharacterMoveAtBridgeLose = false
         isNecessaryUseAllMoves = false
-        lastPathStepSprite.removeFromParent()
         isPreviewing = false
         isLosedLevel = false
         keysInBag.removeAll()
         collectedObjects.removeAll()
+        isOpenInfoView = false
+        timerToClaimFreeLife.invalidate()
         
         if Model.sharedInstance.currentLevel > 1 {
             removeObjectInfoView()
@@ -1072,10 +1073,6 @@ class GameScene: SKScene {
         
         updateMoves(-winningPath.count + 1)
         character.moves = winningPath
-        
-        if lastPathStepSprite != nil {
-            lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
-        }
         
         character.path()
     }

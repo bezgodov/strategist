@@ -83,13 +83,8 @@ class GameViewController: UIViewController {
             else {
                 SKTAudio.sharedInstance().playSoundEffect(filename: "Click.wav")
                 
-                // Если режим предпросмотра был куплен или сейчас 3-ий уровень, так как там обучение с этим происходит
-                if Model.sharedInstance.isPaidPreviewMode() || Model.sharedInstance.currentLevel == 3 {
-                    Model.sharedInstance.gameScene.presentPreview()
-                }
-                else {
-                    Model.sharedInstance.gameScene.buyPreviewOnGameBoard()
-                }
+                // В новой версии (1.04) режим предпросмотра бесплатно
+                Model.sharedInstance.gameScene.presentPreview()
             }
         }
     }

@@ -9,6 +9,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
+//        for index in 1...Model.sharedInstance.countLevels {
+//            if index % 2 != 0 {
+//                Model.sharedInstance.setCompletedLevel(index, value: true)
+//                
+//            }
+//            else {
+//                Model.sharedInstance.setCompletedLevel(index, value: false)
+//            }
+//            
+//            if index > 14 {
+//                Model.sharedInstance.setCompletedLevel(index, value: false)
+//            }
+//        }
+//        Model.sharedInstance.setCountCompletedLevels(13)
+        
         if Model.sharedInstance.isDisabledAd() == false {
             GADMobileAds.configure(withApplicationID: "ca-app-pub-3811728185284523~6581984133")
         }

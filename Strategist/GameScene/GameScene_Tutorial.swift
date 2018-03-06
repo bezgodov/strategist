@@ -74,21 +74,13 @@ extension GameScene {
                     ],
                 2:
                     [
-                        3: getRectFromPoint(point: Point(column: 1, row: 3)),
+                        2: getRectFromPoint(point: Point(column: 1, row: 3)),
                     ],
                 3:
                     [
                         1: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
                     ],
-                4:
-                    [
-                        0: self.view!.bounds
-                    ],
                 5:
-                    [
-                        0: self.view!.bounds
-                    ],
-                6:
                     [
                         0: self.view!.bounds
                     ],
@@ -96,7 +88,11 @@ extension GameScene {
                     [
                         0: self.view!.bounds
                     ],
-                14:
+                8:
+                    [
+                        0: self.view!.bounds
+                    ],
+                9:
                     [
                         0: self.view!.bounds
                     ],
@@ -106,12 +102,16 @@ extension GameScene {
                         2: self.view!.bounds,
                         3: self.view!.bounds
                     ],
-                24:
+                17:
+                    [
+                        0: self.view!.bounds
+                    ],
+                26:
                     [
                         0: self.view!.bounds,
                         1: self.view!.bounds
                     ],
-                33:
+                35:
                     [
                         0: self.view!.bounds,
                         1: getRectFromPoint(point: Point(column: 0, row: 1)),
@@ -132,15 +132,19 @@ extension GameScene {
                 
             let tapLocationPos = sender.location(in: sender.view!)
             if tapPoints.index(forKey: slideIndex) != nil {
+                
+                var tapIconOnScene: UIView?
+                for tapIconView in sender.view!.subviews {
+                    if tapIconView.restorationIdentifier == "tapIcon" {
+                        tapIconOnScene = tapIconView
+                    }
+                }
+                
                 if checkIfClickInsideRect(point: tapLocationPos, rect: tapPoints[slideIndex]!) {
                     sender.view!.tag += 1
                     
                     if sender.view!.tag == 6 || sender.view!.tag == 8 {
-                        for tapIconView in sender.view!.subviews {
-                            if tapIconView.restorationIdentifier == "tapIcon" {
-                                tapIconView.frame.origin = CGPoint(x: sender.view!.frame.maxX, y: 0)
-                            }
-                        }
+                        tapIconOnScene?.frame.origin = CGPoint(x: sender.view!.frame.maxX, y: 0)
                     }
                     
                     if sender.view!.tag == 6 {
@@ -157,6 +161,10 @@ extension GameScene {
                         extraActionForSlide(slide: slideIndex)
                         nextSlideInfo(slide: sender.view!.tag, sender: sender)
                     }
+                }
+                else {
+                    // Немного трясём указатель, чтобы на него обратили внимание (если клик был сделан не в то место)
+                    shakeView(tapIconOnScene!)
                 }
             }
             else {
@@ -192,7 +200,6 @@ extension GameScene {
                 [
                 NSLocalizedString("For previous level you got 3 GEMS. You can look how many gems you have in menu or settings...", comment: ""),
                 NSLocalizedString("You can buy extra lives for GEMS or winning paths...", comment: ""),
-                NSLocalizedString("You can tap at any object to find out how it behaves itself or how it moves...", comment: ""),
                 NSLocalizedString("Tap at the nearest star to find out what it is like...", comment: ""),
                 ],
             3:
@@ -200,25 +207,21 @@ extension GameScene {
                 NSLocalizedString("If you still did not choose path you can activate preview mode...", comment: ""),
                 NSLocalizedString("Tap at 'Start' button to activate preview mode", comment: "")
                 ],
-            4:
+            5:
                 [
                 NSLocalizedString("You can tap at last your choosen path's point and delete it", comment: "")
                 ],
-            5:
+            7:
                 [
                 NSLocalizedString("Except tapping at screen you can slide along the game board", comment: "")
                 ],
-            6:
+            8:
                 [
                 NSLocalizedString("If label with maximum count of moves has red color you should use all moves", comment: "")
                 ],
-            7:
+            9:
                 [
                 NSLocalizedString("If you've already chosen path you can still look at enemy's info. Just tap long at it", comment: "")
-                ],
-            14:
-                [
-                NSLocalizedString("To get some info about dynamic enemy just tap long at it", comment: "")
                 ],
             16:
                 [
@@ -227,12 +230,16 @@ extension GameScene {
                 NSLocalizedString("You can try passing this level as many times as you wish", comment: ""),
                 NSLocalizedString("Collect 10 stars to win level and be careful you should avoid your enemies", comment: "")
                 ],
-            24:
+            17:
+                [
+                NSLocalizedString("To get some info about dynamic enemy just tap long at it", comment: "")
+                ],
+            26:
                 [
                 NSLocalizedString("Sometimes levels can contain lots of enemies but resolution can be very easy...", comment: ""),
                 NSLocalizedString("Solve this level only for 7 moves", comment: "")
                 ],
-            33:
+            35:
                 [
                 NSLocalizedString("Press down all buttons to win the level and do not forget about stars...", comment: ""),
                 NSLocalizedString("Tap at button to switch all other button...", comment: ""),
@@ -242,8 +249,10 @@ extension GameScene {
         ]
         
         if slide != infoBlockTutorial[Model.sharedInstance.currentLevel]!.count {
+            isOpenInfoView = true
+            
             removeObjectInfoView(toAlpha: 1)
-            presentObjectInfoView(spriteName: "PlayerStaysFront", description: infoBlockTutorial[Model.sharedInstance.currentLevel]![slide])
+            presentObjectInfoView(spriteName: "PlayerStaysFront", description: infoBlockTutorial[Model.sharedInstance.currentLevel]![slide], isTutorial: true)
             
             if sender != nil {
                 
@@ -259,6 +268,10 @@ extension GameScene {
                         if tapIconView.restorationIdentifier == "tapIcon" {
                             if nextMovePointForTapIcon != self.view!.bounds {
                                 tapIconView.alpha = 1
+                                
+                                if Model.sharedInstance.currentLevel == 3 {
+                                    tapIconView.frame.origin = CGPoint(x: mainBgTutorial.frame.minX - tapIconView.frame.width, y: self.view!.frame.midY)
+                                }
                                 
                                 UIView.animate(withDuration: 0.25, animations: {
                                     
@@ -339,14 +352,15 @@ extension GameScene {
             }
         case 2:
             switch slide {
-                case 4:
+                case 3:
                     for object in staticObjects {
                         if object.point == Point(column: 1, row: 3) {
                             
                             presentObjectInfoView(spriteName: object.type.spriteName, description: object.type.description)
                             
-                            objectTypeClickedLast = object.type
                             lastClickOnGameBoard = object.point
+                            
+                            isOpenInfoView = true
                         }
                     }
                 default:
@@ -377,7 +391,7 @@ extension GameScene {
             default:
                 break
             }
-        case 33:
+        case 35:
             switch slide {
             case 1:
                 for object in staticObjects {

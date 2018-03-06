@@ -1,7 +1,8 @@
 import SpriteKit
+import GoogleMobileAds
 import Flurry_iOS_SDK
 
-class ChooseLevelViewController: UIViewController {
+class ChooseLevelViewController: UIViewController, GADRewardBasedVideoAdDelegate {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var settingsButton: UIButton!
     @IBOutlet weak var findCharacterButton: UIButton!
@@ -51,9 +52,14 @@ class ChooseLevelViewController: UIViewController {
     /// true, если модальное окно открыто
     var isModalWindowOpen = false
     
+    /// окно для таймера для получения бесплатной доп. жизни
+    var viewExtraLifeForAd: UIView!
+    
+    /// Таймер для получения бесплатной жизни на уровне
+    var timerToClaimFreeLife = Timer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         menuSettings()
         
         characterInitial()
@@ -84,12 +90,115 @@ class ChooseLevelViewController: UIViewController {
         }
     }
     
+    
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         
         // Если обучение было "прервано" после 1-ого уровня
         if !moveCharacterToNextLevel && Model.sharedInstance.currentLevel == 2 && Model.sharedInstance.getCountCompletedLevels() == 1 && !Model.sharedInstance.isCompletedLevel(2) {
             modalWindowPresent()
+        }
+        
+        if moveCharacterToNextLevel == false {
+            if Model.sharedInstance.getLastTimeUserClaimFreeEveryDayGem() == nil {
+                Model.sharedInstance.setLastTimeUserClaimFreeEveryDayGem(Calendar.current.date(byAdding: Calendar.Component.hour, value: -10, to: Date())!)
+            }
+            
+            let timeToClaimFreeGem = TIME_TO_CLAIM_FREE_GEM - (Model.sharedInstance.getLastTimeUserClaimFreeEveryDayGem()!.timeIntervalSinceNow * -1)
+            
+            if timeToClaimFreeGem <= 0 {
+                self.scrollView.isScrollEnabled = false
+                self.settingsButton.isEnabled = false
+                self.findCharacterButton.isEnabled = false
+            }
+            
+            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (_) in
+                if timeToClaimFreeGem <= 0 {
+                    let bgForFreeGemView = UIView(frame: self.scrollView.bounds)
+                    bgForFreeGemView.backgroundColor = UIColor.black.withAlphaComponent(0)
+                    bgForFreeGemView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.clickOnBgGetFreeGem(_:))))
+                    bgForFreeGemView.restorationIdentifier = "bgForFreeGemView"
+                    self.scrollView.addSubview(bgForFreeGemView)
+                    
+                    let freeGemView = UIImageView(image: UIImage(named: "Gem_blue_big"))
+                    freeGemView.frame.size = CGSize(width: 46, height: 36)
+                    freeGemView.frame.origin = CGPoint(x: bgForFreeGemView.frame.width / 2 - freeGemView.frame.width / 2, y: 0 - freeGemView.frame.height)
+                    freeGemView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+                    freeGemView.isUserInteractionEnabled = true
+                    freeGemView.restorationIdentifier = "freeGemView"
+                    
+                    let koefForHeight = ((self.view.frame.width * 4) / 5) / freeGemView.frame.width
+                    
+                    bgForFreeGemView.addSubview(freeGemView)
+                    
+                    let viewInfoAboutFreeEveryDayGem = UILabel(frame: CGRect(x: 0, y: 0, width: bgForFreeGemView.frame.width, height: 65))
+                    viewInfoAboutFreeEveryDayGem.textAlignment = NSTextAlignment.center
+                    viewInfoAboutFreeEveryDayGem.textColor = UIColor.white
+                    viewInfoAboutFreeEveryDayGem.backgroundColor = UIColor.black.withAlphaComponent(0.35)
+                    viewInfoAboutFreeEveryDayGem.text = NSLocalizedString("Tap at gem to get its", comment: "")
+                    viewInfoAboutFreeEveryDayGem.numberOfLines = 3
+                    viewInfoAboutFreeEveryDayGem.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+                    bgForFreeGemView.addSubview(viewInfoAboutFreeEveryDayGem)
+                    
+                    UIView.animate(withDuration: 0.215, animations: {
+                        bgForFreeGemView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+                        self.settingsButton.alpha = 0
+                        self.findCharacterButton.alpha = 0
+                    })
+                    
+                    UIView.animate(withDuration: 0.5, animations: {
+                        freeGemView.frame.size = CGSize(width: (self.view.frame.width * 4) / 5, height: freeGemView.frame.height * koefForHeight)
+                        freeGemView.frame.origin = CGPoint(x: bgForFreeGemView.frame.width / 2 - freeGemView.frame.width / 2, y: bgForFreeGemView.frame.height / 2 - freeGemView.frame.height / 2)
+                    }, completion: { (_) in
+                        freeGemView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.getFreeEveryDayGem(_:))))
+                    })
+                }
+            }
+        }
+        
+        loadClaimFreeLifeAD()
+    }
+    
+    @objc func getFreeEveryDayGem(_ sender: UITapGestureRecognizer) {
+        sender.view?.isUserInteractionEnabled = false
+        sender.view?.layer.removeAllAnimations()
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            sender.view?.frame.origin = CGPoint(x: 15 / 2, y: self.scrollView.frame.height - 15 / 2)
+            sender.view?.frame.size = CGSize(width: 0, height: 0)
+            sender.view?.alpha = 0
+            
+            self.settingsButton.alpha = 1
+            self.findCharacterButton.alpha = 1
+        }, completion: { (_) in
+            self.settingsButton.isEnabled = true
+            self.findCharacterButton.isEnabled = true
+            
+            Model.sharedInstance.setCountGems(amountGems: 1)
+            Model.sharedInstance.setLastTimeUserClaimFreeEveryDayGem(Date())
+            
+            SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpCoin.mp3")
+            
+            UIView.animate(withDuration: 0.215, animations: {
+                sender.view?.superview?.backgroundColor = UIColor.black.withAlphaComponent(0)
+            }, completion: { (_) in
+                if sender.view?.superview?.restorationIdentifier == "bgForFreeGemView" {
+                    sender.view?.superview?.removeFromSuperview()
+                }
+                sender.view?.removeFromSuperview()
+                
+                self.scrollView.isScrollEnabled = true
+            })
+        })
+    }
+    
+    @objc func clickOnBgGetFreeGem(_ sender: UITapGestureRecognizer) {
+        for subview in sender.view!.subviews {
+            if subview.restorationIdentifier == "freeGemView" {
+                shakeView(subview)
+                break
+            }
         }
     }
     
@@ -433,6 +542,11 @@ class ChooseLevelViewController: UIViewController {
                 
                 secondButton.setTitle(NSLocalizedString("EXTRA LIFE", comment: ""), for: UIControlState.normal)
                 secondButton.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
+                
+                // Если жизней 0, то выводим надпись о получении бесплатной жизни
+                if Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) == false {
+                    buttonToClaimFreeLife()
+                }
             }
             else {
                 secondButton.setTitle(NSLocalizedString("SETTINGS", comment: ""), for: UIControlState.normal)
@@ -457,10 +571,24 @@ class ChooseLevelViewController: UIViewController {
                 self.settingsButton.alpha = 1
                 self.findCharacterButton.alpha = 1
                 self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
+                
+                if self.viewExtraLifeForAd != nil {
+                    if self.viewExtraLifeForAd.superview != nil {
+                        self.viewExtraLifeForAd.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
+                    }
+                }
+                
                 self.modalWindowBg.alpha = 0
             }, completion: { (_) in
                 self.modalWindowBg.removeFromSuperview()
                 self.modalWindow.removeFromSuperview()
+                
+                if self.viewExtraLifeForAd != nil {
+                    if self.viewExtraLifeForAd.superview != nil {
+                        self.viewExtraLifeForAd.removeFromSuperview()
+                    }
+                }
+                
                 self.scrollView.isScrollEnabled = true
                 
                 self.isModalWindowOpen = false
@@ -492,15 +620,25 @@ class ChooseLevelViewController: UIViewController {
         presentMenu(dismiss: true)
     }
     
-    func buyExtraLife() {
-        // Отнимаем 10 драг. камней
-        Model.sharedInstance.setCountGems(amountGems: -EXTRA_LIFE_PRICE)
+    func buyExtraLife(price: Int = 0, addLives: Int = 1) {
         
-        Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + 1)
+        if price != 0 {
+            // Отнимаем 10 драг. камней
+            Model.sharedInstance.setCountGems(amountGems: price)
+        }
+        
+        Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: addLives)
         UIView.animate(withDuration: 0.215, animations: {
             self.modalWindow.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
+            
+            if self.viewExtraLifeForAd != nil {
+                if self.viewExtraLifeForAd.superview != nil {
+                    self.viewExtraLifeForAd.frame.origin.x = self.view.bounds.minX - self.modalWindow.frame.size.width
+                }
+            }
         }, completion: { (_) in
             self.modalWindowBg.removeFromSuperview()
+            self.viewExtraLifeForAd.removeFromSuperview()
             
             // Ищем кнопку-уровень на scrollView
             var tileLevelSubView: UIView!
@@ -527,7 +665,7 @@ class ChooseLevelViewController: UIViewController {
         
         // Если больше 10 драг. камней, то добавляем новую жизнь
         if Model.sharedInstance.getCountGems() >= EXTRA_LIFE_PRICE {
-            let message = "\(NSLocalizedString("An extra life is worth", comment: "")) \(EXTRA_LIFE_PRICE) \(NSLocalizedString("GEMS", comment: "")) (\(NSLocalizedString("you have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: "")))"
+            let message = "5 \(NSLocalizedString("An extra life is worth", comment: "")) \(EXTRA_LIFE_PRICE) \(NSLocalizedString("GEMS", comment: "")) (\(NSLocalizedString("you have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: "")))"
             
             let alert = UIAlertController(title: NSLocalizedString("Buying an extra life", comment: ""), message: message, preferredStyle: UIAlertControllerStyle.alert)
             
@@ -540,7 +678,7 @@ class ChooseLevelViewController: UIViewController {
             let actionOk = UIAlertAction(title: NSLocalizedString("Buy one life", comment: ""), style: UIAlertActionStyle.default, handler: { (_) in
                 let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
                 
-                self.buyExtraLife()
+                self.buyExtraLife(price: -EXTRA_LIFE_PRICE, addLives: 5)
                 
                 Flurry.logEvent("Buy_extra_life_levels", withParameters: eventParams)
             })
@@ -659,7 +797,7 @@ class ChooseLevelViewController: UIViewController {
         var countOfCompletedLevels = 0
         
         while level > 0 {
-            if Model.sharedInstance.isCompletedLevel(level) {
+            if Model.sharedInstance.isCompletedLevel(level) && level % Model.sharedInstance.distanceBetweenSections != 0 {
                 countOfCompletedLevels += 1
             }
             
@@ -741,7 +879,7 @@ class ChooseLevelViewController: UIViewController {
                     button.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
                     
                     if (row > 0) && ((row / distanceBetweenLevels + 1) % Model.sharedInstance.distanceBetweenSections == 0) {
-                        let sizeBoss: CGFloat = (!Model.sharedInstance.isDeviceIpad() ? 21 : (21 * 2.5))
+                        let sizeBoss: CGFloat = (!Model.sharedInstance.isDeviceIpad() ? 17 : (17 * 2.5))
                         button.titleLabel?.font = UIFont(name: "Avenir Next", size: sizeBoss)
                         button.setTitle(NSLocalizedString("BOSS", comment: ""), for: UIControlState.normal)
                     }
@@ -775,7 +913,7 @@ class ChooseLevelViewController: UIViewController {
                         let needCompleteLevelsPreviousSection = getCountCompleteLevelsForNextSection(row / distanceBetweenLevels)
                         
                         // Если не пройдено достаточное кол-во уровней, чтобы разблокировать или босс не пройден
-                        if completedLevels < needCompleteLevelsPreviousSection || !Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels) {
+                        if completedLevels < needCompleteLevelsPreviousSection {
                             isLevelsAfterSectionDisabled = true
                             
                             if Model.sharedInstance.getCountCompletedLevels() >= (row / distanceBetweenLevels - 1) {
@@ -785,9 +923,7 @@ class ChooseLevelViewController: UIViewController {
                             }
                             
                             let textAboutLevels = "\(NSLocalizedString("at least", comment: "")) \(needCompleteLevelsPreviousSection - completedLevels) \(NSLocalizedString("more levels", comment: ""))"
-                            let textAboutFinalLevel = NSLocalizedString("section's final level", comment: "")
-                            let ifBothTrue = (completedLevels < needCompleteLevelsPreviousSection && !Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels)) ? " \(NSLocalizedString("and", comment: "")) " : ""
-                            let disabledSectionText = "\(NSLocalizedString("Complete", comment: "")) \(completedLevels < needCompleteLevelsPreviousSection ? textAboutLevels : "")\(ifBothTrue)\(!Model.sharedInstance.isCompletedLevel(row / distanceBetweenLevels) ? textAboutFinalLevel : "")\(NSLocalizedString("to unlock next section", comment: ""))"
+                            let disabledSectionText = "\(NSLocalizedString("Complete", comment: "")) \(textAboutLevels)\(NSLocalizedString("to unlock next section", comment: ""))"
                             
                             presentInfoBlock(point: Point(column: 1, row: row - 2), message: disabledSectionText)
                         }
@@ -795,7 +931,7 @@ class ChooseLevelViewController: UIViewController {
                     
                     // Если последний уровень пройден, то выводим надпись о том, что новые уровни разрабатываются
                     if ((row / distanceBetweenLevels + 1) == Model.sharedInstance.getCountCompletedLevels()) && (Model.sharedInstance.getCountCompletedLevels() == Model.sharedInstance.countLevels) {
-                        presentInfoBlock(point: Point(column: 1, row: row + 1), message: NSLocalizedString("New levels are coming. We are already designing new levels. Wait for updates", comment: ""))
+                        presentInfoBlock(point: Point(column: 1, row: row + 1), message: NSLocalizedString("New levels are coming. We are already designing new levels. Wait for updates", comment: ""), isRateApp: true)
                     }
                     
                     if (row / distanceBetweenLevels) <= Model.sharedInstance.getCountCompletedLevels() + 1 && !isLevelsAfterSectionDisabled {
@@ -933,7 +1069,7 @@ class ChooseLevelViewController: UIViewController {
     }
     
     /// Окно на scrollView, которое выводит какое-либо сообщение
-    func presentInfoBlock(point: Point, message: String) {
+    func presentInfoBlock(point: Point, message: String, isRateApp: Bool = false) {
         let pointOnScrollView = pointFor(column: point.column, row: point.row)
         let infoBlockBgView = UIView(frame: CGRect(x: pointOnScrollView.x - levelTileSize.width, y: pointOnScrollView.y + 3 * levelTileSize.height / 4, width: levelTileSize.width * 4, height: levelTileSize.height * 1.5))
         infoBlockBgView.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
@@ -963,6 +1099,182 @@ class ChooseLevelViewController: UIViewController {
         infoBlockLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 17 * scaleFactorForIpad)
         infoBlockLabel.textColor = UIColor.white
         infoBlockBgView.addSubview(infoBlockLabel)
+        
+        if isRateApp {
+            infoBlockBgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(rateApp(_:))))
+        }
+    }
+    
+    @objc func rateApp(_ sender: UITapGestureRecognizer) {
+        Flurry.logEvent("Rate_app_levels")
+        
+        if #available(iOS 10.3,*) {
+            SKStoreReviewController.requestReview()
+        }
+        else {
+            let appId = 1351841309
+            let url = URL(string: "itms-apps:itunes.apple.com/app/apple-store/id\(appId)?mt=8&action=write-review")!
+            UIApplication.shared.open(url, options: ["mt": 8, "action": "write-review"], completionHandler: nil)
+        }
+    }
+    
+    @objc func extraLifeForAd(_ sender: UIButton) {
+        presentClaimFreeLifeAD()
+    }
+    
+    func stringFromTimeInterval(_ interval: TimeInterval) -> String {
+        let time = Int(interval)
+        
+        let minutes = (time / 60) % 60
+        let seconds = time % 60
+        
+        var leadingZero = ""
+        if seconds / 10 == 0 {
+            leadingZero = "0"
+        }
+        
+        return "\(minutes):\(leadingZero)\(seconds)"
+    }
+    
+    func buttonToClaimFreeLife() {
+        let timeToClaimFreeLife = TIME_TO_CLAIM_FREE_LIFE - (Model.sharedInstance.getLastDateClaimFreeLife(Model.sharedInstance.currentLevel)!.timeIntervalSinceNow * -1)
+        
+        // Добавляем кнопку дополнительной жизни
+        timerToClaimFreeLife.invalidate()
+        
+        // Если есть кнопка "Бесплатная жизнь", то немного поднимает модальное окно
+        modalWindow.frame.origin.y += (modalWindow.frame.height / 4) / 2
+        
+        viewExtraLifeForAd = UIView(frame: CGRect(x: scrollView.frame.minX - modalWindow.frame.width, y: modalWindow.frame.minY - 10 - (modalWindow.frame.height / 4), width: modalWindow.frame.width, height: modalWindow.frame.height / 4))
+        viewExtraLifeForAd.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
+        viewExtraLifeForAd.clipsToBounds = true
+        viewExtraLifeForAd.layer.cornerRadius = 15
+        viewExtraLifeForAd.layer.shadowColor = UIColor.black.cgColor
+        viewExtraLifeForAd.layer.shadowOffset = CGSize.zero
+        viewExtraLifeForAd.layer.shadowOpacity = 0.35
+        viewExtraLifeForAd.layer.shadowRadius = 10
+        viewExtraLifeForAd.isUserInteractionEnabled = true
+        viewExtraLifeForAd.restorationIdentifier = "viewExtraLifeForAd"
+        viewExtraLifeForAd.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+        scrollView.addSubview(viewExtraLifeForAd)
+        
+        UIView.animate(withDuration: 0.215, animations: {
+            self.viewExtraLifeForAd.frame.origin.x = self.modalWindow.frame.minX
+        })
+        
+        let buttonExtraLifeForAd = UIButton(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: viewExtraLifeForAd.frame.size))
+        buttonExtraLifeForAd.setTitleColor(UIColor.white, for: UIControlState.normal)
+        
+        buttonExtraLifeForAd.setTitle(NSLocalizedString("Free extra life", comment: ""), for: UIControlState.normal)
+        buttonExtraLifeForAd.titleLabel?.textAlignment = NSTextAlignment.center
+        buttonExtraLifeForAd.titleLabel?.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
+        viewExtraLifeForAd.addSubview(buttonExtraLifeForAd)
+        
+        if timeToClaimFreeLife <= 0 {
+            buttonExtraLifeForAd.addTarget(self, action: #selector(extraLifeForAd), for: UIControlEvents.touchUpInside)
+        }
+        else {
+        
+            buttonExtraLifeForAd.isEnabled = false
+            buttonExtraLifeForAd.setTitle(String(stringFromTimeInterval(timeToClaimFreeLife)), for: UIControlState.normal)
+            
+            timerToClaimFreeLife = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (timer) in
+                if Model.sharedInstance.getLastDateClaimFreeLife(Model.sharedInstance.currentLevel) != nil {
+                    
+                    let timeToClaimFreeLife = TIME_TO_CLAIM_FREE_LIFE - (Model.sharedInstance.getLastDateClaimFreeLife(Model.sharedInstance.currentLevel)!.timeIntervalSinceNow * -1)
+                    if timeToClaimFreeLife > 1 {
+                        buttonExtraLifeForAd.setTitle(self.stringFromTimeInterval(timeToClaimFreeLife), for: UIControlState.normal)
+                        if timeToClaimFreeLife < 30 {
+                            if GADRewardBasedVideoAd.sharedInstance().isReady == false {
+                                self.loadClaimFreeLifeAD()
+                            }
+                        }
+                    }
+                    else {
+                        buttonExtraLifeForAd.isEnabled = true
+                        buttonExtraLifeForAd.setTitle(NSLocalizedString("Free extra life", comment: ""), for: UIControlState.normal)
+                        buttonExtraLifeForAd.addTarget(self, action: #selector(self.extraLifeForAd), for: UIControlEvents.touchUpInside)
+                        
+                        timer.invalidate()
+                    }
+                }
+            }
+            
+            let indicatorExtraLifeForAd = UIView(frame: CGRect(x: 0, y: 0, width: viewExtraLifeForAd.frame.width, height: viewExtraLifeForAd.frame.height))
+            indicatorExtraLifeForAd.frame.size.width = (viewExtraLifeForAd.frame.width * CGFloat(timeToClaimFreeLife)) / CGFloat(TIME_TO_CLAIM_FREE_LIFE)
+            indicatorExtraLifeForAd.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+            viewExtraLifeForAd.insertSubview(indicatorExtraLifeForAd, belowSubview: buttonExtraLifeForAd)
+            
+            UIView.animate(withDuration: timeToClaimFreeLife, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+                indicatorExtraLifeForAd.frame.size.width = 0
+            }, completion: { (_) in
+                indicatorExtraLifeForAd.removeFromSuperview()
+            })
+        }
+    }
+    
+    func loadClaimFreeLifeAD() {
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
+        let request = GADRequest()
+        GADRewardBasedVideoAd.sharedInstance().load(request, withAdUnitID: "ca-app-pub-3811728185284523/1179286082")
+    }
+    
+    func presentClaimFreeLifeAD() {
+        if GADRewardBasedVideoAd.sharedInstance().isReady == true {
+            GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+        }
+        else {
+            let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+            
+            loadClaimFreeLifeAD()
+            
+            let title = NSLocalizedString("FAIL", comment: "")
+            let message = NSLocalizedString("Rewarded video was not ready, try again or check your Internet connection", comment: "")
+            
+            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+            let actionOk = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.default)
+            alert.addAction(actionOk)
+            self.present(alert, animated: true, completion: nil)
+            
+            Flurry.logEvent("Ad_wasnt_ready_levels", withParameters: eventParams)
+        }
+    }
+    
+    func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
+        let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+        
+        if Model.sharedInstance.isActivatedSounds() {
+            SKTAudio.sharedInstance().resumeBackgroundMusic()
+        }
+        
+        Model.sharedInstance.setLastDateClaimFreeLife(Model.sharedInstance.currentLevel, value: Date())
+        
+        buyExtraLife(price: 0, addLives: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + Int(truncating: reward.amount))
+        
+        Flurry.logEvent("Watch_ad_free_life_levels_success", withParameters: eventParams)
+    }
+    
+    func rewardBasedVideoAdDidOpen(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        if Model.sharedInstance.isActivatedSounds() {
+            SKTAudio.sharedInstance().pauseBackgroundMusic()
+        }
+    }
+    
+    func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        if Model.sharedInstance.isActivatedSounds() {
+            SKTAudio.sharedInstance().resumeBackgroundMusic()
+        }
+        
+        loadClaimFreeLifeAD()
+    }
+    
+    func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd,
+                            didFailToLoadWithError error: Error) {
+        if Model.sharedInstance.isActivatedSounds() {
+            SKTAudio.sharedInstance().resumeBackgroundMusic()
+        }
+        
+        loadClaimFreeLifeAD()
     }
     
     override var prefersStatusBarHidden: Bool {

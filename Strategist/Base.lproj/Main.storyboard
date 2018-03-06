@@ -302,7 +302,7 @@
                                             <constraint firstItem="BK0-5z-S2e" firstAttribute="leading" secondItem="JZo-Ew-GTT" secondAttribute="leading" constant="16" id="pos-1T-Izb"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eBh-sm-4fk" userLabel="BUYPREVIEWMODE">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eBh-sm-4fk" userLabel="TURNOFFADD?">
                                         <rect key="frame" x="0.0" y="354.66666666666669" width="375" height="61"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PREVIEW MODE" lineBreakMode="characterWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aRj-MZ-AFI">
@@ -359,13 +359,13 @@
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Customization" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U7f-lm-711">
-                                        <rect key="frame" x="16" y="436.66666666666669" width="120" height="24.666666666666686"/>
+                                        <rect key="frame" x="16" y="375.66666666666669" width="120" height="24.666666666666686"/>
                                         <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="18"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zEE-hd-h4f" userLabel="SHOWTIPSVIEW">
-                                        <rect key="frame" x="0.0" y="471.33333333333331" width="375" height="60.999999999999943"/>
+                                        <rect key="frame" x="0.0" y="410.33333333333331" width="375" height="61"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TopMenuViewBorderDown.png" translatesAutoresizingMaskIntoConstraints="NO" id="nee-mo-a2i">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="6"/>
@@ -380,7 +380,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c5Y-eN-lEQ" userLabel="Separator">
-                                                <rect key="frame" x="0.0" y="59.000000000000057" width="375" height="2"/>
+                                                <rect key="frame" x="0.0" y="59" width="375" height="2"/>
                                                 <color key="backgroundColor" red="0.53741671950000003" green="0.29220933160000001" blue="0.1471465206" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="2" id="nPD-ZP-d43"/>
@@ -410,7 +410,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ACQ-AN-hHd" userLabel="SOUNDVIEW">
-                                        <rect key="frame" x="0.0" y="532.33333333333337" width="375" height="61"/>
+                                        <rect key="frame" x="0.0" y="471.33333333333331" width="375" height="60.999999999999943"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sounds" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mVr-kG-s6I">
                                                 <rect key="frame" x="16" y="18" width="62" height="24.666666666666671"/>
@@ -425,7 +425,7 @@
                                                 </connections>
                                             </switch>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eTi-R9-9II" userLabel="Separator">
-                                                <rect key="frame" x="0.0" y="59" width="375" height="2"/>
+                                                <rect key="frame" x="0.0" y="59.000000000000057" width="375" height="2"/>
                                                 <color key="backgroundColor" red="0.53741671950000003" green="0.29220933160000001" blue="0.1471465206" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="2" id="LkQ-d6-w0W"/>
@@ -446,7 +446,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ayE-04-jIV" userLabel="BGMUSICVIEW">
-                                        <rect key="frame" x="0.0" y="593.33333333333337" width="375" height="61"/>
+                                        <rect key="frame" x="0.0" y="532.33333333333337" width="375" height="61"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TopMenuViewBorderUp.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZQG-Tu-bmw">
                                                 <rect key="frame" x="0.0" y="55" width="375" height="6"/>
@@ -483,7 +483,7 @@
                                         </constraints>
                                     </view>
                                     <button opaque="NO" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d8t-QQ-fV1">
-                                        <rect key="frame" x="236" y="430.66666666666669" width="123" height="37"/>
+                                        <rect key="frame" x="236" y="369.66666666666669" width="123" height="37"/>
                                         <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="18"/>
                                         <state key="normal" title="Leave a review">
                                             <color key="titleColor" red="0.0" green="0.42745098040000001" blue="0.94117647059999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -520,13 +520,13 @@
                                     <constraint firstItem="zEE-hd-h4f" firstAttribute="width" secondItem="Fni-U3-u24" secondAttribute="width" id="dqW-7q-AHB"/>
                                     <constraint firstItem="XaR-bs-Lte" firstAttribute="top" secondItem="bzp-gv-AeB" secondAttribute="bottom" id="f2f-62-Ree"/>
                                     <constraint firstAttribute="trailing" secondItem="ayE-04-jIV" secondAttribute="trailing" id="hja-v7-CmU"/>
-                                    <constraint firstItem="U7f-lm-711" firstAttribute="top" secondItem="eBh-sm-4fk" secondAttribute="bottom" constant="21" id="jfF-RW-YbM"/>
                                     <constraint firstItem="d8t-QQ-fV1" firstAttribute="centerY" secondItem="U7f-lm-711" secondAttribute="centerY" id="jjq-dH-e9C"/>
                                     <constraint firstItem="eBh-sm-4fk" firstAttribute="top" secondItem="JZo-Ew-GTT" secondAttribute="bottom" id="l4f-nx-TDE"/>
                                     <constraint firstItem="bzp-gv-AeB" firstAttribute="width" secondItem="Fni-U3-u24" secondAttribute="width" id="mBJ-nC-zfX"/>
                                     <constraint firstAttribute="trailing" secondItem="eBh-sm-4fk" secondAttribute="trailing" id="meg-nb-RNe"/>
                                     <constraint firstItem="bzp-gv-AeB" firstAttribute="leading" secondItem="Fni-U3-u24" secondAttribute="leading" id="mwS-6i-FT3"/>
                                     <constraint firstItem="ayE-04-jIV" firstAttribute="leading" secondItem="Fni-U3-u24" secondAttribute="leading" id="mxI-s2-1nG"/>
+                                    <constraint firstItem="U7f-lm-711" firstAttribute="top" secondItem="JZo-Ew-GTT" secondAttribute="bottom" constant="21" id="od0-eV-GAa"/>
                                     <constraint firstAttribute="trailing" secondItem="ACQ-AN-hHd" secondAttribute="trailing" id="oeu-jM-daV"/>
                                     <constraint firstAttribute="trailing" secondItem="iy8-cx-wvV" secondAttribute="trailing" id="pN4-sx-rGw"/>
                                     <constraint firstItem="ACQ-AN-hHd" firstAttribute="top" secondItem="zEE-hd-h4f" secondAttribute="bottom" id="suF-Dm-y6z"/>
@@ -535,6 +535,11 @@
                                     <constraint firstAttribute="trailing" secondItem="d8t-QQ-fV1" secondAttribute="trailing" constant="16" id="z9v-w9-2cN"/>
                                 </constraints>
                                 <viewLayoutGuide key="safeArea" id="k9n-ed-E5t"/>
+                                <variation key="default">
+                                    <mask key="subviews">
+                                        <exclude reference="eBh-sm-4fk"/>
+                                    </mask>
+                                </variation>
                             </scrollView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bVN-dB-CmC" userLabel="ViewMenuTop">
                                 <rect key="frame" x="0.0" y="44" width="375" height="61"/>

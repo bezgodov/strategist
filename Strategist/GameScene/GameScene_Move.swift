@@ -660,7 +660,7 @@ extension GameScene {
     }
     
     func checkFinish() {
-        if character.moves.last! == finish && stars == 0 && countButtonsOnLevel(isPressed: true) == buttonsOnLevel {
+        if character.moves.last! == finish && stars == 0 && countButtonsOnLevel(isPressed: true) == buttonsOnLevel && isLosedLevel == false {
             winLevel()
         }
         else {

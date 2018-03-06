@@ -13,7 +13,7 @@
 "You need" = "You need";
 "but you only have" = "but you only have";
 "Level" = "Level";
-"BOSS" = "BOSS";
+"BOSS" = "BONUS";
 
 "Awesome" = "Awesome";
 "Well done" = "Well done";
@@ -29,12 +29,12 @@
 "LEVELS" = "LEVELS";
 "CONTINUE" = "CONTINUE";
 "RESTART" = "RESTART";
-"EXTRA LIFE" = "EXTRA LIFE";
+"EXTRA LIFE" = "EXTRA LIVES";
 
-"Buying an extra life" = "Buying an extra life";
-"An extra life is worth" = "An extra life is worth";
-"Buy one life" = "Buy one life";
-"You do not have enough GEMS to buy an extra life" = "You do not have enough GEMS to buy an extra life";
+"Buying an extra life" = "Buying extra lives";
+"An extra life is worth" = "extra lives are worth";
+"Buy one life" = "Buy five lives";
+"You do not have enough GEMS to buy an extra life" = "You do not have enough GEMS to buy 5 extra lives";
 "You lose" = "You lose";
 "No lives" = "No lives";
 "Preview mode" = "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner";
@@ -49,24 +49,23 @@
 "Then choose cell where GEM is..." = "Then choose cell where GEM is...";
 "And finally tap at start button" = "And finally tap at start button";
 "Oooppps.. Be careful, everything in this planet wants to kill us. Tap restart to try again..." = "Oooppps.. Be careful, everything in this planet wants to kill us. Tap restart to try again...";
-"But we already know how each of them behaves itself. Tap at bee..." = "But we have already known how each of them behaves itself. Tap at bee...";
+"But we already know how each of them behaves itself. Tap at bee..." = "But we have already known how each of them behaves itself. Tap at bee at the bottom...";
 "That red line shows how bee moves. When a bee reaches last cell bee goes back and again..." = "That red line shows how bee moves. When a bee reaches last cell bee goes back and repeat again...";
-"Now let's find right way to get GEM. Tap at column#1 and row#1 (left-bottom cell)..." = "Now let's find right way to get GEM. Tap at column#1 and row#1 (left-bottom cell)...";
-"Next cell must be column#2 and row#1..." = "Next cell must be column#2 and row#1...";
-"Next cell must be column#3 and row#1..." = "Next cell must be column#3 and row#1...";
+"Now let's find right way to get GEM. Tap at column#1 and row#1 (left-bottom cell)..." = "Now let's find right way to get GEM. Tap at column#1 and row#3 (left-bottom cell)...";
+"Next cell must be column#2 and row#1..." = "Next cell must be column#2 and row#3...";
+"Next cell must be column#3 and row#1..." = "Next cell must be column#3 and row#3...";
 "Next cell must be column#3 and row#2..." = "Next cell must be column#3 and row#2...";
-"And finally last cell must be column#3 and row#3..." = "And finally last cell must be column#3 and row#3...";
+"And finally last cell must be column#3 and row#3..." = "And finally last cell must be column#3 and row#1...";
 "And as you guessed tap at start button" = "And as you guessed tap at start button";
 
 "For previous level you got 3 GEMS. You can look how many gems you have in menu or settings..."  = "For previous level you got 3 GEMS. You can look how many gems you have in menu or settings...";
 "You can buy extra lives for GEMS or winning paths..." = "You can buy extra lives for GEMS or winning paths...";
-"You can tap at any object to find out how it behaves itself or how it moves..." = "You can tap at any object to find out how it behaves itself or how it moves...";
 "Tap at the nearest star to find out what it is like..." = "Tap at the nearest star to find out what it is like...";
 
 "If you still did not choose path you can activate preview mode..." = "If you still did not choose path you can activate preview mode...";
 "Tap at 'Start' button to activate preview mode" = "Tap at 'Start' button to activate preview mode";
 
-"You can tap at last your choosen path's point and delete it" = "You can tap at last your choosen path's point and delete it";
+"You can tap at last your chosen path's point and delete it" = "You can tap at any your chosen path's point and remove path from the end to the chosen point";
 
 "Except tapping at screen you can slide along the game board" = "Except tapping at screen you can slide along the game board";
 
@@ -76,9 +75,9 @@
 
 "To get some info about dynamic enemy just tap long at it" = "To get some info about dynamic enemy just tap long at it";
 
-"Now your managing is going to be different..." = "Now your managing is going to be different...";
+"Now your managing is going to be different..." = "Now your control is going to be different...";
 "Use 'swipes' to control a space alien, just slide finger along your screen..." = "Use 'swipes' to control a space alien, just slide finger along your screen...";
-"You can try passing this level as many times as you wish" = "You can try passing this level as many times as you wish";
+"You can try passing this level as many times as you wish" = "You can try passing this level as many times as you wish. Reward - 3 GEMS";
 "Collect 10 stars to win level and be careful you should avoid your enemies" = "Collect 10 stars to win level and be careful you should avoid your enemies";
 
 "Sometimes levels can contain lots of enemies but resolution can be very easy..." = "Sometimes levels can contain lots of enemies but resolution can be very easy...";
@@ -89,10 +88,9 @@
 "If an alien gets at button and that button was pressed down then nothing happens, but..." = "If an alien gets at button and that button was pressed down then nothing happens, but...";
 "If an alien gets at active button (button was not pressed down). Only that button is switched" = "If an alien gets at active button (button was not pressed down). Only that button is switched";
 
-"New levels are coming. We are already designing new levels. Wait for updates" = "New levels are coming. We are already designing new levels. Wait for updates";
+"New levels are coming. We are already designing new levels. Wait for updates" = "New levels are coming. We are already designing new levels. Wait for updates. Click to rate";
 "Complete" = "Complete";
 "at least" = "at least";
-"section's final level" = "section's final level";
 "and" = "and";
 "to unlock next section" = " to unlock next section";
 
@@ -128,3 +126,9 @@
 "key_description" = "Key opens the door with same color";
 "magnet_description" = "Pick up a magnet to collect stars within one point radius around an alien. Magnet will be activated in 1 move";
 "button_description" = "Tap at button to switch all other buttons. If an alien gets at button only that button is switched down";
+
+"Purchasing can take long time. Please wait at least 1 minute" = "Purchasing can take long time. Please wait at least 1 minute";
+"Purchasing cancelled" = "Purchasing cancelled";
+"Rewarded video was not ready, try again or check your Internet connection" = "Rewarded video was not loaded, try again or check your Internet connection";
+"Free extra life" = "Free extra life";
+"Tap at gem to get its" = "Tap at gem to get its";

@@ -1,42 +1,37 @@
 {
-    "finish": [3,5],
-    "character": [4,0],
+    "finish": [0,0],
+    "character": [4,4],
     "boardSize": [5,6],
-    "moves": 25,
-    "gems": 3,
+    "moves": 21,
+    "gems": 2,
     "winningPath":
     [
+     [3,4],
+     [3,5],
+     [2,5],
+     [2,4],
+     [1,4],
+     [1,3],
+     [0,3],
+     [0,2],
+     [0,1],
+     [1,1],
+     [1,2],
+     [2,2],
+     [3,2],
+     [4,2],
      [4,1],
-     [3,1],
+     [4,0],
      [3,0],
      [2,0],
      [1,0],
-     [0,0],
-     [0,1],
-     [0,2],
-     [1,2],
-     [1,3],
-     [1,4],
-     [0,4],
-     [0,5],
-     [1,5],
-     [2,5],
-     [2,4],
-     [2,3],
-     [2,2],
-     [3,2],
-     [3,3],
-     [3,4],
-     [4,4],
-     [4,5],
-     [3,5]
+     [0,0]
     ],
     "movingObjects": [
                 {
                 "type": "bee",
                 "move": [
-                       [3,4],
-                       [2,4],
+                       [3,5],
                        [2,5],
                        [1,5],
                        [1,4]]
@@ -44,64 +39,55 @@
                 {
                 "type": "bee",
                 "move": [
-                       [0,1],
-                       [1,1],
-                       [1,0],
-                       [2,0]]
+                       [2,1],
+                       [2,0],
+                       [3,0],
+                       [4,0]]
                 }],
     "staticObjects": [
                 {
                 "type": "lock",
-                "point": [1,3],
+                "point": [1,0],
                 "color": 0
                 },
                 {
-                "type": "lock",
+                "type": "key",
+                "point": [2,5],
+                "color": 0
+                },
+                {
+                "type": "key",
+                "point": [4,0],
+                "color": 0
+                },
+                {
+                "type": "spinner",
+                "point": [3,1]
+                },
+                {
+                "type": "arrow",
                 "point": [2,3],
-                "color": 1
-                },
-                {
-                "type": "lock",
-                "point": [3,3],
-                "color": 3
-                },
-                {
-                "type": "key",
-                "point": [0,0],
-                "color": 0
-                },
-                {
-                "type": "key",
-                "point": [3,1],
-                "color": 1
-                },
-                {
-                "type": "key",
-                "point": [0,2],
-                "color": 3
-                },
-                {
-                "type": "spinner",
-                "point": [4,3]
+                "rotate": 3
                 },
                 {
                 "type": "star",
+                "point": [2,0]
+                },
+                {
+                "type": "star",
+                "point": [1,4]
+                },
+                {
+                "type": "star",
+                "point": [4,2]
+                },
+                {
+                "type": "arrow",
+                "point": [3,2],
+                "rotate": 0
+                },
+                {
+                "type": "spinner",
                 "point": [0,4]
-                },
-                {
-                "type": "star",
-                "point": [4,4]
-                },
-                {
-                "type": "star",
-                "point": [3,2]
-                },
-                {
-                "type": "alarmclock",
-                "point": [2,1]
-                },
-                {
-                "type": "spinner",
-                "point": [0,3]
                 }]
 }

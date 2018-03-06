@@ -318,7 +318,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     }
     
     @objc func respondToSwipeGesture(gesture: UIGestureRecognizer) {
-        if !isFinishedLevel {
+        if !isFinishedLevel && !gameScene.isModalWindowOpen {
             if let swipeGesture = gesture as? UISwipeGestureRecognizer {
                 var point = gameScene.convertPoint(point: gameScene.character.position)
                 

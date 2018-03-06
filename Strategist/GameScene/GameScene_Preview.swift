@@ -207,6 +207,7 @@ extension GameScene {
         }
     }
     
+    /*
     func buyPreviewOnGameBoard() {
         if Model.sharedInstance.getCountGems() >= PREVIEW_MODE_PRICE {
             let message = "\(NSLocalizedString("Buying preview mode for all time is worth", comment: "")) \(PREVIEW_MODE_PRICE) \(NSLocalizedString("GEMS", comment: "")) (\(NSLocalizedString("you have", comment: "")) \(Model.sharedInstance.getCountGems()) \(NSLocalizedString("GEMS", comment: "")))"
@@ -262,4 +263,5 @@ extension GameScene {
             Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
         }
     }
+ */
 }

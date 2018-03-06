@@ -2,13 +2,19 @@ import Foundation
 import SpriteKit
 
 /// Цена в драг. камнях доп. жизни
-let EXTRA_LIFE_PRICE = 5
+let EXTRA_LIFE_PRICE = 10
 
 /// Цена в драг. камнях выйгрышного пути
 let WINNING_PATH_PRICE = 15
 
 /// Цена в драг. камнях режима предпросмотра
 let PREVIEW_MODE_PRICE = 50
+
+/// Время, чтобы получить бесплатную жизнь на уровне
+let TIME_TO_CLAIM_FREE_LIFE: TimeInterval = 600
+
+/// Время, чтобы получить бесплатный ежедневный алмаз (при заходе в игру)
+let TIME_TO_CLAIM_FREE_GEM: TimeInterval = 60 * 60 * 12
 
 class Model {
     init() {
@@ -36,6 +42,14 @@ class Model {
             levelsCompletedWithHelp = [Int]()
         }
         
+        // Получаем время, через которое пользователи смогут получить жизнь на уровне
+        if let levelsClaimFreeLifeArr = UserDefaults.standard.array(forKey: "levelsClaimFreeLife") as? [Date] {
+            levelsClaimFreeLife = levelsClaimFreeLifeArr
+        }
+        else {
+            levelsClaimFreeLife = [Date]()
+        }
+        
         // Если нет сохранённых уровней, то задаём кол-во пройденных уровней равным 0 и показываем подсказки по умолчанию
         if emptySavedLevelsLives() == true {
             // Инициализируем все данные для уровней
@@ -45,12 +59,25 @@ class Model {
             setActivatedBgMusic(true)
         }
         
+        // Если ещё не были добавлены данные о последнем получении бесплатной жизни (заполняем здесь, так как новая фича, не у всех есть)
+        var isSetLevelsClaimFreeLife = false
+        if levelsClaimFreeLife.isEmpty {
+            for index in 1...countLevels {
+                setLastDateClaimFreeLife(index, value: nil)
+            }
+            isSetLevelsClaimFreeLife = true
+        }
+        
         // Если были добавлены новые уровни (т.е. выделенное кол-во элементов в массиве для пройденных уровней не соответствует текущему кол-ву уровней)
         if countLevels > completedLevels.count {
             for index in completedLevels.count + 1...countLevels {
                 setLevelLives(level: index, newValue: 5)
                 setCompletedLevel(index, value: false)
                 generateTilesPosition()
+                
+                if isSetLevelsClaimFreeLife == false {
+                    setLastDateClaimFreeLife(index, value: nil)
+                }
             }
         }
         
@@ -59,6 +86,8 @@ class Model {
         if isActivatedBgMusic() {
             SKTAudio.sharedInstance().playBackgroundMusic(filename: "BgMusic.mp3")
         }
+        
+        IAPHandler.sharedInstance.fetchAvailableProducts()
     }
     
     static let sharedInstance = Model()
@@ -67,7 +96,7 @@ class Model {
     var menuViewController: MenuViewController!
     
     /// Общее количество уровней
-    let countLevels: Int = 36
+    let countLevels: Int = 38
     
     /// Количество уровней между секциями
     let distanceBetweenSections = 16
@@ -93,6 +122,9 @@ class Model {
     /// Массив, который содержит номера уровней, которые были пройдены с помощью кнопки "Help"
     private var levelsCompletedWithHelp: [Int]!
     
+    /// Массив, которые содержит время, через которое пользователи смогут получить жизнь на уровне
+    private var levelsClaimFreeLife: [Date]!
+    
     /// Был ли куплен режим предпросмотра
     private var isPaidPreviewModeVal = UserDefaults.standard.bool(forKey: "isPaidPreviewMode")
     
@@ -110,6 +142,8 @@ class Model {
     
     /// Время последнего просмотра рекламы за вознаграждение
     private var lastTimeClickToRewardVideoVal = UserDefaults.standard.object(forKey: "lastTimeClickToRewardVideo") as? Date
+    
+    private var lastTimeUserClaimFreeEveryDayGemVal = UserDefaults.standard.object(forKey: "lastTimeUserClaimFreeEveryDayGem") as? Date
     
     /// Последняя позиция, на которой находился пользователь, когда заходил на уровень или в меню
     var lastYpositionLevels: CGFloat?
@@ -160,6 +194,27 @@ class Model {
             completedLevels.append(value)
         }
         UserDefaults.standard.set(completedLevels, forKey: "completedLevels")
+    }
+    
+    /// Функция задаёт время последнего получения бесплатной жизни на уровне
+    func setLastDateClaimFreeLife(_ level: Int, value: Date? = nil) {
+        if level - 1 < levelsClaimFreeLife.count {
+            levelsClaimFreeLife[level - 1] = ((value != nil) ? value! : Date())
+        }
+        else {
+            if value == nil {
+                levelsClaimFreeLife.append(Calendar.current.date(byAdding: .hour, value: -1, to: Date())! as Date)
+            }
+            else {
+                levelsClaimFreeLife.append(value!)
+            }
+        }
+        
+        UserDefaults.standard.set(levelsClaimFreeLife, forKey: "levelsClaimFreeLife")
+    }
+    
+    func getLastDateClaimFreeLife(_ level: Int) -> Date? {
+        return (level - 1 < levelsClaimFreeLife.count) ? levelsClaimFreeLife[level - 1] : nil
     }
     
     /// Функция задаёт новое значение количества драгоценных камней
@@ -303,9 +358,9 @@ class Model {
         UserDefaults.standard.set(countLoseLevelVal, forKey: "countLoseLevel")
     }
     
-    /// Если проиграно 8 уровней, то показать рекламу
+    /// Если проиграно 6 уровней, то показать рекламу
     func shouldPresentAd() -> Bool {
-        return countLoseLevelVal % 8 == 0 && countLoseLevelVal > 0
+        return countLoseLevelVal % 6 == 0 && countLoseLevelVal > 0
     }
     
     func setLastTimeClickToRewardVideo(_ date: Date?) {
@@ -314,7 +369,19 @@ class Model {
         UserDefaults.standard.set(lastTimeClickToRewardVideoVal, forKey: "lastTimeClickToRewardVideo")
     }
     
+    /// Последнее время, когда пользователь получал бесплатный алмаз за просмотр рекламы в меню
     func getLastTimeClickToRewardVideo() -> Date? {
         return lastTimeClickToRewardVideoVal
+    }
+    
+    func setLastTimeUserClaimFreeEveryDayGem(_ date: Date?) {
+        lastTimeUserClaimFreeEveryDayGemVal = date
+        
+        UserDefaults.standard.set(lastTimeUserClaimFreeEveryDayGemVal, forKey: "lastTimeUserClaimFreeEveryDayGem")
+    }
+    
+    /// Последнее время, когда пользователь получал бесплатный ежедневный алмаз
+    func getLastTimeUserClaimFreeEveryDayGem() -> Date? {
+        return lastTimeUserClaimFreeEveryDayGemVal
     }
 }

@@ -106,11 +106,6 @@ extension GameScene {
                                                 checkChoosingPath = boardClick.point
                                                 checkChoosingPathArray = character.moves
                                                 
-                                                if character.moves.count > 1 {
-                                                    lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
-                                                    lastPathStepSprite.alpha = 1
-                                                }
-                                                
                                                 SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
                                                 
                                                 updateMoves(-1)
@@ -139,14 +134,6 @@ extension GameScene {
                                                 checkChoosingPath = character.moves[character.moves.count - 1]
                                                 
                                                 SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
-                                                
-                                                if character.moves.count > 1 {
-                                                    lastPathStepSprite.alpha = 1
-                                                    lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
-                                                }
-                                                else {
-                                                    lastPathStepSprite.alpha = 0
-                                                }
                                                 
                                                 updateMoves(1)
                                                 character.path()
@@ -233,48 +220,53 @@ extension GameScene {
                                     // Если Touch был отпущен на поле, на которое первоначально и нажимали, то есть перемещения не было
                                     if boardClick.point == checkChoosingPath {
                                         // Если расстояние от последнего хода в траектории и нового хода равно 1 (принимает значение 1, когда новый блок находится строго сверху, справа, снизу или слева. В противном случае блок примет большее значение. Данная проверка запрещает ходы по вертикали)
-                                        if sqrt(pow(Double(character.moves.last!.column - boardClick.point.column), Double(2)) + pow(Double(character.moves.last!.row - boardClick.point.row), Double(2))) == 1 {
+                                            // + Если ещё не добавляли эту позицию в траеткорию
+                                        if sqrt(pow(Double(character.moves.last!.column - boardClick.point.column), Double(2)) + pow(Double(character.moves.last!.row - boardClick.point.row), Double(2))) == 1 && !pointExists(points: character.moves, point: boardClick.point) {
                                             // Если не исчерпали ещё все ходы
                                             if moves > 0 {
-                                                // Если ещё не добавляли эту позицию в траеткорию
-                                                if !pointExists(points: character.moves, point: boardClick.point) {
-                                                    character.moves.append(boardClick.point)
-                                                    
-                                                    updateMoves(-1)
-                                                    character.path()
-                                                    
-                                                    SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
-                                                    
-                                                    if character.moves.count > 1 {
-                                                        lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
-                                                        lastPathStepSprite.alpha = 1
-                                                    }
-                                                    
-                                                    // Так как мы начали строить траекторию ГП, то спрятать все траектории остальных объектов)
-                                                    for object in movingObjects {
-                                                        object.path(hide: true)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        // Если расстояние не равно 1, то есть новая позиция в траектории не находится справа, сверху, слева или снизу от последней точки траектории
-                                        else {
-                                            //Если новая позиция не равна последней позиции в существующей траектории и TouchedMoved не был вызван после TouchedMoved
-                                            if boardClick.point == character.moves.last! && !addedLastPointByMove {
-                                                character.moves.remove(at: character.moves.count - 1)
+                                                
+                                                character.moves.append(boardClick.point)
+                                                
+                                                updateMoves(-1)
+                                                character.path()
                                                 
                                                 SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
                                                 
-                                                if character.moves.count > 1 {
-                                                    lastPathStepSprite.alpha = 1
-                                                    lastPathStepSprite.position = pointFor(column: character.moves.last!.column, row: character.moves.last!.row)
+                                                // Так как мы начали строить траекторию ГП, то спрятать все траектории остальных объектов)
+                                                for object in movingObjects {
+                                                    object.path(hide: true)
                                                 }
-                                                else {
-                                                    lastPathStepSprite.alpha = 0
-                                                }
+                                            }
+                                        }
+                                        else {
+                                            // Если кликнуть в любую точку пути, то путь стирается до этой позиции
+                                            if !addedLastPointByMove && !removedLastPointByMove {
+                                                let isContainMove = pointExists(points: character.moves, point: boardClick.point)
                                                 
-                                                updateMoves(1)
-                                                character.path()
+                                                if isContainMove {
+                                                    var indexFromRemove = 0
+                                                    
+                                                    for move in character.moves {
+                                                        
+                                                        if move != boardClick.point {
+                                                            indexFromRemove += 1
+                                                        }
+                                                        else {
+                                                            if move == character.moves.last! {
+                                                                updateMoves(1)
+                                                                character.moves.removeLast()
+                                                            }
+                                                            else {
+                                                                updateMoves(character.moves.endIndex - indexFromRemove - 1)
+                                                                character.moves.removeSubrange(indexFromRemove + 1..<character.moves.endIndex)
+                                                            }
+                                                            break
+                                                        }
+                                                    }
+                                                    
+                                                    SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
+                                                    character.path()
+                                                }
                                             }
                                         }
                                     }
@@ -282,6 +274,13 @@ extension GameScene {
                                 else {
                                     if character.moves.count == 1 && !addedLastPointByMove {
                                         objectTypeClicked = ObjectType.spaceAlien
+                                    }
+                                    
+                                    if !addedLastPointByMove && !removedLastPointByMove && boardClick.point == checkChoosingPath {
+                                        updateMoves(character.moves.endIndex - 1)
+                                        character.moves.removeSubrange(1..<character.moves.endIndex)
+                                        SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
+                                        character.path()
                                     }
                                 }
                                 
@@ -309,12 +308,10 @@ extension GameScene {
     }
     
     func prepareObjectInfoView(_ objectTypeClicked: ObjectType?, boardClick: Point) {
-        if objectTypeClicked == objectTypeClickedLast {
-            if lastClickOnGameBoard == boardClick {
-                removeObjectInfoView(toAlpha: 0)
-                
-                objectTypeClickedLast = nil
-            }
+        
+        if lastClickOnGameBoard == boardClick && isOpenInfoView {
+            removeObjectInfoView(toAlpha: 0)
+            SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
         }
         else {
             var toAlpha: CGFloat = 0
@@ -346,33 +343,36 @@ extension GameScene {
                 
                 presentObjectInfoView(spriteName: sprite, description: objectTypeClicked!.description)
             }
-            
-            objectTypeClickedLast = objectTypeClicked
         }
     }
     
     func removeObjectInfoView(toAlpha: CGFloat = 1) {
-        let lastInfoView = objectInfoView
-        
-        DispatchQueue.main.async {
-            UIView.animate(withDuration: 0.25, animations: {
-                if lastInfoView != nil {
-                    if lastInfoView?.superview != nil {
-                        lastInfoView?.frame.origin.x = -1 * (Model.sharedInstance.gameScene.view?.frame.size.width)!
-                        lastInfoView?.alpha = toAlpha
+        if isOpenInfoView {
+            let lastInfoView = objectInfoView
+            DispatchQueue.main.async {
+                UIView.animate(withDuration: 0.25, animations: {
+                    if lastInfoView != nil {
+                        if lastInfoView?.superview != nil {
+                            lastInfoView?.frame.origin.x = -1 * (Model.sharedInstance.gameScene.view?.frame.size.width)!
+                            lastInfoView?.alpha = toAlpha
+                        }
                     }
-                }
-            }, completion: { (_) in
-                if lastInfoView != nil {
-                    if lastInfoView?.superview != nil {
-                        lastInfoView?.removeFromSuperview()
+                }, completion: { (_) in
+                    if lastInfoView != nil {
+                        if lastInfoView?.superview != nil {
+                            lastInfoView?.removeFromSuperview()
+                        }
                     }
-                }
-            })
+                })
+            }
         }
+        
+        isOpenInfoView = false
     }
     
-    func presentObjectInfoView(spriteName: String?, description: String, infoViewHeight: CGFloat = 85) {
+    func presentObjectInfoView(spriteName: String?, description: String, infoViewHeight: CGFloat = 85, isTutorial: Bool = false) {
+        isOpenInfoView = true
+        
         SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
         
         let objectInfoViewSize = CGSize(width: (Model.sharedInstance.gameScene.view?.frame.width)!, height: infoViewHeight)
@@ -383,6 +383,14 @@ extension GameScene {
         
         objectInfoView = UIView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.frame.size.width)!, y: objectInfoViewPosConverted.y, width: objectInfoViewSize.width, height: objectInfoViewSize.height))
         objectInfoView!.backgroundColor = UIColor.darkGray
+        
+        if isTutorial {
+            objectInfoView?.isUserInteractionEnabled = false
+        }
+        else {
+            objectInfoView?.isUserInteractionEnabled = true
+        }
+        
         Model.sharedInstance.gameScene.view?.addSubview(objectInfoView!)
         
         if spriteName != nil {
