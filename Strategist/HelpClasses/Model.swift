@@ -14,7 +14,7 @@ let PREVIEW_MODE_PRICE = 50
 let TIME_TO_CLAIM_FREE_LIFE: TimeInterval = 600
 
 /// Время, чтобы получить бесплатный ежедневный алмаз (при заходе в игру)
-let TIME_TO_CLAIM_FREE_GEM: TimeInterval = 60 * 60 * 12
+let TIME_TO_CLAIM_FREE_GEM: TimeInterval = 60 * 60 * 16
 
 class Model {
     init() {
@@ -48,6 +48,14 @@ class Model {
         }
         else {
             levelsClaimFreeLife = [Date]()
+        }
+        
+        // Получаем время, через которое пользователи смогут получить жизнь на уровне
+        if let gotGemsForAchievesArr = UserDefaults.standard.array(forKey: "gotGemsForAchieves") as? [String] {
+            gotGemsForAchieves = gotGemsForAchievesArr
+        }
+        else {
+            gotGemsForAchieves = [String]()
         }
         
         // Если нет сохранённых уровней, то задаём кол-во пройденных уровней равным 0 и показываем подсказки по умолчанию
@@ -143,7 +151,29 @@ class Model {
     /// Время последнего просмотра рекламы за вознаграждение
     private var lastTimeClickToRewardVideoVal = UserDefaults.standard.object(forKey: "lastTimeClickToRewardVideo") as? Date
     
+    /// Время последнего получения бесплатного алмаза
     private var lastTimeUserClaimFreeEveryDayGemVal = UserDefaults.standard.object(forKey: "lastTimeUserClaimFreeEveryDayGem") as? Date
+    
+    /// Кол-во собранных алмазов (для достижений)
+    private var countCollectedGemsVal = UserDefaults.standard.integer(forKey: "countCollectedGems")
+    
+    /// Кол-во пройденных уровней с первой попытки (для достижений)
+    private var countLevelsCompletedWithoutLosingVal = UserDefaults.standard.integer(forKey: "countLevelsCompletedWithoutLosing")
+    
+    /// Кол-во пройденных уровней без помощи (без выигрышного пути)
+    private var countLevelsCompletedWithoutHelpVal = UserDefaults.standard.integer(forKey: "countLevelsCompletedWithoutHelp")
+    
+    /// Все достижения, за которые уже были получены алмазы
+    private var gotGemsForAchieves: [String]!
+    
+    /// Максимальный рекорд в бонус-уровне (в меню)
+    private var highScoreBonusLevel = UserDefaults.standard.integer(forKey: "highScoreBonusLevel")
+    
+    /// Кол-во собранных звёзд на бонус уровнях
+    private var collectedStarsOnBonusLevels = UserDefaults.standard.integer(forKey: "collectedStarsOnBonusLevels")
+    
+    /// true, если обучение на бонусном уровне на рекорд уже завершено
+    var isCompletedTurorialBonusLevel = UserDefaults.standard.bool(forKey: "isCompletedTurorialBonusLevel")
     
     /// Последняя позиция, на которой находился пользователь, когда заходил на уровень или в меню
     var lastYpositionLevels: CGFloat?
@@ -383,5 +413,88 @@ class Model {
     /// Последнее время, когда пользователь получал бесплатный ежедневный алмаз
     func getLastTimeUserClaimFreeEveryDayGem() -> Date? {
         return lastTimeUserClaimFreeEveryDayGemVal
+    }
+    
+    /// Добавить достижение, за которое уже была получена награда
+    func setGotGemsForAchieves(id: String) {
+        if gotGemsForAchieves.contains(id) == false {
+            gotGemsForAchieves.append(id)
+        }
+        
+        UserDefaults.standard.set(gotGemsForAchieves, forKey: "gotGemsForAchieves")
+    }
+    
+    /// Получить все достижения, за которые были получены вознаграждения
+    func getGotGemsForAchieves() -> [String] {
+        return gotGemsForAchieves
+    }
+    
+    /// Получить кол-во полученных бесплатных алмазов
+    func getCountCollectedGems() -> Int {
+        return countCollectedGemsVal
+    }
+    
+    /// Обновить кол-во полученных бесплатных алмазов
+    func setCountCollectedGems(amount: Int = 1) {
+        countCollectedGemsVal += amount
+        
+        UserDefaults.standard.set(countCollectedGemsVal, forKey: "countCollectedGems")
+    }
+    
+    /// Получить кол-во пройденных уровней без проигрыша
+    func getCountLevelsCompletedWithoutLosing() -> Int {
+        return countLevelsCompletedWithoutLosingVal
+    }
+    
+    /// Обновить кол-во уровней пройденных без проигрыша
+    func setCountLevelsCompletedWithoutLosing(amount: Int = 1) {
+        countLevelsCompletedWithoutLosingVal += amount
+        
+        UserDefaults.standard.set(countLevelsCompletedWithoutLosingVal, forKey: "countLevelsCompletedWithoutLosing")
+    }
+    
+    /// Получить кол-во пройденных уровней без помощи (выигрышного пути)
+    func getCountLevelsCompletedWithoutHelp() -> Int {
+        return countLevelsCompletedWithoutHelpVal
+    }
+    
+    /// Обновить кол-во уровней пройденных без помощи (выигрышного пути)
+    func setCountLevelsCompletedWithoutHelp(amount: Int = 1) {
+        countLevelsCompletedWithoutHelpVal += amount
+        
+        UserDefaults.standard.set(countLevelsCompletedWithoutHelpVal, forKey: "countLevelsCompletedWithoutHelp")
+    }
+    
+    /// Получить максимальный рекорд в бонус-уровне (в меню)
+    func getHighScoreBonusLevel() -> Int {
+        return highScoreBonusLevel
+    }
+    
+    /// Задать новый рекорд бонус-уровня (в меню)
+    func setHighScoreBonusLevel(_ score: Int) {
+        if score > getHighScoreBonusLevel() {
+            highScoreBonusLevel = score
+            
+            UserDefaults.standard.set(highScoreBonusLevel, forKey: "highScoreBonusLevel")
+        }
+    }
+    
+    /// Получить текущее значение кол-ва звёзд, которые были собраные на всех бонус уровнях
+    func getCollectedStarsOnBonusLevels() -> Int {
+        return collectedStarsOnBonusLevels
+    }
+    
+    /// Добавить N звёзд, собранных на бонус уровнях
+    func setCollectedStarsOnBonusLevels(_ amount: Int = 1) {
+        collectedStarsOnBonusLevels += amount
+        
+        UserDefaults.standard.set(collectedStarsOnBonusLevels, forKey: "collectedStarsOnBonusLevels")
+    }
+    
+    /// Установить флаг: завершено ли обучение на бонусном уровне на рекорд (в меню)
+    func setCompletedTurorialBonusLevel(_ value: Bool = true) {
+        isCompletedTurorialBonusLevel = value
+        
+        UserDefaults.standard.set(isCompletedTurorialBonusLevel, forKey: "isCompletedTurorialBonusLevel")
     }
 }

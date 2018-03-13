@@ -9,6 +9,7 @@ extension GameScene {
         
         if object.moves[object.move] == character.moves[characterMove] {
             if isLoseLevelByDefault {
+                losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("you were hit by", comment: "")) \(NSLocalizedString(String(describing: object.type!), comment: ""))"
                 loseLevel()
             }
             isLosed = true
@@ -30,6 +31,7 @@ extension GameScene {
         
         if object.point == self.character.moves[characterMove] {
             if object.type != ObjectType.stopper && object.type != ObjectType.alarmclock && object.type != ObjectType.bridge && object.type != ObjectType.star && object.type != ObjectType.arrow && object.type != ObjectType.tulip && object.type != ObjectType.cabbage && object.type != ObjectType.lock && object.type != ObjectType.key && object.type != ObjectType.magnet && object.type != ObjectType.button {
+                losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("you got on", comment: "")) \(NSLocalizedString(String(describing: object.type!), comment: ""))\(NSLocalizedString("'s cell", comment: ""))"
                 loseLevel()
                 isLosed = true
             }
@@ -66,9 +68,11 @@ extension GameScene {
                     
                     for point in points {
                         if point == self.character.moves[self.move - 1] {
+                            self.losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("bomb exploded next to you", comment: ""))"
                             self.loseLevel()
                             
                             isLosed = true
+                            break
                         }
                     }
                 })
@@ -90,6 +94,7 @@ extension GameScene {
             
             // Если направления не совпадают, то проигрыш
             if !checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.right, RotationDirection.left]) && !checkForSameDirection(firstDirection: characterDirection, secondDirection: object.rotate, directions: [RotationDirection.top, RotationDirection.bottom]) {
+                losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("your and arrow's directions were different", comment: ""))"
                 loseLevel()
                 
                 isLosed = true
@@ -110,6 +115,7 @@ extension GameScene {
                     
                     // Если ГП находится хотя бы на одном из шипов, то уровень проигран
                     if newPointForSpike == character.moves[move] {
+                        losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("you got on spikes", comment: ""))"
                         loseLevel()
                         
                         isLosed = true
@@ -146,6 +152,7 @@ extension GameScene {
             }
             
             if isLosedOnLock {
+                losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("when you got on lock you did not have a", comment: "")) \(NSLocalizedString(String(describing: object.lockKeyColor!), comment: "")) \(NSLocalizedString("key", comment: ""))"
                 loseLevel()
                 
                 isLosed = true
@@ -279,6 +286,7 @@ extension GameScene {
                 object.run(SKAction.move(to: moveToPointLose, duration: 0.25), completion: {
                     if !isLosed {
                         isLosed = true
+                        self.losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("you were hit by", comment: "")) \(NSLocalizedString(String(describing: object.type!), comment: ""))"
                         self.loseLevel()
                     }
                 })
@@ -301,6 +309,9 @@ extension GameScene {
             /// Если ГП находится на ускорителе
             var characterAtAlarmClock = false
             
+            /// Объект из-за которого проигрыш (мост или стрелка) для пояснения проигрыша
+            var objectNextCharacterMoveAtBridgeLose: StaticObject?
+            
             for object in staticObjects {
                 
                 if object.type == ObjectType.bridge {
@@ -318,6 +329,7 @@ extension GameScene {
                     }
                     else {
                         isNextCharacterMoveAtBridgeLose = true
+                        objectNextCharacterMoveAtBridgeLose = object
                     }
                 }
                 
@@ -329,6 +341,7 @@ extension GameScene {
                     }
                     else {
                         isNextCharacterMoveAtBridgeLose = true
+                        objectNextCharacterMoveAtBridgeLose = object
                     }
                 }
                 
@@ -394,7 +407,10 @@ extension GameScene {
                 
                 moveToPointLose = correctDirectionToHalfTile(pointToLose: moveToPointLose, movingDirection: movingCharacterDirection, downScale: 2.5)
                 
+                let object = objectNextCharacterMoveAtBridgeLose != nil ? objectNextCharacterMoveAtBridgeLose?.type! : ObjectType.arrow
+                
                 character.run(SKAction.move(to: moveToPointLose, duration: 0.25), completion: {
+                    self.losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("your and \(String(describing: object!))'s directions were different", comment: ""))"
                     self.loseLevel()
                 })
             }
@@ -660,10 +676,24 @@ extension GameScene {
     }
     
     func checkFinish() {
-        if character.moves.last! == finish && stars == 0 && countButtonsOnLevel(isPressed: true) == buttonsOnLevel && isLosedLevel == false {
+        let isPressedAllButtons = countButtonsOnLevel(isPressed: true)
+        if character.moves.last! == finish && stars == 0 && isPressedAllButtons == buttonsOnLevel && isLosedLevel == false {
             winLevel()
         }
         else {
+            if character.moves.last! != finish {
+                losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("you did not get at gem's cell", comment: ""))"
+            }
+            else {
+                if stars != 0 {
+                    losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("you did not collect all stars", comment: ""))"
+                }
+                else {
+                    if isPressedAllButtons != buttonsOnLevel {
+                        losingReason = "\(NSLocalizedString("Losing reason", comment: "")): \(NSLocalizedString("you did not press all buttons down", comment: ""))"
+                    }
+                }
+            }
             loseLevel()
         }
     }

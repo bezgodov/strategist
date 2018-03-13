@@ -36,10 +36,10 @@
 "UV9-qX-haO.normalTitle" = "КУПИТЬ ЗА 29РУБ";
 
 /* Class = "UILabel"; text = "PREVIEW MODE"; ObjectID = "aRj-MZ-AFI"; */
-"aRj-MZ-AFI.text" = "РЕЖИМ ПРЕДПРОСМОТРА";
+"aRj-MZ-AFI.text" = "РЕКОРД:";
 
 /* Class = "UIButton"; normalTitle = "BUY FOR 50 GEMS"; ObjectID = "ca3-Ez-uOE"; */
-"ca3-Ez-uOE.normalTitle" = "50 АЛМАЗОВ";
+"ca3-Ez-uOE.normalTitle" = "ИГРАТЬ БОНУС";
 
 /* Class = "UIButton"; normalTitle = "Leave a review"; ObjectID = "d8t-QQ-fV1"; */
 "d8t-QQ-fV1.normalTitle" = "Оставить отзыв";

@@ -70,6 +70,7 @@
 		2B30C860203C4A70009EE444 /* Button_green_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B30C858203C4A70009EE444 /* Button_green_pressed.png */; };
 		2B30C861203C4A70009EE444 /* Button_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B30C859203C4A70009EE444 /* Button_green.png */; };
 		2B3D5353204D6DE7008BDC5D /* Gem_blue_big.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B3D5352204D6DE6008BDC5D /* Gem_blue_big.png */; };
+		2B45FD66205146D70065E894 /* Levels_achievements.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B45FD65205146D60065E894 /* Levels_achievements.png */; };
 		2B54018C1FDA41B400E03C63 /* Level_6.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B54018B1FDA41B400E03C63 /* Level_6.json */; };
 		2B54018E1FDA81E800E03C63 /* Level_5.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B54018D1FDA81E800E03C63 /* Level_5.json */; };
 		2B5DCAAC20269B15007E9A54 /* Menu_levels.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B5DCAA920269B13007E9A54 /* Menu_levels.png */; };
@@ -125,6 +126,7 @@
 		2BB481E02023331C009560B2 /* Level_11.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BB481DF2023331C009560B2 /* Level_11.json */; };
 		2BBE77A01FB71F3F0042F79F /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBE779F1FB71F3F0042F79F /* MenuViewController.swift */; };
 		2BC4F2F31FB5913D002B28BB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC4F2F21FB5913D002B28BB /* Model.swift */; };
+		2BC535502050F49B0079DF7F /* AchieveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC5354F2050F49B0079DF7F /* AchieveViewController.swift */; };
 		2BC7B77D20173D1800B99AB8 /* Level_18.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BC7B77C20173D1800B99AB8 /* Level_18.json */; };
 		2BCD9DC01FF634BC0097C4F2 /* GameScene_Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCD9DBF1FF634BC0097C4F2 /* GameScene_Touches.swift */; };
 		2BCD9DC21FF640910097C4F2 /* GameScene_Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCD9DC11FF640910097C4F2 /* GameScene_Move.swift */; };
@@ -224,6 +226,7 @@
 		2B30C858203C4A70009EE444 /* Button_green_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Button_green_pressed.png; sourceTree = "<group>"; };
 		2B30C859203C4A70009EE444 /* Button_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Button_green.png; sourceTree = "<group>"; };
 		2B3D5352204D6DE6008BDC5D /* Gem_blue_big.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Gem_blue_big.png; sourceTree = "<group>"; };
+		2B45FD65205146D60065E894 /* Levels_achievements.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Levels_achievements.png; sourceTree = "<group>"; };
 		2B54018B1FDA41B400E03C63 /* Level_6.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_6.json; sourceTree = "<group>"; };
 		2B54018D1FDA81E800E03C63 /* Level_5.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_5.json; sourceTree = "<group>"; };
 		2B5DCAA920269B13007E9A54 /* Menu_levels.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Menu_levels.png; sourceTree = "<group>"; };
@@ -280,6 +283,7 @@
 		2BB481DF2023331C009560B2 /* Level_11.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_11.json; sourceTree = "<group>"; };
 		2BBE779F1FB71F3F0042F79F /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		2BC4F2F21FB5913D002B28BB /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		2BC5354F2050F49B0079DF7F /* AchieveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchieveViewController.swift; sourceTree = "<group>"; };
 		2BC7B77C20173D1800B99AB8 /* Level_18.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Level_18.json; sourceTree = "<group>"; };
 		2BCD9DBF1FF634BC0097C4F2 /* GameScene_Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene_Touches.swift; sourceTree = "<group>"; };
 		2BCD9DC11FF640910097C4F2 /* GameScene_Move.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene_Move.swift; sourceTree = "<group>"; };
@@ -390,6 +394,7 @@
 		2B1178DC1FB84B55006326E4 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				2BC5354F2050F49B0079DF7F /* AchieveViewController.swift */,
 				2B2CA4451FB93F4600AA35F1 /* ChooseLevelViewController.swift */,
 				2B0B63DB1FAFD1AF002C0322 /* GameViewController.swift */,
 				2BBE779F1FB71F3F0042F79F /* MenuViewController.swift */,
@@ -453,6 +458,7 @@
 				2B5DCAB32026B7D3007E9A54 /* Menu_questionMark.png */,
 				2B09151C20316D280057E3DC /* Levels_settings.png */,
 				2B7AEC062039101C00E02553 /* Levels_glassFinder.png */,
+				2B45FD65205146D60065E894 /* Levels_achievements.png */,
 				2B0CF14020288F0B0060BEF7 /* Settings_back.png */,
 			);
 			path = MenuIcons;
@@ -736,6 +742,7 @@
 				2B7DFE37202DC03B00999922 /* GrassStep.mp3 in Resources */,
 				2B30C839203AEF41009EE444 /* Lock_red.png in Resources */,
 				2B309555200B1C5E00F571DA /* Level_12.json in Resources */,
+				2B45FD66205146D70065E894 /* Levels_achievements.png in Resources */,
 				2BC7B77D20173D1800B99AB8 /* Level_18.json in Resources */,
 				2B30C860203C4A70009EE444 /* Button_green_pressed.png in Resources */,
 				2B91D6E3203C518900801BEA /* Level_36.json in Resources */,
@@ -907,6 +914,7 @@
 				2BCD9DC21FF640910097C4F2 /* GameScene_Move.swift in Sources */,
 				2B2CA4461FB93F4600AA35F1 /* ChooseLevelViewController.swift in Sources */,
 				2BBE77A01FB71F3F0042F79F /* MenuViewController.swift in Sources */,
+				2BC535502050F49B0079DF7F /* AchieveViewController.swift in Sources */,
 				2BCD9DC01FF634BC0097C4F2 /* GameScene_Touches.swift in Sources */,
 				2B9330781FD81F93002E5933 /* Character.swift in Sources */,
 				2BD94B712036514400954393 /* BossLevel.swift in Sources */,

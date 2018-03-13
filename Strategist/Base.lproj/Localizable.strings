@@ -38,9 +38,6 @@
 "You lose" = "You lose";
 "No lives" = "No lives";
 "Preview mode" = "Preview mode is activated. To turn off this tap at 'Stop' button at right-top corner";
-"Expensive Preview mode" = "Sorry, but is't quite expensive to use 'Preview mode' very often, help us with extra gems, but you do not have enough GEMS to buy preview mode for all time";
-"Buying preview mode" = "Buying preview mode";
-"Buying preview mode for all time is worth" = "When you activate this feature you are able to look at how all dynamic enemies behaves before you start. Buying preview mode for all time is worth";
 
 "Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]" = "Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]";
 "Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!" = "Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!";
@@ -101,7 +98,6 @@
 "Ok" = "Ok";
 "OK" = "OK";
 "If you turn off tips you won't be able to look at new enemies' descriptions" = "If you turn off tips you won't be able to look at new enemies' descriptions";
-"Not enough gems to buy preview mode menu" = "You do not have enough GEMS to buy preview mode for all time";
 
 "Promotional code" = "Promotional code";
 "was already used" = "was already used";
@@ -132,3 +128,56 @@
 "Rewarded video was not ready, try again or check your Internet connection" = "Rewarded video was not loaded, try again or check your Internet connection";
 "Free extra life" = "Free extra life";
 "Tap at gem to get its" = "Tap at gem to get its";
+
+"Losing reason" = "Losing reason";
+"you were hit by" = "you were hit by";
+"you got on" = "you got on";
+"'s cell" = "'s cell";
+"bomb exploded next to you" = "bomb exploded next to you";
+"your and arrow's directions were different" = "your and arrow's directions were different";
+"you got on spikes" = "you got on spikes";
+"when you got on lock you did not have a" = "when you got on lock you did not have a";
+"key" = "key";
+"your and bridge's directions were different" = "your and bridge's directions were different";
+"you did not get at gem's cell" = "you did not get at gem's cell (finish)";
+"you did not collect all stars" = "you did not collect all stars";
+"you did not press all buttons down" = "you did not press all buttons down";
+
+"bee" = "bee";
+"spinner" = "spinner";
+"bomb" = "bomb";
+"stopper" = "stopper";
+"alarmclock" = "alarm clock";
+"bridge" = "bridge";
+"spikes" = "spikes";
+"star" = "star";
+"snail" = "snail";
+"arrow" = "arrow";
+"tulip" = "tulip";
+"cabbage" = "cabbage";
+"lock" = "lock";
+"key" = "key";
+"magnet" = "magnet";
+"button" = "button";
+"red" = "red";
+"blue" = "blue";
+"green" = "green";
+"yellow" = "yellow";
+
+"ACHIEVEMENTS" = "ACHIEVEMENTS";
+"MENU" = "SETTINGS";
+"LEVELS" = "LEVELS";
+
+"Complete basic tutorial" = "Complete basic tutorial";
+"levels" = "levels";
+"without winning path" = "without using winning path";
+"on the first try" = "on the first try";
+"bonus levels" = "bonus levels";
+"Collect" = "Collect";
+"daily gems" = "daily gems";
+"stars on bonus levels" = "stars on bonus levels";
+"Score" = "Score";
+"HIGH SCORE" = "HIGH SCORE";
+"Collect stars to get gems. 10 STARS = 1 GEM" = "Collect stars to get gems. EVERY 10 STARS = 1 GEM";
+"NEW RECORD" = "NEW RECORD";
+"+1 extra GEM" = "+1 extra GEM";

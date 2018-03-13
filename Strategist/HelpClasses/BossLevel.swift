@@ -29,6 +29,9 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     /// Массив, содержащий анимацию движеничя пчелы
     var beeFliesAtlas = [SKTexture]()
     
+    /// Скорость всех вражеских объектов (запоминть здесь, ибо нужно будет восстанавливать её после паузы)
+    var currentEnemiesSpeed: CGFloat = 1.09
+    
     override init() {
         super.init()
         
@@ -37,7 +40,13 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
         
         gameScene.addChild(gameScene.bossEnemies)
         
-        countStars = gameScene.moves
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+            countStars = 0
+        }
+        else {
+            countStars = gameScene.moves
+        }
+        
         setCountStars(countStars)
         
         Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isHidden = true
@@ -58,13 +67,21 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
             gameScene.view!.addGestureRecognizer(gesture)
         }
         
-        if Model.sharedInstance.currentLevel != Model.sharedInstance.distanceBetweenSections || (Model.sharedInstance.currentLevel == Model.sharedInstance.distanceBetweenSections && (Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) || Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) < 5)) {
-            prepareBossLevel()
-        }
-        else {
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel && Model.sharedInstance.isCompletedTurorialBonusLevel == false {
             isFinishedLevel = true
             gameScene.isPaused = true
         }
+        else {
+            if (Model.sharedInstance.currentLevel != Model.sharedInstance.distanceBetweenSections) || (Model.sharedInstance.currentLevel == Model.sharedInstance.distanceBetweenSections && (Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) || Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) < 5)) {
+                prepareBossLevel()
+            }
+            else {
+                isFinishedLevel = true
+                gameScene.isPaused = true
+            }
+        }
+        
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -142,6 +159,10 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
         let timerKoef = Double(Double(Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections) / 10)
         
         gameScene.bossEnemies.speed = CGFloat(timerKoef) + 1
+        
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+            gameScene.bossEnemies.speed = currentEnemiesSpeed
+        }
         
         timerEnemy = Timer.scheduledTimer(withTimeInterval: 0.745 - (timerKoef * 1.5), repeats: true) { (_) in
             self.newObject()
@@ -307,8 +328,26 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     func pickUpCoin(nodeToRemove: SKNode) {
         nodeToRemove.removeFromParent()
         SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpStar.mp3")
-        countStars -= 1
+        
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+            countStars += 1
+        }
+        else {
+            countStars -= 1
+        }
+        
+        Model.sharedInstance.setCollectedStarsOnBonusLevels()
+        
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+            increaseEnemiesSpeed()
+        }
+        
         setCountStars(countStars)
+    }
+    
+    func increaseEnemiesSpeed() {
+        currentEnemiesSpeed += 0.01
+        gameScene.bossEnemies.speed = currentEnemiesSpeed
     }
     
     func loseLevelBoss() {
@@ -352,7 +391,9 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     func setCountStars(_ amount: Int) {
         Model.sharedInstance.gameViewControllerConnect.movesRemainLabel.text = String(amount)
         
-        isWinLevel(amount)
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel == false {
+            isWinLevel(amount)
+        }
     }
     
     func isWinLevel(_ starsAmount: Int) {

@@ -111,6 +111,10 @@ extension GameScene {
                         0: self.view!.bounds,
                         1: self.view!.bounds
                     ],
+                32:
+                    [
+                        0: self.view!.bounds
+                    ],
                 35:
                     [
                         0: self.view!.bounds,
@@ -239,6 +243,10 @@ extension GameScene {
                 NSLocalizedString("Sometimes levels can contain lots of enemies but resolution can be very easy...", comment: ""),
                 NSLocalizedString("Solve this level only for 7 moves", comment: "")
                 ],
+            32:
+                [
+                NSLocalizedString("Collect stars to get gems. 10 STARS = 1 GEM", comment: "")
+                ],
             35:
                 [
                 NSLocalizedString("Press down all buttons to win the level and do not forget about stars...", comment: ""),
@@ -252,7 +260,7 @@ extension GameScene {
             isOpenInfoView = true
             
             removeObjectInfoView(toAlpha: 1)
-            presentObjectInfoView(spriteName: "PlayerStaysFront", description: infoBlockTutorial[Model.sharedInstance.currentLevel]![slide], isTutorial: true)
+            presentObjectInfoView(spriteName: "PlayerStaysFront", description: infoBlockTutorial[Model.sharedInstance.currentLevel]![slide], isUserInteractionEnabled: false)
             
             if sender != nil {
                 
@@ -388,6 +396,19 @@ extension GameScene {
                         bossLevel?.isFinishedLevel = false
                         bossLevel?.prepareBossLevel()
                     }
+            default:
+                break
+            }
+        case 32:
+            switch slide {
+            case 1:
+                if bossLevel != nil {
+                    self.isPaused = false
+                    bossLevel?.isFinishedLevel = false
+                    bossLevel?.prepareBossLevel()
+                    
+                    Model.sharedInstance.setCompletedTurorialBonusLevel()
+                }
             default:
                 break
             }

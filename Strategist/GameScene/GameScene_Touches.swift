@@ -164,61 +164,60 @@ extension GameScene {
                             var objectTypeClicked: ObjectType?
                             
                             if boardClick.success {
-                                if character.moves.count == 1 {
-                                    for object in movingObjects {
-                                        // Если клик был сделан по перемещающемуся объекту, то показываем его траекторию
-                                        if object.getPoint() == boardClick.point {
-                                            if object.pathLayer.parent != nil {
-                                                object.path(hide: true)
+                                if boardClick.point == checkChoosingPath {
+                                    if character.moves.count == 1 {
+                                        for object in movingObjects {
+                                            // Если клик был сделан по перемещающемуся объекту, то показываем его траекторию
+                                            if object.getPoint() == boardClick.point {
+                                                if object.pathLayer.parent != nil {
+                                                    object.path(hide: true)
+                                                }
+                                                else {
+                                                    object.path()
+                                                }
+                                                
+                                                objectTypeClicked = object.type
                                             }
                                             else {
-                                                object.path()
-                                            }
-                                            
-                                            objectTypeClicked = object.type
-                                        }
-                                        else {
-                                            object.path(hide: true)
-                                        }
-                                    }
-                                    
-                                    for object in staticObjects {
-                                        // Если клик был сделан по статичному объекту
-                                        if boardClick.point == object.point {
-                                            // Если клик был сделан по объекту "мост", то поворачиваем на 90 deg.
-                                            if object.type == ObjectType.bridge {
-                                                if object.active {
-                                                    object.active = false
-                                                    
-                                                    object.rotate = object.rotate.nextPoint()
-                                                    self.animateBridgeWall(object: object)
-                                                    
-                                                    object.run(SKAction.rotate(toAngle: object.zRotation - CGFloat(90 * Double.pi / 180), duration: 0.35), completion: {
-                                                        object.active = true
-                                                    })
-                                                }
-                                            }
-                                            
-                                            if object.type == ObjectType.button {
-                                                changeButtonsState(object)
-                                            }
-                                            objectTypeClicked = object.type
-                                        }
-                                    }
-                                }
-                                else {
-                                    if !isLastTapLongPress {
-                                        for object in movingObjects {
-                                            if object.pathLayer.parent != nil {
                                                 object.path(hide: true)
                                             }
                                         }
+                                        
+                                        for object in staticObjects {
+                                            // Если клик был сделан по статичному объекту
+                                            if boardClick.point == object.point {
+                                                // Если клик был сделан по объекту "мост", то поворачиваем на 90 deg.
+                                                if object.type == ObjectType.bridge {
+                                                    if object.active {
+                                                        object.active = false
+                                                        
+                                                        object.rotate = object.rotate.nextPoint()
+                                                        self.animateBridgeWall(object: object)
+                                                        
+                                                        object.run(SKAction.rotate(toAngle: object.zRotation - CGFloat(90 * Double.pi / 180), duration: 0.35), completion: {
+                                                            object.active = true
+                                                        })
+                                                    }
+                                                }
+                                                
+                                                if object.type == ObjectType.button {
+                                                    changeButtonsState(object)
+                                                }
+                                                objectTypeClicked = object.type
+                                            }
+                                        }
                                     }
-                                }
+                                    else {
+                                        if !isLastTapLongPress {
+                                            for object in movingObjects {
+                                                if object.pathLayer.parent != nil {
+                                                    object.path(hide: true)
+                                                }
+                                            }
+                                        }
+                                    }
                                 
-                                if boardClick.point != characterStart {
-                                    // Если Touch был отпущен на поле, на которое первоначально и нажимали, то есть перемещения не было
-                                    if boardClick.point == checkChoosingPath {
+                                    if boardClick.point != characterStart {
                                         // Если расстояние от последнего хода в траектории и нового хода равно 1 (принимает значение 1, когда новый блок находится строго сверху, справа, снизу или слева. В противном случае блок примет большее значение. Данная проверка запрещает ходы по вертикали)
                                             // + Если ещё не добавляли эту позицию в траеткорию
                                         if sqrt(pow(Double(character.moves.last!.column - boardClick.point.column), Double(2)) + pow(Double(character.moves.last!.row - boardClick.point.row), Double(2))) == 1 && !pointExists(points: character.moves, point: boardClick.point) {
@@ -270,33 +269,33 @@ extension GameScene {
                                             }
                                         }
                                     }
-                                }
-                                else {
-                                    if character.moves.count == 1 && !addedLastPointByMove {
-                                        objectTypeClicked = ObjectType.spaceAlien
+                                    else {
+                                        if character.moves.count == 1 && !addedLastPointByMove {
+                                            objectTypeClicked = ObjectType.spaceAlien
+                                        }
+                                        
+                                        if !addedLastPointByMove && !removedLastPointByMove && boardClick.point == checkChoosingPath {
+                                            updateMoves(character.moves.endIndex - 1)
+                                            character.moves.removeSubrange(1..<character.moves.endIndex)
+                                            SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
+                                            character.path()
+                                        }
                                     }
-                                    
-                                    if !addedLastPointByMove && !removedLastPointByMove && boardClick.point == checkChoosingPath {
-                                        updateMoves(character.moves.endIndex - 1)
-                                        character.moves.removeSubrange(1..<character.moves.endIndex)
-                                        SKTAudio.sharedInstance().playSoundEffect(filename: "GrassStep.mp3")
-                                        character.path()
+                                
+                                    if boardClick.point == finish && character.moves.count == 1 && !addedLastPointByMove {
+                                        objectTypeClicked = ObjectType.gem
                                     }
-                                }
                                 
-                                if boardClick.point == finish && character.moves.count == 1 && !addedLastPointByMove {
-                                    objectTypeClicked = ObjectType.gem
-                                }
                                 
-                                if !removedLastPointByMove && objectTypeClicked != ObjectType.bridge && objectTypeClicked != ObjectType.button && Model.sharedInstance.getShowTips() {
-                                    prepareObjectInfoView(objectTypeClicked, boardClick: boardClick.point)
-                                }
+                                    if !removedLastPointByMove && objectTypeClicked != ObjectType.bridge && objectTypeClicked != ObjectType.button && Model.sharedInstance.getShowTips() {
+                                        prepareObjectInfoView(objectTypeClicked, boardClick: boardClick.point)
+                                    }
 
-                                if objectTypeClicked == ObjectType.bridge || objectTypeClicked == ObjectType.button {
-                                    removeObjectInfoView(toAlpha: 0)
+                                    if objectTypeClicked == ObjectType.bridge || objectTypeClicked == ObjectType.button {
+                                        removeObjectInfoView(toAlpha: 0)
+                                    }
+                                    lastClickOnGameBoard = boardClick.point
                                 }
-                                
-                                lastClickOnGameBoard = boardClick.point
                             }
                         }
                     }
@@ -370,7 +369,7 @@ extension GameScene {
         isOpenInfoView = false
     }
     
-    func presentObjectInfoView(spriteName: String?, description: String, infoViewHeight: CGFloat = 85, isTutorial: Bool = false) {
+    func presentObjectInfoView(spriteName: String?, description: String, infoViewHeight: CGFloat = 85, isUserInteractionEnabled: Bool = false) {
         isOpenInfoView = true
         
         SKTAudio.sharedInstance().playSoundEffect(filename: "Swish.wav")
@@ -384,12 +383,8 @@ extension GameScene {
         objectInfoView = UIView(frame: CGRect(x: (Model.sharedInstance.gameScene.view?.frame.size.width)!, y: objectInfoViewPosConverted.y, width: objectInfoViewSize.width, height: objectInfoViewSize.height))
         objectInfoView!.backgroundColor = UIColor.darkGray
         
-        if isTutorial {
-            objectInfoView?.isUserInteractionEnabled = false
-        }
-        else {
-            objectInfoView?.isUserInteractionEnabled = true
-        }
+        // Пропускать ли клик по подсказке "через себя"
+        objectInfoView?.isUserInteractionEnabled = isUserInteractionEnabled
         
         Model.sharedInstance.gameScene.view?.addSubview(objectInfoView!)
         

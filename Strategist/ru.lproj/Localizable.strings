@@ -38,9 +38,6 @@
 "You lose" = "Проигрыш";
 "No lives" = "Нет жизней";
 "Preview mode" = "Режим предпросмотра активирован. Чтобы выключить, нажмите 'Стоп' в правом верхнем углу";
-"Expensive Preview mode" = "Извините, но для нас достаточно дорого часто использовать 'Режим просмотра', помогите нам дополнительными алмазами, но у вас недостаточно алмазов, чтобы купить 'Режим просмотра' навсегда";
-"Buying preview mode" = "Покупка режима предпросмотра";
-"Buying preview mode for all time is worth" = "При активации режима предпросмотра вы сможете увидеть, как все 'динамические' враги себя ведут (перемещаются, например). Покупка режима предпросмотра навсегда стоит";
 
 "Hi. You have just got a promotion, now you are a STRATEGIST... [Tap somewhere to continue]" = "Привет, вас только что повысили, теперь вы СТРАТЕГИСТ... [Нажмите где-нибудь, чтобы продолжить]";
 "Your main role is managing ordinary space aliens and help them collecting gems. Let's begin!" = "Ваша основная задача управлять обычными инопланетянами и помогать им собирать алмазы. Давайте приступим!";
@@ -102,7 +99,6 @@
 "Ok" = "Ок";
 "OK" = "ОК";
 "If you turn off tips you won't be able to look at new enemies' descriptions" = "Если вы выключите подсказки, то не сможете посмотреть на описания новых объектов";
-"Not enough gems to buy preview mode menu" = "Недостаточно алмазов, чтобы купить режим предпросмотра";
 
 "Promotional code" = "Промо код";
 "was already used" = "уже был использован";
@@ -133,3 +129,46 @@
 "Rewarded video was not ready, try again or check your Internet connection" = "Видео за вознаграждение не было загружено, попробуйте ещё раз или проверьте интернет соединение";
 "Free extra life" = "Бесплатная жизнь";
 "Tap at gem to get its" = "Нажмите на алмаз, чтобы получить его";
+
+"Losing reason" = "Причина проигрыша";
+"you were hit by" = "вы столкнулись с";
+"you got on" = "вы попали на ячейку, где находится";
+"'s cell" = "";
+"bomb exploded next to you" = "бомба взорвалась рядом с вами";
+"your and arrow's directions were different" = "ваше направление и направление стрелки были различными";
+"you got on spikes" = "вы попали на шипы";
+"when you got on lock you did not have a" = "когда вы попали на замок, у вас не было";
+"your and bridge's directions were different" = "ваше направление и направление моста были различными";
+"you did not get at gem's cell" = "вы не дошли до ячейки, где находится алмаз (финиш)";
+"you did not collect all stars" = "вы не собрали все звёзды";
+"you did not press all buttons down" = "вы не нажали все кнопки (вниз)";
+
+"key" = "ключа";
+"bee" = "пчелой";
+"spinner" = "спиннер";
+"bomb" = "бомба";
+"spikes" = "шипы";
+"snail" = "улиткой";
+
+"red" = "красного";
+"blue" = "синего";
+"green" = "зелёного";
+"yellow" = "жёлтого";
+
+"ACHIEVEMENTS" = "ДОСТИЖЕНИЯ";
+"MENU" = "НАСТРОЙКИ";
+"LEVELS" = "УРОВНИ";
+
+"Complete basic tutorial" = "Завершите базовое обучение";
+"levels" = "уровней";
+"without winning path" = "без выигрышного пути";
+"on the first try" = "с первой попытки";
+"bonus levels" = "бонусных уровней";
+"Collect" = "Соберите";
+"daily gems" = "ежедневных алмазов";
+"stars on bonus levels" = "звёзд на бонусных уровнях";
+"Score" = "Счёт";
+"HIGH SCORE" = "РЕКОРД";
+"Collect stars to get gems. 10 STARS = 1 GEM" = "Собирайте звёзды, чтобы получить алмазы. Каждые 10 звёзд = 1 алмаз";
+"NEW RECORD" = "НОВЫЙ РЕКОРД";
+"+1 extra GEM" = "+1 доп. алмаз";

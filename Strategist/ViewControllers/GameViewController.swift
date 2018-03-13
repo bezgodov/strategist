@@ -10,6 +10,9 @@ class GameViewController: UIViewController {
     @IBOutlet weak var startRightEdgeOutlet: NSLayoutConstraint!
     @IBOutlet var viewTopMenuBorder: [UIImageView]!
     
+    /// true, если бонус-уровень на рекорд, который в меню
+    var isHighScoreBonusLevel = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

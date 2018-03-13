@@ -146,6 +146,12 @@ class GameScene: SKScene {
     /// окно для таймера для получения бесплатной доп. жизни
     var viewExtraLifeForAd: UIView!
     
+    /// Причина проигрыша на уровне
+    var losingReason: String?
+    
+    /// Слой для фейерверка
+    var emitterLayer: CAEmitterLayer = CAEmitterLayer()
+    
     override func didMove(to view: SKView) {
         
         self.backgroundColor = UIColor.white
@@ -486,12 +492,20 @@ class GameScene: SKScene {
                 }
             }
             
+            if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel && Model.sharedInstance.isCompletedTurorialBonusLevel == false {
+                isLevelWithTutorial = true
+            }
+            
             // Если финальный уровень в секции
             if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
                 bossLevel = BossLevel()
             }
             
             buttonsOnLevel = countButtonsOnLevel()
+            
+            if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+                loadClaimExtraGemNewRecordBonus()
+            }
             
             if Model.sharedInstance.shouldPresentAd() {
                 loadAd()
@@ -764,17 +778,30 @@ class GameScene: SKScene {
                     
                     if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
                         if bossLevel != nil {
-                            let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countAttemps": abs(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 5), "countStars": bossLevel!.countStars] as [String : Any]
-                            
-                            Flurry.logEvent("Lose_boss_level", withParameters: eventParams)
+                            if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+                                let eventParams = ["countStars": bossLevel!.countStars] as [String : Any]
+                                
+                                Flurry.logEvent("Lose_bonus_level", withParameters: eventParams)
+                            }
+                            else {
+                                let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countAttemps": abs(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) - 5), "countStars": bossLevel!.countStars] as [String : Any]
+                                
+                                Flurry.logEvent("Lose_boss_level", withParameters: eventParams)
+                            }
                         }
                     }
                     else {
+                        Model.sharedInstance.setLastDateClaimFreeLife(Model.sharedInstance.currentLevel, value: Date())
+                        
                         let eventParams = ["level": Model.sharedInstance.currentLevel, "isCompletedLevel": Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel), "countLives": Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel)] as [String : Any]
                         
                         Flurry.logEvent("Lose_level", withParameters: eventParams)
                     }
                 }
+            }
+            
+            if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel == false {
+                presentInterstitialLoseWin()
             }
             
             // Если обычный уровень (не босс) и жизней = 0, то окно nolives (если босс, то всегда выводить lose)
@@ -785,7 +812,13 @@ class GameScene: SKScene {
                 modalWindowPresent(type: modalWindowType.lose)
             }
             
-            presentInterstitialLoseWin()
+            // Если "была найдена" причина проигрыша на уровне
+            if Model.sharedInstance.currentLevel != 1 || Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) {
+                if losingReason != nil {
+                    removeObjectInfoView()
+                    presentObjectInfoView(spriteName: "PlayerStaysFront", description: losingReason!, infoViewHeight: 65, isUserInteractionEnabled: false)
+                }
+            }
             
             // Если обычный уровень (не босс), то скрываем одно сердечко
             if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
@@ -797,6 +830,19 @@ class GameScene: SKScene {
                     btnFadeOutAnim.isRemovedOnCompletion = false
                     
                     lastHeartButton.layer.add(btnFadeOutAnim, forKey: "fadeOut")
+                }
+            }
+            else {
+                if bossLevel != nil {
+                    if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+                        Model.sharedInstance.setHighScoreBonusLevel(bossLevel!.countStars)
+                        
+                        let countGems = Int(bossLevel!.countStars / 10)
+                        let extraCoins = Int(countGems / 2)
+                        if countGems > 0 {
+                            getGemsAnimation(amountGems: countGems + extraCoins)
+                        }
+                    }
                 }
             }
             
@@ -843,33 +889,48 @@ class GameScene: SKScene {
         
         // Если уровень не был пройден, то обновляем кол-во драг. камней
         if Model.sharedInstance.isCompletedLevel(Model.sharedInstance.currentLevel) == false {
-            Model.sharedInstance.setCountGems(amountGems: gemsForLevel)
+
+            Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
             
-            for index in 1...gemsForLevel {
-                let gem = UIImageView(image: UIImage(named: "Gem_blue"))
-                
-                gem.frame.origin = CGPoint(x: self.view!.frame.width + 200, y: self.view!.frame.height + 200)
-                gem.frame.size = CGSize(width: gem.frame.width * 5, height: gem.frame.height * 5)
-                self.view!.addSubview(gem)
-                
-                DispatchQueue.main.async {
-                    UIView.animate(withDuration: TimeInterval(0.5 + CGFloat(index) * 0.425), animations: {
-                        gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 110 - 55, y: self.view!.frame.height / 2 - 78)
-                        gem.frame.size = CGSize(width: gem.frame.width / 5 * 0.75, height: gem.frame.height / 5 * 0.75)
-                    }, completion: { (_) in
-                        
-                        SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpCoin.mp3")
-                        
-                        self.countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems() - self.gemsForLevel + index)"
-                        gem.removeFromSuperview()
-                    })
-                }
+            getGemsAnimation(amountGems: gemsForLevel)
+            
+            if Model.sharedInstance.isLevelsCompletedWithHelp(Model.sharedInstance.currentLevel) == false {
+                Model.sharedInstance.setCountLevelsCompletedWithoutHelp()
             }
             
-            Model.sharedInstance.setCompletedLevel(Model.sharedInstance.currentLevel)
+            if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) == 5 {
+                Model.sharedInstance.setCountLevelsCompletedWithoutLosing()
+            }
         }
         else {
-            presentInterstitialLoseWin()
+            if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel == false {
+                presentInterstitialLoseWin()
+            }
+        }
+    }
+    
+    func getGemsAnimation(amountGems: Int) {
+        Model.sharedInstance.setCountGems(amountGems: amountGems)
+        
+        for index in 1...amountGems {
+            let gem = UIImageView(image: UIImage(named: "Gem_blue"))
+            
+            gem.frame.origin = CGPoint(x: self.view!.frame.width + 200, y: self.view!.frame.height + 200)
+            gem.frame.size = CGSize(width: gem.frame.width * 5, height: gem.frame.height * 5)
+            self.view!.addSubview(gem)
+            
+            DispatchQueue.main.async {
+                UIView.animate(withDuration: TimeInterval(0.5 + CGFloat(index) * 0.425), animations: {
+                    gem.frame.origin = CGPoint(x: self.view!.frame.width / 2 + 110 - 55, y: self.view!.frame.height / 2 - 78)
+                    gem.frame.size = CGSize(width: gem.frame.width / 5 * 0.75, height: gem.frame.height / 5 * 0.75)
+                }, completion: { (_) in
+                    
+                    SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpCoin.mp3")
+                    
+                    self.countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems() - amountGems + index)"
+                    gem.removeFromSuperview()
+                })
+            }
         }
     }
     
@@ -918,12 +979,14 @@ class GameScene: SKScene {
         isLosedLevel = false
         keysInBag.removeAll()
         collectedObjects.removeAll()
-        isOpenInfoView = false
         timerToClaimFreeLife.invalidate()
+        losingReason = nil
         
         if Model.sharedInstance.currentLevel > 1 {
             removeObjectInfoView()
         }
+        
+        isOpenInfoView = false
         
         buttonsOnLevel = 0
         

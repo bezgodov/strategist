@@ -98,7 +98,25 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
             
             if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
                 let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
-                modalWindowTitleLabel.text = "\(NSLocalizedString("BOSS", comment: "")) #\(bossNumberTitle)"
+                
+                if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+                    modalWindowTitleLabel.text = "\(NSLocalizedString("BOSS", comment: ""))"
+                    
+                    if bossLevel != nil {
+                        if bossLevel!.countStars > Model.sharedInstance.getHighScoreBonusLevel() {
+                            modalWindowTitleLabel.text = "\(NSLocalizedString("NEW RECORD", comment: ""))"
+                            
+                            if bossLevel!.countStars > 9 && bossLevel!.countStars >= Model.sharedInstance.getHighScoreBonusLevel() + 3 {
+                                buttonToClaimFreeExtraGemNewRecord()
+                            }
+                            
+                            createFireWorks()
+                        }
+                    }
+                }
+                else {
+                    modalWindowTitleLabel.text = "\(NSLocalizedString("BOSS", comment: "")) #\(bossNumberTitle)"
+                }
             }
             
             modalWindowTitleLabel.isUserInteractionEnabled = true
@@ -159,41 +177,82 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
                 
                 if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections == 0 {
                     let bossNumberTitle = Model.sharedInstance.currentLevel / Model.sharedInstance.distanceBetweenSections
-                    sentenceLabel.text = "\(NSLocalizedString("BOSS", comment: "")) #\(bossNumberTitle)"
+                    
+                    if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+                        sentenceLabel.text = "\(NSLocalizedString("BOSS", comment: ""))"
+                    }
+                    else {
+                        sentenceLabel.text = "\(NSLocalizedString("BOSS", comment: "")) #\(bossNumberTitle)"
+                    }
                 }
             }
         }
         else {
-            goToSettingsBtn.setTitle(NSLocalizedString("LEVELS", comment: ""), for: UIControlState.normal)
-            goToSettingsBtn.addTarget(self, action: #selector(goToLevelsAfterLose), for: .touchUpInside)
-            
             if type == modalWindowType.lose {
                 startBtn.setTitle(NSLocalizedString("RESTART", comment: ""), for: UIControlState.normal)
                 startBtn.addTarget(self, action: #selector(restartLevelObjc), for: .touchUpInside)
                 
-                sentenceLabel.text = NSLocalizedString("You lose", comment: "")
+                if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+                    if bossLevel != nil {
+                        sentenceLabel.text = "\(NSLocalizedString("Score", comment: "")): \(bossLevel!.countStars)"
+                        goToSettingsBtn.restorationIdentifier = "withNoDismiss"
+                        goToSettingsBtn.addTarget(self, action: #selector(goToSettings), for: .touchUpInside)
+                    }
+                }
+                else {
+                    sentenceLabel.text = NSLocalizedString("You lose", comment: "")
+                    
+                    goToSettingsBtn.setTitle(NSLocalizedString("LEVELS", comment: ""), for: UIControlState.normal)
+                    goToSettingsBtn.addTarget(self, action: #selector(goToLevelsAfterLose), for: .touchUpInside)
+                }
             }
             else {
                 startBtn.setTitle(NSLocalizedString("EXTRA LIFE", comment: ""), for: UIControlState.normal)
                 startBtn.addTarget(self, action: #selector(addExtraLife), for: .touchUpInside)
                 
+                goToSettingsBtn.setTitle(NSLocalizedString("LEVELS", comment: ""), for: UIControlState.normal)
+                goToSettingsBtn.addTarget(self, action: #selector(goToLevelsAfterLose), for: .touchUpInside)
+                
                 sentenceLabel.text = NSLocalizedString("No lives", comment: "")
+                
+                if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
+                    let countOfGemsImage = UIImageView(image: UIImage(named: "Heart"))
+                    countOfGemsImage.frame.size = CGSize(width: countOfGemsImage.frame.size.width * 0.75, height: countOfGemsImage.frame.size.height * 0.75)
+                    countOfGemsImage.frame.origin = CGPoint(x: modalWindow.frame.size.width - 35 - 20, y: 22)
+                    modalWindow.addSubview(countOfGemsImage)
+                    
+                    let countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 75 / 2, y: countOfGemsImage.frame.height / 2 - 50 / 2, width: 75, height: 50))
+                    countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 18)
+                    countGemsModalWindowLabel.text = String(Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel))
+                    countGemsModalWindowLabel.textAlignment = NSTextAlignment.center
+                    countGemsModalWindowLabel.textColor = UIColor.white
+                    countOfGemsImage.addSubview(countGemsModalWindowLabel)
+                    
+                    if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) < 1 {
+                        countGemsModalWindowLabel.text = "8:37"
+                        countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 13)
+                        countGemsModalWindowLabel.frame.origin.y -= 3
+                        labelToGetFreeLifeTime(buttonExtraLifeForAd: countGemsModalWindowLabel)
+                    }
+                }
             }
         }
         
         modalWindow.addSubview(startBtn)
         
-        let countOfGemsImage = UIImageView(image: UIImage(named: "Gem_blue"))
-        countOfGemsImage.frame.size = CGSize(width: countOfGemsImage.frame.size.width * 0.75, height: countOfGemsImage.frame.size.height * 0.75)
-        countOfGemsImage.frame.origin = CGPoint(x: modalWindow.frame.size.width - 35 - 20, y: 22)
-        modalWindow.addSubview(countOfGemsImage)
-        
-        countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 75 / 2, y: 10, width: 75, height: 50))
-        countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 14)
-        countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems())"
-        countGemsModalWindowLabel.textAlignment = NSTextAlignment.center
-        countGemsModalWindowLabel.textColor = UIColor.white
-        countOfGemsImage.addSubview(countGemsModalWindowLabel)
+        if type != modalWindowType.nolives {
+            let countOfGemsImage = UIImageView(image: UIImage(named: "Gem_blue"))
+            countOfGemsImage.frame.size = CGSize(width: countOfGemsImage.frame.size.width * 0.75, height: countOfGemsImage.frame.size.height * 0.75)
+            countOfGemsImage.frame.origin = CGPoint(x: modalWindow.frame.size.width - 35 - 20, y: 22)
+            modalWindow.addSubview(countOfGemsImage)
+            
+            countGemsModalWindowLabel = UILabel(frame: CGRect(x: countOfGemsImage.frame.width / 2 - 75 / 2, y: 10, width: 75, height: 50))
+            countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 14)
+            countGemsModalWindowLabel.text = "X\(Model.sharedInstance.getCountGems())"
+            countGemsModalWindowLabel.textAlignment = NSTextAlignment.center
+            countGemsModalWindowLabel.textColor = UIColor.white
+            countOfGemsImage.addSubview(countGemsModalWindowLabel)
+        }
         
         modalWindow.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
         modalWindow.layer.cornerRadius = 15
@@ -219,9 +278,39 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
         return "\(minutes):\(leadingZero)\(seconds)"
     }
     
-    func buttonToClaimFreeLife() {
+    func labelToGetFreeLifeTime(buttonExtraLifeForAd: UILabel) {
         let timeToClaimFreeLife = TIME_TO_CLAIM_FREE_LIFE - (Model.sharedInstance.getLastDateClaimFreeLife(Model.sharedInstance.currentLevel)!.timeIntervalSinceNow * -1)
         
+        // Добавляем кнопку дополнительной жизни
+        timerToClaimFreeLife.invalidate()
+        
+        buttonExtraLifeForAd.text = String(stringFromTimeInterval(timeToClaimFreeLife))
+        
+        timerToClaimFreeLife = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (timer) in
+            
+            if Model.sharedInstance.getLastDateClaimFreeLife(Model.sharedInstance.currentLevel) != nil {
+                
+                let timeToClaimFreeLife = TIME_TO_CLAIM_FREE_LIFE - (Model.sharedInstance.getLastDateClaimFreeLife(Model.sharedInstance.currentLevel)!.timeIntervalSinceNow * -1)
+                if timeToClaimFreeLife > 1 {
+                    
+                    buttonExtraLifeForAd.text = self.stringFromTimeInterval(timeToClaimFreeLife)
+                }
+                else {
+                    buttonExtraLifeForAd.isHidden = true
+                    
+                    if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) < 1 {
+                        Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + 1)
+                        
+                        self.restartingLevel()
+                    }
+                    
+                    timer.invalidate()
+                }
+            }
+        }
+    }
+    
+    func buttonToClaimFreeLife() {
         viewExtraLifeForAd = UIView(frame: CGRect(x: self.view!.frame.maxX, y: modalWindow.frame.maxY + 10, width: modalWindow.frame.width, height: modalWindow.frame.height / 4))
         viewExtraLifeForAd.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
         viewExtraLifeForAd.clipsToBounds = true
@@ -245,53 +334,69 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
         buttonExtraLifeForAd.titleLabel?.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
         viewExtraLifeForAd.addSubview(buttonExtraLifeForAd)
         
-        if timeToClaimFreeLife <= 0 {
-            buttonExtraLifeForAd.addTarget(self, action: #selector(extraLifeForAd), for: UIControlEvents.touchUpInside)
+        buttonExtraLifeForAd.addTarget(self, action: #selector(extraLifeForAd), for: UIControlEvents.touchUpInside)
+    }
+    
+    /// Кнопка, которая появляется при новом рекорде, для получения 1 доп. алмаза
+    func buttonToClaimFreeExtraGemNewRecord() {
+        let timeToClaimFreeGem = 10
+        
+        if GADRewardBasedVideoAd.sharedInstance().isReady == false {
+            loadClaimExtraGemNewRecordBonus()
         }
-        else {
-            buttonExtraLifeForAd.isEnabled = false
-            buttonExtraLifeForAd.setTitle(String(stringFromTimeInterval(timeToClaimFreeLife)), for: UIControlState.normal)
-            
-            let indicatorExtraLifeForAd = UIView(frame: CGRect(x: 0, y: 0, width: viewExtraLifeForAd.frame.width, height: viewExtraLifeForAd.frame.height))
-            indicatorExtraLifeForAd.frame.size.width = (viewExtraLifeForAd.frame.width * CGFloat(timeToClaimFreeLife)) / CGFloat(TIME_TO_CLAIM_FREE_LIFE)
-            indicatorExtraLifeForAd.backgroundColor = UIColor.black.withAlphaComponent(0.1)
-            viewExtraLifeForAd.insertSubview(indicatorExtraLifeForAd, belowSubview: buttonExtraLifeForAd)
-            
-            UIView.animate(withDuration: timeToClaimFreeLife, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
-                indicatorExtraLifeForAd.frame.size.width = 0
-            }, completion: { (_) in
-                indicatorExtraLifeForAd.removeFromSuperview()
+        
+        let viewExtraLifeForAd = UIView(frame: CGRect(x: self.view!.frame.maxX, y: modalWindow.frame.maxY + 10, width: modalWindow.frame.width, height: modalWindow.frame.height / 4))
+        viewExtraLifeForAd.backgroundColor = UIColor.init(red: 0, green: 109 / 255, blue: 240 / 255, alpha: 1)
+        viewExtraLifeForAd.clipsToBounds = true
+        viewExtraLifeForAd.layer.cornerRadius = 15
+        viewExtraLifeForAd.layer.shadowColor = UIColor.black.cgColor
+        viewExtraLifeForAd.layer.shadowOffset = CGSize.zero
+        viewExtraLifeForAd.layer.shadowOpacity = 0.35
+        viewExtraLifeForAd.layer.shadowRadius = 10
+        viewExtraLifeForAd.isUserInteractionEnabled = true
+        viewExtraLifeForAd.restorationIdentifier = "viewExtraLifeForAd"
+        self.view!.addSubview(viewExtraLifeForAd)
+        
+        UIView.animate(withDuration: 0.215, animations: {
+            viewExtraLifeForAd.frame.origin.x = self.modalWindow.frame.minX
+        })
+        
+        let buttonExtraLifeForAd = UIButton(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: viewExtraLifeForAd.frame.size))
+        buttonExtraLifeForAd.setTitleColor(UIColor.white, for: UIControlState.normal)
+        buttonExtraLifeForAd.titleLabel?.textAlignment = NSTextAlignment.center
+        buttonExtraLifeForAd.titleLabel?.font = UIFont(name: "AvenirNext-DemiBold", size: 24)
+        viewExtraLifeForAd.addSubview(buttonExtraLifeForAd)
+        
+        buttonExtraLifeForAd.addTarget(self, action: #selector(extraGemAfterNewRecordBonusAction), for: UIControlEvents.touchUpInside)
+        buttonExtraLifeForAd.setTitle(NSLocalizedString("+1 extra GEM", comment: ""), for: UIControlState.normal)
+        
+        let indicatorExtraLifeForAd = UIView(frame: CGRect(x: 0, y: 0, width: viewExtraLifeForAd.frame.width, height: viewExtraLifeForAd.frame.height))
+        indicatorExtraLifeForAd.frame.size.width = viewExtraLifeForAd.frame.width
+        indicatorExtraLifeForAd.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+        viewExtraLifeForAd.insertSubview(indicatorExtraLifeForAd, belowSubview: buttonExtraLifeForAd)
+        
+        UIView.animate(withDuration: TimeInterval(timeToClaimFreeGem), delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+            indicatorExtraLifeForAd.frame.size.width = 0
+        }, completion: { (_) in
+            UIView.animate(withDuration: 0.5, animations: {
+                viewExtraLifeForAd.alpha = 0
+            },completion: { (_) in
+                viewExtraLifeForAd.removeFromSuperview()
             })
-            
-            timerToClaimFreeLife = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (timer) in
-                if Model.sharedInstance.getLastDateClaimFreeLife(Model.sharedInstance.currentLevel) != nil {
-                    
-                    let timeToClaimFreeLife = TIME_TO_CLAIM_FREE_LIFE - (Model.sharedInstance.getLastDateClaimFreeLife(Model.sharedInstance.currentLevel)!.timeIntervalSinceNow * -1)
-                    if timeToClaimFreeLife > 1 {
-                        buttonExtraLifeForAd.setTitle(self.stringFromTimeInterval(timeToClaimFreeLife), for: UIControlState.normal)
-                        
-                        if timeToClaimFreeLife < 30 {
-                            if GADRewardBasedVideoAd.sharedInstance().isReady == false {
-                                self.loadClaimFreeLifeAD()
-                            }
-                        }
-                    }
-                    else {
-                        buttonExtraLifeForAd.isEnabled = true
-                        buttonExtraLifeForAd.setTitle(NSLocalizedString("Free extra life", comment: ""), for: UIControlState.normal)
-                        buttonExtraLifeForAd.addTarget(self, action: #selector(self.extraLifeForAd), for: UIControlEvents.touchUpInside)
-                        
-                        timer.invalidate()
-                    }
-                }
-            }
-        }
+        })
     }
     
     func loadClaimFreeLifeAD() {
         GADRewardBasedVideoAd.sharedInstance().delegate = self
         let request = GADRequest()
         GADRewardBasedVideoAd.sharedInstance().load(request, withAdUnitID: "ca-app-pub-3811728185284523/1179286082")
+    }
+    
+    /// Загрузка рекламы для получения 1 алмаза после нового рекорда на бонус-уровне в меню
+    func loadClaimExtraGemNewRecordBonus() {
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
+        let request = GADRequest()
+        GADRewardBasedVideoAd.sharedInstance().load(request, withAdUnitID: "ca-app-pub-3811728185284523/9825579204")
     }
     
     func presentClaimFreeLifeAD() {
@@ -312,6 +417,28 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
             Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
             
             Flurry.logEvent("Ad_wasnt_ready_modal_window", withParameters: eventParams)
+        }
+    }
+    
+    /// Показать рекламу после нового рекорда, чтобы получить 1 доп. алмаз
+    func presentClaimExtraGemNewRecordBonus() {
+        if GADRewardBasedVideoAd.sharedInstance().isReady == true {
+            GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: Model.sharedInstance.gameViewControllerConnect)
+        }
+        else {
+            let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+            
+            loadClaimExtraGemNewRecordBonus()
+            
+            let title = NSLocalizedString("FAIL", comment: "")
+            let message = NSLocalizedString("Rewarded video was not ready, try again or check your Internet connection", comment: "")
+            
+            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+            let actionOk = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.default)
+            alert.addAction(actionOk)
+            Model.sharedInstance.gameViewControllerConnect.present(alert, animated: true, completion: nil)
+            
+            Flurry.logEvent("Ad_wasnt_ready_new_record_modal", withParameters: eventParams)
         }
     }
     
@@ -391,6 +518,10 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
         self.isPaused = false
         objectsLayer.speed = 1
 
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
+            emitterLayer.removeAllAnimations()
+            emitterLayer.removeFromSuperlayer()
+        }
         
         for object in movingObjects {
             object.run(SKAction.move(to: pointFor(column: object.moves!.first!.column, row: object.moves!.first!.row), duration: 0.215))
@@ -416,6 +547,8 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
             }
         }
         
+        removeObjectInfoView()
+        
         UIView.animate(withDuration: 0.215, animations: {
             self.modalWindow.frame.origin.x = self.view!.frame.maxX
             self.modalWindowBg.backgroundColor = UIColor.black.withAlphaComponent(0)
@@ -440,6 +573,10 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
     
     @objc func extraLifeForAd(_ sender: UIButton) {
         presentClaimFreeLifeAD()
+    }
+    
+    @objc func extraGemAfterNewRecordBonusAction(_ sender: UIButton) {
+        presentClaimExtraGemNewRecordBonus()
     }
     
     @objc func addExtraLife(_ sender: UIButton) {
@@ -521,6 +658,8 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
             Flurry.logEvent("Go_to_levels_from_menu_from_modal_window", withParameters: eventParams)
         }
         
+        timerToClaimFreeLife.invalidate()
+        
         Model.sharedInstance.gameViewControllerConnect.goToLevels()
     }
     
@@ -529,13 +668,15 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
         
         SKTAudio.sharedInstance().resumeBackgroundMusic()
         
-        Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: true)
+        let dismiss = sender.restorationIdentifier == "withNoDismiss" ? false : true
+        
+        Model.sharedInstance.gameViewControllerConnect.presentMenu(dismiss: dismiss)
     }
     
     /// Функция отображает фейерверк при выйгрыше уровня
     func createFireWorks() {
         let rootLayer:CALayer = CALayer()
-        let emitterLayer:CAEmitterLayer = CAEmitterLayer()
+        emitterLayer = CAEmitterLayer()
         
         var yPos = 0 + self.view!.bounds.height / 2
         if Model.sharedInstance.isDeviceIpad() {
@@ -608,26 +749,37 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
         rootLayer.addSublayer(emitterLayer)
         
         Timer.scheduledTimer(withTimeInterval: 15, repeats: false) { (_) in
-            emitterLayer.removeFromSuperlayer()
+            self.emitterLayer.removeFromSuperlayer()
         }
         
         self.view!.layer.insertSublayer(rootLayer, below: modalWindow.layer)
     }
     
     func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
-        let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
-        
-        Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + Int(truncating: reward.amount))
-        
-        restartingLevel()
-        
-        if Model.sharedInstance.isActivatedSounds() {
-            SKTAudio.sharedInstance().resumeBackgroundMusic()
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel == false {
+            let eventParams = ["level": Model.sharedInstance.currentLevel, "countGems": Model.sharedInstance.getCountGems()]
+            
+            Model.sharedInstance.setLevelLives(level: Model.sharedInstance.currentLevel, newValue: Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) + Int(truncating: reward.amount))
+            
+            timerToClaimFreeLife.invalidate()
+            
+            restartingLevel()
+            
+            if Model.sharedInstance.isActivatedSounds() {
+                SKTAudio.sharedInstance().resumeBackgroundMusic()
+            }
+            
+            Flurry.logEvent("Watch_ad_free_life_modal_window_success", withParameters: eventParams)
+            
+            Model.sharedInstance.setLastDateClaimFreeLife(Model.sharedInstance.currentLevel, value: Date())
         }
-        
-        Flurry.logEvent("Watch_ad_free_life_modal_window_success", withParameters: eventParams)
-        
-        Model.sharedInstance.setLastDateClaimFreeLife(Model.sharedInstance.currentLevel, value: Date())
+        else {
+            let eventParams = ["countGems": Model.sharedInstance.getCountGems()]
+            
+            getGemsAnimation(amountGems: 1)
+            
+            Flurry.logEvent("Watch_ad_free_gem_bonus_modal_window_success", withParameters: eventParams)
+        }
     }
     
     func rewardBasedVideoAdDidOpen(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
@@ -641,7 +793,9 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
             SKTAudio.sharedInstance().resumeBackgroundMusic()
         }
         
-        loadClaimFreeLifeAD()
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel == false {
+            loadClaimFreeLifeAD()
+        }
     }
     
     func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd,
@@ -650,6 +804,8 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
             SKTAudio.sharedInstance().resumeBackgroundMusic()
         }
         
-        loadClaimFreeLifeAD()
+        if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel == false {
+            loadClaimFreeLifeAD()
+        }
     }
 }
