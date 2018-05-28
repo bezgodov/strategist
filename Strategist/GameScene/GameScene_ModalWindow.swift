@@ -229,8 +229,7 @@ extension GameScene: GADRewardBasedVideoAdDelegate {
                     countOfGemsImage.addSubview(countGemsModalWindowLabel)
                     
                     if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) < 1 {
-                        countGemsModalWindowLabel.text = "8:37"
-                        countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-DemiBold", size: 13)
+                        countGemsModalWindowLabel.font = UIFont(name: "AvenirNext-Bold", size: 13)
                         countGemsModalWindowLabel.frame.origin.y -= 3
                         labelToGetFreeLifeTime(buttonExtraLifeForAd: countGemsModalWindowLabel)
                     }

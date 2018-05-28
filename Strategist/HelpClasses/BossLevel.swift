@@ -346,7 +346,7 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     }
     
     func increaseEnemiesSpeed() {
-        currentEnemiesSpeed += 0.01
+        currentEnemiesSpeed += 0.005
         gameScene.bossEnemies.speed = currentEnemiesSpeed
     }
     

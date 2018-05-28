@@ -36,7 +36,7 @@ class AchieveViewContoller: UIViewController {
         achieveCell(achieveId: achieveId, yKoef: 0, text: text, rewardCount: 1, countCompleted: Model.sharedInstance.getCountCompletedLevels(), countToComplete: 2, isAchieveLocked: isAchieveLocked, isAchieved: gotGemsForAchieves.contains(achieveId), isTopBorder: true, isBottomBorder: false)
         
         let completedLevelsValues = [5, 25, 50, 100]
-        let completedLevelsGems = [1, 3, 5, 10]
+        let completedLevelsGems = [1, 3, 5, 8]
         var yKoefNextSection = 1
         
         for index in 0...3 {
@@ -53,7 +53,7 @@ class AchieveViewContoller: UIViewController {
         yKoefNextSection += 4
         
         let completedLevelsWithoutHelpValues = [5, 10, 25, 50]
-        let completedLevelsWithoutHelpGems = [2, 3, 5, 10]
+        let completedLevelsWithoutHelpGems = [1, 2, 5, 7]
         for index in 0...3 {
             
             var isAchieveLocked = true
@@ -69,7 +69,7 @@ class AchieveViewContoller: UIViewController {
         yKoefNextSection += 4
         
         let completedLevelsFirstAttempValues = [5, 10, 25, 50]
-        let completedLevelsFirstAttempGems = [2, 3, 5, 10]
+        let completedLevelsFirstAttempGems = [1, 3, 5, 7]
         for index in 0...3 {
             
             var isAchieveLocked = true
@@ -84,8 +84,8 @@ class AchieveViewContoller: UIViewController {
         }
         yKoefNextSection += 4
         
-        let completedBonusLevelsValues = [1, 3, 5, 10]
-        let completedBonusLevelsGems = [1, 5, 10, 15]
+        let completedBonusLevelsValues = [1, 3, 5, 7]
+        let completedBonusLevelsGems = [1, 5, 8, 10]
         for index in 0...3 {
             
             var isAchieveLocked = true
@@ -117,7 +117,7 @@ class AchieveViewContoller: UIViewController {
         yKoefNextSection += 4
         
         let collectedStarsOnBonusLevelsValues = [15, 100, 250, 500]
-        let collectedStarsOnBonusLevelsGems = [1, 2, 3, 5]
+        let collectedStarsOnBonusLevelsGems = [1, 3, 5, 7]
         for index in 0...3 {
             
             var isAchieveLocked = true
@@ -291,7 +291,6 @@ class AchieveViewContoller: UIViewController {
                         button.superview?.layer.borderWidth = 0
                         checked.alpha = 1
                     }, completion: { (_) in
-//                        button.superview?.removeFromSuperview()
                         self.scrollView.isScrollEnabled = true
                     })
                 }

@@ -73,6 +73,6 @@
                 {
                 "type": "bridge",
                 "point": [3,2],
-                "rotate": 1
+                "rotate": 2
                 }]
 }

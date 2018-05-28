@@ -62,7 +62,7 @@
 "If you still did not choose path you can activate preview mode..." = "Если вы ещё не выбрали путь, то можете активировать режим предпросмотра...";
 "Tap at 'Start' button to activate preview mode" = "Нажмите на 'Старт', чтобы активировать режим предпросмотра";
 
-"You can tap at last your choosen path's point and delete it" = "Вы можете нажать на любую ячейку выбранного пути, чтобы удалить путь от конца до выбранной ячейки";
+"You can tap at last your chosen path's point and delete it" = "Вы можете нажать на любую ячейку выбранного пути, чтобы удалить путь от конца до выбранной ячейки";
 
 "Except tapping at screen you can slide along the game board" = "Вы можете провести пальцем от пришельца до ближайшей пчелы, чтобы выбрать путь";
 
@@ -169,6 +169,6 @@
 "stars on bonus levels" = "звёзд на бонусных уровнях";
 "Score" = "Счёт";
 "HIGH SCORE" = "РЕКОРД";
-"Collect stars to get gems. 10 STARS = 1 GEM" = "Собирайте звёзды, чтобы получить алмазы. Каждые 10 звёзд = 1 алмаз";
+"Collect stars to get gems. 10 STARS = 1 GEM" = "Собирайте звёзды, чтобы получить алмазы. Каждые 5 звёзд = 1 алмаз";
 "NEW RECORD" = "НОВЫЙ РЕКОРД";
 "+1 extra GEM" = "+1 доп. алмаз";

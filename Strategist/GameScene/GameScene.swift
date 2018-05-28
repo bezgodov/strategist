@@ -837,7 +837,7 @@ class GameScene: SKScene {
                     if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel {
                         Model.sharedInstance.setHighScoreBonusLevel(bossLevel!.countStars)
                         
-                        let countGems = Int(bossLevel!.countStars / 10)
+                        let countGems = Int(bossLevel!.countStars / 5)
                         let extraCoins = Int(countGems / 2)
                         if countGems > 0 {
                             getGemsAnimation(amountGems: countGems + extraCoins)
@@ -894,17 +894,27 @@ class GameScene: SKScene {
             
             getGemsAnimation(amountGems: gemsForLevel)
             
-            if Model.sharedInstance.isLevelsCompletedWithHelp(Model.sharedInstance.currentLevel) == false {
-                Model.sharedInstance.setCountLevelsCompletedWithoutHelp()
-            }
-            
-            if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) == 5 {
-                Model.sharedInstance.setCountLevelsCompletedWithoutLosing()
+            if Model.sharedInstance.currentLevel % Model.sharedInstance.distanceBetweenSections != 0 {
+                if Model.sharedInstance.isLevelsCompletedWithHelp(Model.sharedInstance.currentLevel) == false {
+                    Model.sharedInstance.setCountLevelsCompletedWithoutHelp()
+                }
+                
+                if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) == 5 {
+                    Model.sharedInstance.setCountLevelsCompletedWithoutLosing()
+                }
+                
             }
         }
         else {
             if Model.sharedInstance.gameViewControllerConnect.isHighScoreBonusLevel == false {
                 presentInterstitialLoseWin()
+            }
+            else {
+                if bossLevel != nil {
+                    if bossLevel!.countStars < 10 {
+                        presentInterstitialLoseWin()
+                    }
+                }
             }
         }
     }

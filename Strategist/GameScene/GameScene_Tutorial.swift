@@ -213,7 +213,7 @@ extension GameScene {
                 ],
             5:
                 [
-                NSLocalizedString("You can tap at last your choosen path's point and delete it", comment: "")
+                NSLocalizedString("You can tap at last your chosen path's point and delete it", comment: "")
                 ],
             7:
                 [

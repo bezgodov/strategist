@@ -19,7 +19,7 @@ class MenuViewController: UIViewController, GADRewardBasedVideoAdDelegate {
     var isDismissed: Bool = false
     
     /// Кол-во секунд между просмотрами рекламы за вознаграждение
-    let TIME_REWARD_VIDEO: Double = 300
+    let TIME_REWARD_VIDEO: Double = 60
     
     /// Таймер, которые отсчитываем время до возможности просмотра рекламы за вознаграждение
     var timeToWatchAd = Timer()

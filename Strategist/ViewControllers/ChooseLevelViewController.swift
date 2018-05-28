@@ -407,6 +407,7 @@ class ChooseLevelViewController: UIViewController, GADRewardBasedVideoAdDelegate
             if character.layer.animation(forKey: "movement") == nil {
                 let movement = CAKeyframeAnimation(keyPath: "position")
                 scrollView.isScrollEnabled = false
+                topMenuView.alpha = 0
                 
                 // Анимации ходьбы ГП
                 character.animationImages = walkFrames
@@ -571,9 +572,12 @@ class ChooseLevelViewController: UIViewController, GADRewardBasedVideoAdDelegate
                     countOfGemsImage.addSubview(countGemsModalWindowLabel!)
                     
                     if Model.sharedInstance.getLevelLives(Model.sharedInstance.currentLevel) < 1 {
+                        let timeToClaimFreeLife = TIME_TO_CLAIM_FREE_LIFE - (Model.sharedInstance.getLastDateClaimFreeLife(Model.sharedInstance.currentLevel)!.timeIntervalSinceNow * -1)
+                        if timeToClaimFreeLife > 0 {
+                            countGemsModalWindowLabel?.text = String(stringFromTimeInterval(timeToClaimFreeLife))
+                        }
                         
-                        countGemsModalWindowLabel?.alpha = 0
-                        countGemsModalWindowLabel?.font = UIFont(name: "AvenirNext-DemiBold", size: 13)
+                        countGemsModalWindowLabel?.font = UIFont(name: "AvenirNext-Bold", size: 13)
                         countGemsModalWindowLabel?.frame.origin.y -= 3
                         labelToGetFreeLifeTime(buttonExtraLifeForAd: countGemsModalWindowLabel)
                     }
@@ -725,20 +729,22 @@ class ChooseLevelViewController: UIViewController, GADRewardBasedVideoAdDelegate
     
     func removeLevelTileState(_ level: Int) {
         // Ищем кнопку-уровень на scrollView
-        var tileLevelSubView: UIView!
+        var tileLevelSubView: UIView?
         for tileSubview in self.scrollView.subviews {
             if tileSubview.restorationIdentifier == "levelTile_\(level)" {
                 tileLevelSubView = tileSubview
             }
         }
         // Ищем view, который выводит состояние уровня
-        for subview in tileLevelSubView.subviews {
-            if subview.restorationIdentifier == "levelStateImage" {
-                UIView.animate(withDuration: 0.5, animations: {
-                    subview.alpha = 0
-                }, completion: { (_) in
-                    subview.removeFromSuperview()
-                })
+        if tileLevelSubView != nil {
+            for subview in tileLevelSubView!.subviews {
+                if subview.restorationIdentifier == "levelStateImage" {
+                    UIView.animate(withDuration: 0.5, animations: {
+                        subview.alpha = 0
+                    }, completion: { (_) in
+                        subview.removeFromSuperview()
+                    })
+                }
             }
         }
     }
@@ -1236,12 +1242,6 @@ class ChooseLevelViewController: UIViewController, GADRewardBasedVideoAdDelegate
                         if timeToClaimFreeLife > 1 {
                             
                             if Model.sharedInstance.currentLevel == level {
-                                if self.countGemsModalWindowLabel?.alpha == 0 {
-                                    UIView.animate(withDuration: 0.25, animations: {
-                                        self.countGemsModalWindowLabel?.alpha = 1
-                                    })
-                                }
-                                
                                 self.countGemsModalWindowLabel?.text = self.stringFromTimeInterval(timeToClaimFreeLife)
                             }
                         }

@@ -61,7 +61,7 @@
                 {
                 "type": "bridge",
                 "point": [3,3],
-                "rotate": 2
+                "rotate": 1
                 },
                 {
                 "type": "bomb",

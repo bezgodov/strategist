@@ -5,16 +5,17 @@ import SpriteKit
 let EXTRA_LIFE_PRICE = 10
 
 /// Цена в драг. камнях выйгрышного пути
-let WINNING_PATH_PRICE = 15
+let WINNING_PATH_PRICE = 10
 
 /// Цена в драг. камнях режима предпросмотра
-let PREVIEW_MODE_PRICE = 50
+// Не используется (причина: выигрышный путь бесплатен)
+//let PREVIEW_MODE_PRICE = 50
 
 /// Время, чтобы получить бесплатную жизнь на уровне
-let TIME_TO_CLAIM_FREE_LIFE: TimeInterval = 600
+let TIME_TO_CLAIM_FREE_LIFE: TimeInterval = 300
 
 /// Время, чтобы получить бесплатный ежедневный алмаз (при заходе в игру)
-let TIME_TO_CLAIM_FREE_GEM: TimeInterval = 60 * 60 * 16
+let TIME_TO_CLAIM_FREE_GEM: TimeInterval = 60 * 60 * 12
 
 class Model {
     init() {
