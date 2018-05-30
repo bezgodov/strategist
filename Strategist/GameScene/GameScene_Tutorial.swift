@@ -62,7 +62,7 @@ extension GameScene {
                         2: getRectFromPoint(point: Point(column: 1, row: 1)),
                         3: getRectFromPoint(point: Point(column: 2, row: 1)),
                         4: getRectFromPoint(point: Point(column: 2, row: 2)),
-                        5: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7),
+                        5: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.size.height),
                         6: CGRect(x: self.view!.bounds.midX - 200 / 2 + 20, y: self.view!.bounds.midY - 200 / 2 + 75, width: 160, height: 50),
                         7: getRectFromPoint(point: Point(column: 2, row: 0)),
                         9: getRectFromPoint(point: Point(column: 0, row: 0)),
@@ -70,7 +70,7 @@ extension GameScene {
                         11: getRectFromPoint(point: Point(column: 2, row: 0)),
                         12: getRectFromPoint(point: Point(column: 2, row: 1)),
                         13: getRectFromPoint(point: Point(column: 2, row: 2)),
-                        14: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
+                        14: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.size.height)
                     ],
                 2:
                     [
@@ -78,7 +78,7 @@ extension GameScene {
                     ],
                 3:
                     [
-                        1: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel.frame.size.height - 7)
+                        1: CGRect(x: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.origin.x, y: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.origin.y + koefForIphoneX, width: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.size.width, height: Model.sharedInstance.gameViewControllerConnect.startLevel_wrapper.frame.size.height)
                     ],
                 5:
                     [

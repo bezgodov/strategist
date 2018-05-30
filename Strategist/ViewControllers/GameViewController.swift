@@ -3,6 +3,7 @@ import SpriteKit
 class GameViewController: UIViewController {
     @IBOutlet weak var goToMenuButton: UIButton!
     @IBOutlet weak var startLevel: UIButton!
+    @IBOutlet weak var startLevel_wrapper: UIButton!
     @IBOutlet weak var movesRemainLabel: UILabel!
     @IBOutlet weak var buyLevelButton: UIButton!
     @IBOutlet weak var viewTopMenu: UIView!

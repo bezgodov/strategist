@@ -218,6 +218,8 @@ class ChooseLevelViewController: UIViewController, GADRewardBasedVideoAdDelegate
             
             SKTAudio.sharedInstance().playSoundEffect(filename: "PickUpCoin.mp3")
             
+            Model.sharedInstance.sendNotification(id: "getFreeEveryDayGem", time: TIME_TO_CLAIM_FREE_GEM + 600, title: NSLocalizedString("Free gem is waiting for you", comment: ""), message: NSLocalizedString("Come back to get", comment: ""))
+            
             UIView.animate(withDuration: 0.215, animations: {
                 sender.view?.superview?.backgroundColor = UIColor.black.withAlphaComponent(0)
             }, completion: { (_) in

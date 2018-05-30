@@ -819,7 +819,8 @@
                         <outlet property="goToMenuButton" destination="fYx-Mu-YuX" id="br6-WR-JPT"/>
                         <outlet property="moveRemainCircleBg" destination="k9J-6o-ij0" id="yYD-GF-ebv"/>
                         <outlet property="movesRemainLabel" destination="ocF-LN-Q0r" id="lkr-fS-pdI"/>
-                        <outlet property="startLevel" destination="svt-Jk-cTc" id="qHP-Yx-bEp"/>
+                        <outlet property="startLevel" destination="svt-Jk-cTc" id="aOv-uO-SlO"/>
+                        <outlet property="startLevel_wrapper" destination="NPq-fm-w2d" id="kbt-bO-UEe"/>
                         <outlet property="startRightEdgeOutlet" destination="EHz-Nh-gDV" id="HO6-xH-jJh"/>
                         <outlet property="viewTopMenu" destination="pwW-zZ-sJV" id="lTC-bL-IWy"/>
                         <outletCollection property="viewTopMenuBorder" destination="B1A-ZO-UsA" collectionClass="NSMutableArray" id="vcy-78-4Qh"/>

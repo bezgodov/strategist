@@ -1,5 +1,6 @@
 import Foundation
 import SpriteKit
+import UserNotifications
 
 /// Цена в драг. камнях доп. жизни
 let EXTRA_LIFE_PRICE = 10
@@ -15,7 +16,7 @@ let WINNING_PATH_PRICE = 10
 let TIME_TO_CLAIM_FREE_LIFE: TimeInterval = 300
 
 /// Время, чтобы получить бесплатный ежедневный алмаз (при заходе в игру)
-let TIME_TO_CLAIM_FREE_GEM: TimeInterval = 60 * 60 * 12
+let TIME_TO_CLAIM_FREE_GEM: TimeInterval = 60 * 60 * 24
 
 class Model {
     init() {
@@ -497,5 +498,30 @@ class Model {
         isCompletedTurorialBonusLevel = value
         
         UserDefaults.standard.set(isCompletedTurorialBonusLevel, forKey: "isCompletedTurorialBonusLevel")
+    }
+    
+    /// Отправить уведомление
+    ///
+    /// - Parameters:
+    ///   - identifier: идентификатор уведомления, чтобы потом его удалить
+    ///   - time: время, через которое уведомление появится в секундах
+    func sendNotification(id identifier: String, time: Double, title: String, message: String) {
+        let content = UNMutableNotificationContent()
+        
+        content.title = title
+        content.body = message
+        content.badge = 0
+        
+        let date = Date(timeIntervalSinceNow: time)
+        
+        let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+        
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [identifier])
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: { (error) in
+            print("NOTIFICATION \(identifier) SENT")
+        })
     }
 }
