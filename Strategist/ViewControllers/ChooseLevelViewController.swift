@@ -129,7 +129,7 @@ class ChooseLevelViewController: UIViewController, GADRewardBasedVideoAdDelegate
         if Model.sharedInstance.getCountCompletedLevels() > 1 {
             if moveCharacterToNextLevel == false {
                 if Model.sharedInstance.getLastTimeUserClaimFreeEveryDayGem() == nil {
-                    Model.sharedInstance.setLastTimeUserClaimFreeEveryDayGem(Calendar.current.date(byAdding: Calendar.Component.hour, value: -10, to: Date())!)
+                    Model.sharedInstance.setLastTimeUserClaimFreeEveryDayGem(Calendar.current.date(byAdding: Calendar.Component.hour, value: -12, to: Date())!)
                 }
                 
                 let timeToClaimFreeGem = TIME_TO_CLAIM_FREE_GEM - (Model.sharedInstance.getLastTimeUserClaimFreeEveryDayGem()!.timeIntervalSinceNow * -1)

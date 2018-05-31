@@ -67,6 +67,8 @@ class Model {
             setShowTips(val: true)
             setActivatedSounds(true)
             setActivatedBgMusic(true)
+            
+            Model.sharedInstance.sendNotification(id: "getFreeEveryDayGem", time: 60 * 60 * 12 + 600, title: NSLocalizedString("Free gem is waiting for you", comment: ""), message: NSLocalizedString("Come back to get", comment: ""))
         }
         
         // Если ещё не были добавлены данные о последнем получении бесплатной жизни (заполняем здесь, так как новая фича, не у всех есть)
