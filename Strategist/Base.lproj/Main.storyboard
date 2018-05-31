@@ -825,6 +825,9 @@
                         <outlet property="viewTopMenu" destination="pwW-zZ-sJV" id="lTC-bL-IWy"/>
                         <outletCollection property="viewTopMenuBorder" destination="B1A-ZO-UsA" collectionClass="NSMutableArray" id="vcy-78-4Qh"/>
                         <outletCollection property="viewTopMenuBorder" destination="mTW-tX-WBl" collectionClass="NSMutableArray" id="Zxc-70-HCM"/>
+                        <outletCollection property="interfaceButtons" destination="TDb-lr-GMc" collectionClass="NSMutableArray" id="Ygl-0H-dTK"/>
+                        <outletCollection property="interfaceButtons" destination="SoT-RD-H4y" collectionClass="NSMutableArray" id="GLg-rY-z27"/>
+                        <outletCollection property="interfaceButtons" destination="NPq-fm-w2d" collectionClass="NSMutableArray" id="gVU-xj-gRQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
@@ -1134,6 +1137,9 @@
                         <outletCollection property="interfaceButtons" destination="roU-ev-QPD" collectionClass="NSMutableArray" id="w7s-EZ-xzf"/>
                         <outletCollection property="interfaceButtons" destination="9Wn-RF-kyI" collectionClass="NSMutableArray" id="Ko4-9r-KN3"/>
                         <outletCollection property="interfaceButtons" destination="cwf-1j-eDn" collectionClass="NSMutableArray" id="ugb-L5-P81"/>
+                        <outletCollection property="interfaceButtons" destination="qjf-uF-1fu" collectionClass="NSMutableArray" id="uLC-iV-k9y"/>
+                        <outletCollection property="interfaceButtons" destination="cVb-vf-3JP" collectionClass="NSMutableArray" id="ncf-Ge-1MB"/>
+                        <outletCollection property="interfaceButtons" destination="jCx-fq-fh7" collectionClass="NSMutableArray" id="O0q-Ex-rI8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RXq-E0-eHv" userLabel="First Responder" sceneMemberID="firstResponder"/>

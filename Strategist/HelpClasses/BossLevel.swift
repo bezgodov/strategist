@@ -53,6 +53,10 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
         Model.sharedInstance.gameViewControllerConnect.startRightEdgeOutlet.constant = -35
         Model.sharedInstance.gameViewControllerConnect.startLevel.isHidden = true
         
+        for button in Model.sharedInstance.gameViewControllerConnect.interfaceButtons {
+            button.isEnabled = false
+        }
+        
         texturesSettings()
         
         characterSettings()
@@ -90,6 +94,11 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
     
     func prepareBossLevel() {
         Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
+        
+        for button in Model.sharedInstance.gameViewControllerConnect.interfaceButtons {
+            button.isEnabled = false
+        }
+        
         isFinishedLevel = true
         
         let labelTimeToStart = UILabel(frame: CGRect(x: gameScene.view!.frame.midX - 75, y: gameScene.view!.frame.midY - 75, width: 150, height: 150))
@@ -150,6 +159,11 @@ class BossLevel: NSObject, SKPhysicsContactDelegate {
         gameScene.bossEnemies.zPosition = gameScene.bossEnemies.zPosition
         
         Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
+        
+        for button in Model.sharedInstance.gameViewControllerConnect.interfaceButtons {
+            button.isEnabled = true
+        }
+        
         isFinishedLevel = false
         
         if Model.sharedInstance.isActivatedBgMusic() {

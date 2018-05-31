@@ -549,6 +549,10 @@ class GameScene: SKScene {
                     Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
+                    
+                    for button in Model.sharedInstance.gameViewControllerConnect.interfaceButtons {
+                        button.isEnabled = false
+                    }
                 }
             }
             else {
@@ -1003,6 +1007,11 @@ class GameScene: SKScene {
         Model.sharedInstance.gameViewControllerConnect.startLevel.isEnabled = true
         Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = true
         Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = true
+        
+        for button in Model.sharedInstance.gameViewControllerConnect.interfaceButtons {
+            button.isEnabled = true
+        }
+        
         Model.sharedInstance.gameViewControllerConnect.viewTopMenu.isHidden = false
         heartsStackView.removeFromSuperview()
         

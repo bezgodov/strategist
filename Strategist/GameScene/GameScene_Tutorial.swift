@@ -384,6 +384,11 @@ extension GameScene {
                 
                     Model.sharedInstance.gameViewControllerConnect.goToMenuButton.isEnabled = false
                     Model.sharedInstance.gameViewControllerConnect.buyLevelButton.isEnabled = false
+                    
+                    for button in Model.sharedInstance.gameViewControllerConnect.interfaceButtons {
+                        button.isEnabled = false
+                    }
+                    
                     Model.sharedInstance.gameViewControllerConnect.startLevel.setImage(UIImage(named: "Menu_stop"), for: UIControlState.normal)
                 default:
                     break
