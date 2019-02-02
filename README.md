@@ -1,1 +1,1 @@
-# thrup
+# Strategist game for iOS
